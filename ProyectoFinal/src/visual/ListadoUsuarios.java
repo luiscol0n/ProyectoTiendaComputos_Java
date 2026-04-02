@@ -13,6 +13,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import database.TiendaComputos;
 import logico.Tienda;
 import logico.User;
 
@@ -158,6 +159,13 @@ public class ListadoUsuarios extends JDialog {
 								int option = ventanita.getResultado();
 								if(option == JOptionPane.YES_OPTION){
 									Tienda.getInstance().eliminarUsuario(codigo);
+									//------ lo q agregue pa modificar
+									TiendaComputos db = new TiendaComputos();
+									boolean exito = db.eliminarUsuario(codigo);
+									if (exito) {
+										JOptionPane.showMessageDialog(null, "!Usuario eliminado en SQL Server!");
+									}
+									//------------------------------------------------
 									deleteBtn.setEnabled(false);
 									updateBtn.setEnabled(false);
 									ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));

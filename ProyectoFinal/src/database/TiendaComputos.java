@@ -42,7 +42,22 @@ public class TiendaComputos {
             ps.setString(3, pass);
             ps.setString(4, oldUser);
             int resultado = ps.executeUpdate();
-            return resultado > 0; // Retorna true si se insertó al menos una fila
+            return resultado > 0; // Retorna true si se modificó al menos una fila
+            
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al modificar usuario: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    public boolean eliminarUsuario(String user) {
+        String sql = "DELETE FROM Users where UserName = ?";
+        
+        try (Connection con = conexion.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, user);
+            int resultado = ps.executeUpdate();
+            return resultado > 0; // Retorna true si se borró al menos una fila
             
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al modificar usuario: " + e.getMessage());
