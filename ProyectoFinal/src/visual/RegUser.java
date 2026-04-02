@@ -176,7 +176,15 @@ public class RegUser extends JDialog {
 									usuario.setUserName(textField.getText());
 									usuario.setPass(textField_1.getText());
 									usuario.setTipo(comboBox.getSelectedItem().toString());
-
+									//------ lo q agregue pa modificar
+									TiendaComputos db = new TiendaComputos();
+									boolean exito = db.actualizarUsuario(comboBox.getSelectedItem().toString(), codigo, textField.getText(), textField_1.getText());
+									if (exito) {
+										JOptionPane.showMessageDialog(null, "!Usuario modificado en SQL Server!");
+									}									
+									//--------------------------
+									
+									
 									ImageIcon icono = new ImageIcon(VentanaOpcion.class.getResource("/Imagenes/alert.png"));
 									String texto = "¿Seguro desea modificar el usuario: "+ codigo +"?";
 									VentanaOpcion ventanita = new VentanaOpcion(icono, texto);

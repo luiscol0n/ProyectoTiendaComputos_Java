@@ -31,6 +31,25 @@ public class TiendaComputos {
             return false;
         }
     }
+    
+    public boolean actualizarUsuario(String tipo, String oldUser, String user, String pass) {
+        String sql = "UPDATE Users SET Tipo = ?, UserName = ?, Password = ? where UserName = ?";
+        
+        try (Connection con = conexion.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, tipo);
+            ps.setString(2, user);
+            ps.setString(3, pass);
+            ps.setString(4, oldUser);
+            int resultado = ps.executeUpdate();
+            return resultado > 0; // Retorna true si se insertó al menos una fila
+            
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al modificar usuario: " + e.getMessage());
+            return false;
+        }
+    }
+    
 
     // Aquí puedes seguir agregando métodos como:
     // public boolean insertarProducto(...) { ... }
