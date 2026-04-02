@@ -3,8 +3,10 @@ package visual;
 import java.awt.BorderLayout;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
 import logico.DiscoDuro;
@@ -16,11 +18,15 @@ import logico.Tienda;
 
 import java.awt.Toolkit;
 import java.awt.Color;
+import java.awt.GridBagLayout;
 import java.awt.Image;
 
 import javax.swing.JLabel;
 import java.awt.Font;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.JTextPane;
+import javax.swing.Icon;
 import javax.swing.border.LineBorder;
 
 public class Favoritos extends JDialog {
@@ -47,11 +53,12 @@ public class Favoritos extends JDialog {
 	public Favoritos() {
 		
 		Color CyanOscuro = new Color(70, 133, 133);
+		Color CyanMid = new Color(80, 180, 152);
 		Color CyanClaro =  new Color (222, 249, 196);
+		Color Rojito = new Color(250, 128, 114);
 		MatteBorder bottomBorder = new MatteBorder(0, 0, 2, 0, CyanOscuro);
 		producto = Tienda.getInstance().productoFavorito();
 		String texto;	
-		
 		
 		if (producto instanceof Microprocesador) {
 			texto = producto.getId() + "\n" + "Tipo: Microprosesador\n Precio: "+ producto.getPrecio() ;

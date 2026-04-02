@@ -461,25 +461,30 @@ public class Tienda implements Serializable {
 	// Nota: esta dice el producto favorito
 	public Producto productoFavorito()
 	{
-		Producto pro=null;
+		Producto pro = null;
 		int cantMay=0;
 		int cantP=0;
 		for (Producto prod : listaProductos) {
+			cantP=0;
 			for (Factura fat : listaFacturas) {
-				if(fat.getId().equalsIgnoreCase(prod.getId()))
-				{
-					cantP++;
+				for (Producto producto : fat.getProductosFacturados()) {
+					if(producto.getId().equalsIgnoreCase(prod.getId()))
+					{
+						cantP++;
+					}
 				}
+				
 			}
 			if(cantMay<cantP)
 			{
 				cantMay=cantP;
 				pro= prod;
 			}
-			cantP=0;
+			
 		}
 		return pro;
 	}
+
 	//  Nota: esta funcion determina el total de los productos en inventario
 	public int[] cantInventario()
 	{

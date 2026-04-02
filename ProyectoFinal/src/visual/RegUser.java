@@ -164,8 +164,7 @@ public class RegUser extends JDialog {
 									boolean exito = db.insertarUsuario(comboBox.getSelectedItem().toString(), textField.getText(), textField_1.getText());
 									if (exito) {
 										JOptionPane.showMessageDialog(null, "!Usuario registrado en SQL Server!");
-									}
-											
+									}	
 									//-----------------------------------
 									Tienda.getInstance().RegistrarUser(user);
 									ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));

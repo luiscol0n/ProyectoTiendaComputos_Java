@@ -35,7 +35,6 @@ public class Servidor extends Thread {
                 fileOutputStream.close();
                 inputStream.close();
                 clientSocket.close();
-                sfd.close();
                 
                 System.out.println("Operación satisfactoria. Backup realizado correctamente!");
             } catch (IOException ioe) {
