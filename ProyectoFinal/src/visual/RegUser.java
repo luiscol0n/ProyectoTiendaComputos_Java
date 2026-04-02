@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
+import database.TiendaComputos;
 import logico.Tienda;
 import logico.User;
 
@@ -158,6 +159,14 @@ public class RegUser extends JDialog {
 							} else {
 								if (usuario == null) {
 									User user = new User(comboBox.getSelectedItem().toString(),textField.getText(),textField_1.getText());
+									// Lo q agregué--------------------
+									TiendaComputos db = new TiendaComputos();
+									boolean exito = db.insertarUsuario(comboBox.getSelectedItem().toString(), textField.getText(), textField_1.getText());
+									if (exito) {
+										JOptionPane.showMessageDialog(null, "!Usuario registrado en SQL Server!");
+									}
+											
+									//-----------------------------------
 									Tienda.getInstance().RegistrarUser(user);
 									ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));
 									MensajeAlerta mensajito = new MensajeAlerta(iconito, "Operación satisfactoria.\nUsuario registrado!");

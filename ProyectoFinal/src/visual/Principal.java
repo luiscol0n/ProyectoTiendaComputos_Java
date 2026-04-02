@@ -377,8 +377,7 @@ public class Principal extends JFrame {
 		mntmNewMenuItem_13.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				PagoSueldo pago= new PagoSueldo();
-				pago.setVisible(true);
-				
+				pago.setVisible(true);	
 			}
 		});
 		mntmNewMenuItem_13.setFont(new Font("Segoe UI", Font.PLAIN, 16));
@@ -388,7 +387,12 @@ public class Principal extends JFrame {
 		mnNewMenu_3.setIcon(new ImageIcon(Principal.class.getResource("/Imagenes/user.png")));
 		mnNewMenu_3.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 		menuAdministracion.add(mnNewMenu_3);
+		if (!Tienda.getLoginUser().getTipo().equalsIgnoreCase("Administrador")) {
+			mntmNewMenuItem_13.setVisible(false);
+		}
 
+		
+		
 		JMenuItem mntmNewMenuItem_10 = new JMenuItem("Registro");
 		mntmNewMenuItem_10.setBackground(Color.WHITE);
 		mntmNewMenuItem_10.setIcon(new ImageIcon(Principal.class.getResource("/Imagenes/ClienteRegistrar1.png")));
