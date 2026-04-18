@@ -306,13 +306,7 @@ public class Principal extends JFrame {
 		if (!Tienda.getLoginUser().getTipo().equalsIgnoreCase("Administrador")) {
 			mntmNewMenuItem_12.setVisible(false);
 		}
-		mntmNewMenuItem_12.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				RegistrarCombo com= new RegistrarCombo();
-				com.setModal(true);
-				com.setVisible(true);
-			}
-		});
+		
 		mntmNewMenuItem_12.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 		menuAdministracion.add(mntmNewMenuItem_12);
 		mntmNewMenuItem_5.setFont(new Font("Segoe UI", Font.PLAIN, 16));

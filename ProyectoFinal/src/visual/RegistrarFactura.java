@@ -18,7 +18,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
 import logico.Cliente;
-import logico.Combo;
 import logico.DiscoDuro;
 import logico.Factura;
 import logico.FacturaCompra;
@@ -68,7 +67,6 @@ public class RegistrarFactura extends JDialog {
 	private int indexComCarrito;
 	private int indexComDisponible;
 	private ArrayList<Producto> productosComprados = new ArrayList<Producto>();
-	private ArrayList<Combo> combosComprados = new ArrayList<Combo>();
 	private double precioTotal = 0;
 	private double descuentoTotal = 0;
 	private JTextField txtTotal;
@@ -76,7 +74,6 @@ public class RegistrarFactura extends JDialog {
 	private JButton btnAgregarPro;
 	private JButton btnQuitarPro;
 	private JButton btnProducto;
-	private JButton btnCombos;
 	private JPanel pnlCompra;
 	private JTextField txtIdCliente;
 	private JTextField txtEmpleado;
@@ -381,7 +378,6 @@ public class RegistrarFactura extends JDialog {
 		btnProducto.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				btnCombos.setEnabled(true);
 				btnProducto.setEnabled(false);
 				pnlComCarrito.setVisible(false);
 				pnlComDisponible.setVisible(false);
@@ -394,27 +390,6 @@ public class RegistrarFactura extends JDialog {
 		btnProducto.setBounds(10, 131, 108, 23);
 		panel.add(btnProducto);
 
-		btnCombos = new JButton("Combos");
-		if(esCV)
-		{
-			btnCombos.setEnabled(false);
-		}
-		btnCombos.setForeground(new Color(255, 255, 255));
-		btnCombos.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-		btnCombos.setBackground(CyanMid);
-		btnCombos.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				btnProducto.setEnabled(true);
-				btnCombos.setEnabled(false);
-				pnlComCarrito.setVisible(true);
-				pnlComDisponible.setVisible(true);
-				pnlProCarrito.setVisible(false);
-				pnlProDisponible.setVisible(false);
-			}
-		});
-		btnCombos.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-		btnCombos.setBounds(124, 131, 89, 23);
-		panel.add(btnCombos);
 
 		txtTotal = new JTextField();
 		txtTotal.setEditable(false);
@@ -541,16 +516,10 @@ public class RegistrarFactura extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 
 				ArrayList<Producto> productos=Tienda.getInstance().getProductosSeleccionados();
-				ArrayList<Combo> combos=Tienda.getInstance().getCombosSeleccionados();
 				for (Producto prod : productos) {
 					productosComprados.add(prod);
 				}
 
-				for (Combo combo : combos) {
-					for (Producto prod : combo.getMisProductos()) {
-						productosComprados.add(prod);
-					}
-				}
 				LocalDate hoy= LocalDate.now();
 				if(esCV)
 				{	
@@ -578,20 +547,8 @@ public class RegistrarFactura extends JDialog {
 						mensajito.setModal(true);
 						mensajito.setVisible(true);
 						return;
-					}
+					}	
 					
-					Cliente clien = (Cliente) Tienda.getInstance().buscarPersonaId(txtIdCliente.getText());
-					Factura venta = new FacturaVenta( txtID.getText(), hoy, productosComprados,  clien, (Tienda.getInstance().getCantProductos() + Tienda.getInstance().getCantCombos()),precioTotal);
-					Tienda.getInstance().registrarFactura(venta);
-					for (Producto pro : productos) {
-	            		pro.setCantDisponible(pro.getCantDisponible()-1);
-					}
-					
-					for (Combo combo : combos) {
-						combo.setCantDisponible(combo.getCantDisponible() - 1);
-					}
-					clean();
-
 				}
 				
 				
@@ -601,8 +558,6 @@ public class RegistrarFactura extends JDialog {
 				mensajito.setModal(true);
 				mensajito.setVisible(true);
 				Tienda.getInstance().recargaSelecionado();
-				cargaComboCarritoDisponible();
-				cargaComboDisponible(); 
 				cargaProCarritoDisponible();
 				cargaProductoDisponible();
 			}
@@ -633,36 +588,9 @@ public class RegistrarFactura extends JDialog {
 			for (Producto pro : Tienda.getInstance().getListaProductos()) {
 				pro.setEstado(true);	
 			}
-			txtDescuento.setText(String.valueOf(Tienda.getInstance().descuentoAplicado(txtIdCliente.getText(), !btnCombos.isEnabled())));
-			if(!btnCombos.isEnabled())
-				txtTotal.setText(String.valueOf(Tienda.getInstance().calculaPrecioProductoCombos(Tienda.getInstance().getCombosSeleccionados(), txtIdCliente.getText(), !btnCombos.isEnabled())));
-			else
-				txtTotal.setText(String.valueOf(Tienda.getInstance().calculaPrecioProducto(Tienda.getInstance().getProductosSeleccionados(), txtIdCliente.getText(), !btnCombos.isEnabled())));
+		
 		}
-		else
-		{
-			pnlVenta.setVisible(true);
-			pnlCompra.setVisible(false);
-			for (Producto pro : Tienda.getInstance().getListaProductos()) {
-				if(pro.getCantDisponible()>0)
-				{
-					pro.setEstado(true);	
-				}
-				else
-				{
-					pro.setEstado(false);
-				}
-				
-			}
-			txtDescuento.setText(String.valueOf(Tienda.getInstance().descuentoAplicado("", !btnCombos.isEnabled())));
-			if(!btnCombos.isEnabled())
-				txtTotal.setText(String.valueOf(Tienda.getInstance().calculaPrecioProductoCombos(Tienda.getInstance().getCombosSeleccionados(), "", !btnCombos.isEnabled())));
-			else
-				txtTotal.setText(String.valueOf(Tienda.getInstance().calculaPrecioProducto(Tienda.getInstance().getProductosSeleccionados(), "", !btnCombos.isEnabled())));
-
-		}
-		cargaComboCarritoDisponible();
-		cargaComboDisponible(); 
+	
 		cargaProCarritoDisponible();
 		cargaProductoDisponible();
 		pnlComCarrito.setBackground(FondoClarito);
@@ -674,8 +602,6 @@ public class RegistrarFactura extends JDialog {
 		btnBuscarProoveedor.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-
-			
 				
 				Proveedor prove= (Proveedor) Tienda.getInstance().buscarPersonaId(txtProveedor.getText());
 				
@@ -739,32 +665,6 @@ public class RegistrarFactura extends JDialog {
 		}
 	}
 
-	public void cargaComboCarritoDisponible() {
-		precioTotal = 0;
-		modeloComCarri.setRowCount(0);
-		caComRows = new Object[tableComCarrito.getColumnCount()];
-		for (Combo pro : Tienda.getInstance().getCombosSeleccionados()) {
-			if (pro.getCantDisponible() > 0) {
-				precioTotal += pro.getPrecio();
-				caComRows[0] = pro.getNombreCombo();
-				caComRows[1] = pro.getPrecio();
-				modeloComCarri.addRow(caComRows);
-			}
-		}
-		txtTotal.setText(String.format("%.2f", precioTotal));
-	}
-
-	public void cargaComboDisponible() {
-		modeloCom.setRowCount(0);
-		dispComRows = new Object[tableComCarrito.getColumnCount()];
-		for (Combo pro : Tienda.getInstance().getCombosNoSeleccionados()) {
-			if (pro.getCantDisponible() > 0) {
-				dispComRows[0] = pro.getNombreCombo();
-				dispComRows[1] = pro.getPrecio();
-				modeloCom.addRow(dispComRows);
-			}
-		}
-	}
 
 	public void cargaProCarritoDisponible() {
 		precioTotal = 0;
@@ -833,12 +733,10 @@ public class RegistrarFactura extends JDialog {
 		btnAgregarPro.setEnabled(false);
 		btnQuitarPro.setEnabled(false);
 		btnProducto.setEnabled(false);
-		btnCombos.setEnabled(true);
 
 
 
 		btnProducto.setEnabled(false);
-		btnCombos.setEnabled(true);
 		pnlComCarrito.setVisible(false);
 		pnlComDisponible.setVisible(false);
 		pnlProCarrito.setVisible(true);
