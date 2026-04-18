@@ -21,7 +21,6 @@ public class Tienda implements Serializable {
 	private ArrayList <Persona> listaPersonas;
 	private ArrayList <Producto> listaProductos;
 	private ArrayList <Factura> listaFacturas;
-	private ArrayList <Combo> listaCombos;
 	
 	private static Tienda miTienda = null;
 
@@ -160,7 +159,6 @@ public class Tienda implements Serializable {
 		this.listaPersonas = new ArrayList<>();
 		this.listaProductos = new ArrayList<>();
 		this.listaFacturas = new ArrayList<>();
-		this.listaCombos= new ArrayList<>();
 		this.misUsers = new ArrayList<>();
 	}
 	
@@ -242,11 +240,7 @@ public class Tienda implements Serializable {
 		return true;
 		
 	}
-	public boolean registrarCombo(Combo newCombo) {
-		listaCombos.add(newCombo);
-		return true;
-		
-	}
+	
 	public Factura buscarFacturaId(String idFactura) {
 		Factura factura=null;
 		boolean encontrado = false;
@@ -504,11 +498,7 @@ public class Tienda implements Serializable {
 		}
 		return array;
 	}
-	//Nota: esta funcion me crea un combo y me lo agrega en una lista de combos
-	public void creacionCombos( Combo combos)
-	{
-		 listaCombos.add(combos);
-	}
+	
 	//Nota: Esta funcion te dice si el producto esta disponible o no
 	public boolean disponibleProducto(String id)
 	{
@@ -548,23 +538,7 @@ public class Tienda implements Serializable {
 	    return precio;
 	}
 
-	// Nota: Calcula el precio de la factura con combos
-	public float calculaPrecioProductoCombos(ArrayList<Combo> combos, String idCliente, boolean esCombo) {
-	    float precio = 0;
-	    for (Combo combo : combos) {
-	        for (Producto producto : combo.getMisProductos()) {  
-	            precio += producto.getPrecio();  
-	        }
-	    }
-	    float descuento = descuentoAplicado(idCliente, esCombo);
-	    if (descuento > 0) {
-	        precio = precio - (precio * (descuento / 100));  
-	    }
-	    return precio;
-	}
-
-
-
+	
 	public ArrayList<Producto> getProductoNoSeleccionados() {
 		ArrayList<Producto> noSeleccionadoArrayList =new ArrayList<>();
 		for (Producto pro : listaProductos) {
@@ -588,17 +562,7 @@ public class Tienda implements Serializable {
 		}
 		return cant;
 	}
-	public int getCantCombos() {
-		int cant=0;
-		for (Combo produ : listaCombos) {
-			if(produ.isSeleccionado())
-			{
-				cant++;
-			}
-			
-		}
-		return cant;
-	}
+
 	public ArrayList<Producto> getProductosSeleccionados() {
 		ArrayList<Producto> SeleccionadoArrayList =new ArrayList<>();
 		for (Producto produ : listaProductos) {
@@ -609,37 +573,6 @@ public class Tienda implements Serializable {
 			
 		}
 		return SeleccionadoArrayList;
-	}
-	public ArrayList<Combo> getCombosSeleccionados() {
-		ArrayList<Combo> SeleccionadoArrayList =new ArrayList<>();
-		for (Combo combo : listaCombos) {
-			if(combo.isSeleccionado())
-			{
-				SeleccionadoArrayList.add(combo);
-			}
-			
-		}
-		return SeleccionadoArrayList;
-	}
-	
-	public ArrayList<Combo> getCombosNoSeleccionados() {
-		ArrayList<Combo> noSeleccionadoArrayList =new ArrayList<>();
-		for (Combo combo : listaCombos) {
-			if(!combo.isSeleccionado())
-			{
-				noSeleccionadoArrayList.add(combo);
-			}
-			
-		}
-		return noSeleccionadoArrayList;
-	}
-	
-	public ArrayList<Combo> getListaCombos() {
-		return listaCombos;
-	}
-
-	public void setListaCombos(ArrayList<Combo> listaCombos) {
-		this.listaCombos = listaCombos;
 	}
 	
 	public void RegistrarUser(User user) {
@@ -703,13 +636,6 @@ public class Tienda implements Serializable {
 	}
 	public void recargaSelecionado()
 	{
-		for (Combo combo : listaCombos) {
-			if(combo.getCantDisponible()>0)
-			{
-				combo.setSeleccionado(false);
-			}
-			
-		}
 		for (Producto product : listaProductos) {
 			if(product.getCantDisponible()>0)
 			{
