@@ -417,7 +417,7 @@ public class Tienda implements Serializable {
 		for (Factura factu : listaFacturas) {
 			if(factu instanceof FacturaVenta)
 			{
-				total+=calculaPrecioProducto(factu.getProductosFacturados(), ((FacturaVenta) factu).getCliente().getId(), factu.isEsCombo());
+				total+=calculaPrecioProducto(factu.getProductosFacturados(), ((FacturaVenta) factu).getCliente().getId());
 	        
 			}
 			
@@ -431,22 +431,22 @@ public class Tienda implements Serializable {
 		for (Factura fat : listaFacturas) {
 			if(fat instanceof FacturaCompra)
 			{
-				total+=calculaPrecioProducto(fat.getProductosFacturados(), "",fat.isEsCombo());
+				total+=calculaPrecioProducto(fat.getProductosFacturados(), "");
 			}
 			
 		}
 		return total;
 	}
-	//Nota: el total de las ganacias producida por la tienda
+	// Nota: total de las ganancias producidas por la tienda
 	public float totalGanancias() {
 	    float total = 0;
 	    for (Factura fat : listaFacturas) {
 	        if (fat instanceof FacturaVenta) {
 	            FacturaVenta factu = (FacturaVenta) fat;
-	            total += calculaPrecioProducto(factu.getProductosFacturados(), factu.getCliente().getId(), factu.isEsCombo());
+	            total += calculaPrecioProducto(factu.getProductosFacturados(), factu.getCliente().getId());
 	        } else if (fat instanceof FacturaCompra) {
 	            FacturaCompra fact = (FacturaCompra) fat;
-	            total -= calculaPrecioProducto(fact.getProductosFacturados(), " ", fat.isEsCombo());
+	            total -= calculaPrecioProducto(fact.getProductosFacturados(), " ");
 	        }
 	    }
 	    return total;
@@ -526,15 +526,12 @@ public class Tienda implements Serializable {
 		}
 		return descuento;
 	}
-	public float calculaPrecioProducto(ArrayList<Producto> productos, String idCliente, boolean esCombo) {
+	public float calculaPrecioProducto(ArrayList<Producto> productos, String idCliente) {
 	    float precio = 0;
 	    for (Producto producto : productos) {
 	        precio += producto.getPrecio();  
 	    }
-	    float descuento = descuentoAplicado(idCliente, esCombo);
-	    if (descuento > 0) {
-	        precio = precio - (precio * (descuento / 100)); 
-	    }
+	   
 	    return precio;
 	}
 
