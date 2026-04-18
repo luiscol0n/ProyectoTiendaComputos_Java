@@ -144,10 +144,8 @@ public class ListadoFacturas extends JDialog {
 
             if (factura instanceof FacturaVenta) {
                 rows[1] = "Venta";
-               // rows[2] = ((FacturaVenta) factura).getCliente().getId();
             } else if (factura instanceof FacturaCompra) {
                 rows[1] = "Compra";
-                //rows[2] = ((FacturaCompra) factura).getProveedor().getId();
                 
             }
 

@@ -58,5 +58,4 @@ public class Factura implements Serializable {
 		this.cantidadxProducto = cantidadxProducto;
 	}
 
-	
 }
