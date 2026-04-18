@@ -11,7 +11,8 @@ public class Factura implements Serializable {
 	protected LocalDate fechaFactura;
 	protected int cantidadxProducto;
 	protected ArrayList <Producto> productosFacturados;
-	protected double precio;
+	protected double montoTotal;
+	
 	public String getId() {
 		return id;
 	}
@@ -32,21 +33,21 @@ public class Factura implements Serializable {
 		this.productosFacturados = productosFacturados;
 	}
 	
-	public double getPrecio() {
-		return precio;
+	public double getmontoTotal() {
+		return montoTotal;
 	}
 
-	public void setPrecio(double precio) {
-		this.precio = precio;
+	public void setmontoTotal(double montoTotal) {
+		this.montoTotal = montoTotal;
 	}
 
-	public Factura(String id, LocalDate fechaFactura, ArrayList<Producto> productosFacturados,int CantidadxProducto, double precio) {
+	public Factura(String id, LocalDate fechaFactura, ArrayList<Producto> productosFacturados,int CantidadxProducto, double montoTotal) {
 		super();
 		this.id = Tienda.getInstance().generarIdFactura();
 		this.fechaFactura = fechaFactura;
 		this.productosFacturados = productosFacturados;
 		this.cantidadxProducto=CantidadxProducto;
-		this.precio = precio;
+		this.montoTotal = montoTotal;
 	}
 	
 	public int getCantidadxProducto() {

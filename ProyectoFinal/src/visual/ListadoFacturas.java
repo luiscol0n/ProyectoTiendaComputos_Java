@@ -64,7 +64,7 @@ public class ListadoFacturas extends JDialog {
         getContentPane().add(contentPanel, BorderLayout.CENTER);
         contentPanel.setLayout(new BorderLayout(0, 0));
         
-        String[] columnas = {"ID", "Tipo", "Fecha", "Cantidad", "Precio"};
+        String[] columnas = {"ID", "Tipo", "Fecha", "Cantidad", "Monto Total"};
         tableModel = new DefaultTableModel(columnas, 0);
         table = new JTable(tableModel);
         table.addMouseListener(new MouseAdapter() {
@@ -153,7 +153,7 @@ public class ListadoFacturas extends JDialog {
 
             rows[2] = factura.getFechaFactura();
             rows[3] = factura.getCantidadxProducto();
-            rows[4] = String.format("%.2f", factura.getPrecio());
+            rows[4] = String.format("%.2f", factura.getmontoTotal());
 
             tableModel.addRow(rows);
         }
