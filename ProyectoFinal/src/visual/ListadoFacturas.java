@@ -64,7 +64,6 @@ public class ListadoFacturas extends JDialog {
         getContentPane().add(contentPanel, BorderLayout.CENTER);
         contentPanel.setLayout(new BorderLayout(0, 0));
 
-        // Panel superior para el filtro
         JPanel panelFiltro = new JPanel();
         panelFiltro.setBackground(new Color(240, 255, 240));
         panelFiltro.setBorder(new EmptyBorder(5, 10, 5, 5));
