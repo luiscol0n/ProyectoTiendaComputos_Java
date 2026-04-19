@@ -90,5 +90,17 @@ public class TipoFactura extends JDialog {
 		btnVenta.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 		btnVenta.setBackground(CyanMid);
 		
+		JButton btnCancel = new JButton("X");
+		btnCancel.setBackground(Color.RED);
+		btnCancel.setForeground(Color.WHITE);
+		btnCancel.setFocusable(false);
+		btnCancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				dispose();
+			}
+		});
+		btnCancel.setBounds(214, 0, 48, 25);
+		panel.add(btnCancel);
+		
 	}
 }
