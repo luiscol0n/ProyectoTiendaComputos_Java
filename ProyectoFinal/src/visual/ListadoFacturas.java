@@ -1,43 +1,42 @@
 package visual;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Toolkit;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-import logico.Factura;
-import logico.FacturaCompra;
-import logico.FacturaVenta;
-import logico.Persona;
-import logico.Tienda;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+
+import logico.Cliente;
+import logico.Factura;
+import logico.FacturaCompra;
+import logico.FacturaVenta;
+import logico.Proveedor;
+import logico.Tienda;
 
 public class ListadoFacturas extends JDialog {
 
     private final JPanel contentPanel = new JPanel();
-    private JButton btnVerPersona;
+    private JButton btnVerDetalleFactura;
     private JTable table;
     private DefaultTableModel tableModel;
     private Object[] rows;
     private String codigo = "";
-    private String codigoPersona = "";
-    private Persona persona = null;
 
-    /**
-     * Launch the application.
-     */
     public static void main(String[] args) {
         try {
             ListadoFacturas dialog = new ListadoFacturas();
@@ -48,53 +47,44 @@ public class ListadoFacturas extends JDialog {
         }
     }
 
-    /**
-     * Create the dialog.
-     */
     public ListadoFacturas() {
         setIconImage(Toolkit.getDefaultToolkit().getImage(ListadoFacturas.class.getResource("/Imagenes/to-do-list.png")));
         setTitle("Lista de Facturas");
-        setBounds(100, 100, 919, 505);
+        setBounds(100, 100, 1050, 505);
         setLocationRelativeTo(null);
         setResizable(false);
         setModal(true);
         getContentPane().setLayout(new BorderLayout());
+
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         contentPanel.setBackground(new Color(240, 255, 240));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
         contentPanel.setLayout(new BorderLayout(0, 0));
-        
-        String[] columnas = {"ID", "Tipo", "Fecha", "Cantidad", "Monto Total"};
+
+        String[] columnas = {"ID", "Tipo", "Fecha", "Cantidad", "Monto Total", "Cliente / Proveedor"};
         tableModel = new DefaultTableModel(columnas, 0);
         table = new JTable(tableModel);
+
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent arg0) {
                 int index = table.getSelectedRow();
                 if (index >= 0) {
                     codigo = table.getValueAt(index, 0).toString();
-                    //codigoPersona = table.getValueAt(index, 2).toString();
-                    btnVerPersona.setEnabled(true);
+                    btnVerDetalleFactura.setEnabled(true);
                 }
-
-                Factura factura = Tienda.getInstance().buscarFacturaId(codigo);
-
-                if (factura instanceof FacturaCompra) {
-                    btnVerPersona.setText("Ver Proveedor");
-                } else if (factura instanceof FacturaVenta) {
-                    btnVerPersona.setText("Ver Cliente");
-                }
-
-                persona = Tienda.getInstance().buscarPersonaId(codigoPersona);
             }
         });
+
         table.setBackground(new Color(240, 255, 240));
         table.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         table.getTableHeader().setFont(new Font("Bahnschrift", Font.PLAIN, 14));
+
         DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer();
         for (int i = 0; i < table.getColumnModel().getColumnCount(); i++) {
             table.getColumnModel().getColumn(i).setHeaderRenderer(headerRenderer);
         }
+
         table.setPreferredScrollableViewportSize(table.getPreferredSize());
         table.setFillsViewportHeight(true);
 
@@ -105,22 +95,53 @@ public class ListadoFacturas extends JDialog {
         JPanel buttonPane = new JPanel();
         buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
         getContentPane().add(buttonPane, BorderLayout.SOUTH);
-        
-        btnVerPersona = new JButton("Ver Persona");
-        btnVerPersona.addActionListener(new ActionListener() {
+
+        btnVerDetalleFactura = new JButton("Ver detalle de la factura");
+        btnVerDetalleFactura.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (persona != null) {
-                    InformacionPersona verInfo = new InformacionPersona(persona);
-                    verInfo.setVisible(true);
+                if (!codigo.equals("")) {
+                    Factura factura = Tienda.getInstance().buscarFacturaId(codigo);
+
+                    if (factura != null) {
+                        String detalle = "Factura: " + factura.getId()
+                                + "\nFecha: " + factura.getFechaFactura()
+                                + "\nCantidad: " + factura.getCantidadxProducto()
+                                + "\nMonto Total: " + String.format("%.2f", factura.getmontoTotal());
+
+                        if (factura instanceof FacturaCompra) {
+                            FacturaCompra fc = (FacturaCompra) factura;
+                            Proveedor proveedor = fc.getProveedor();
+                            if (proveedor != null) {
+                                detalle += "\nProveedor: " + proveedor.getEmpresa() + " (" + proveedor.getId() + ")";
+                            } else {
+                                detalle += "\nProveedor: Sin proveedor";
+                            }
+                        } else if (factura instanceof FacturaVenta) {
+                            FacturaVenta fv = (FacturaVenta) factura;
+                            Cliente cliente = fv.getCliente();
+                            if (cliente != null) {
+                                detalle += "\nCliente: " + cliente.getNombre() + " (" + cliente.getId() + ")";
+                            } else {
+                                detalle += "\nCliente: Sin cliente";
+                            }
+                        }
+
+                        JOptionPane.showMessageDialog(
+                                null,
+                                detalle,
+                                "Detalle de la Factura",
+                                JOptionPane.INFORMATION_MESSAGE
+                        );
+                    }
                 }
             }
         });
-        btnVerPersona.setForeground(Color.WHITE);
-        btnVerPersona.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-        btnVerPersona.setEnabled(false);
-        btnVerPersona.setBackground(new Color(80, 180, 152));
-        btnVerPersona.setActionCommand("OK");
-        buttonPane.add(btnVerPersona);
+
+        btnVerDetalleFactura.setForeground(Color.WHITE);
+        btnVerDetalleFactura.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
+        btnVerDetalleFactura.setEnabled(false);
+        btnVerDetalleFactura.setBackground(new Color(80, 180, 152));
+        buttonPane.add(btnVerDetalleFactura);
 
         JButton btnSalir = new JButton("Salir");
         btnSalir.addActionListener(new ActionListener() {
@@ -132,21 +153,36 @@ public class ListadoFacturas extends JDialog {
         btnSalir.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
         btnSalir.setBackground(new Color(250, 128, 114));
         buttonPane.add(btnSalir);
-        
+
         loadFacturas();
     }
 
     public void loadFacturas() {
         tableModel.setRowCount(0);
         rows = new Object[tableModel.getColumnCount()];
+
         for (Factura factura : Tienda.getInstance().getListaFacturas()) {
             rows[0] = factura.getId();
 
             if (factura instanceof FacturaVenta) {
                 rows[1] = "Venta";
+
+                FacturaVenta facturaVenta = (FacturaVenta) factura;
+                if (facturaVenta.getCliente() != null) {
+                    rows[5] = facturaVenta.getCliente().getNombre();
+                } else {
+                    rows[5] = "Sin cliente";
+                }
+
             } else if (factura instanceof FacturaCompra) {
                 rows[1] = "Compra";
-                
+
+                FacturaCompra facturaCompra = (FacturaCompra) factura;
+                if (facturaCompra.getProveedor() != null) {
+                    rows[5] = facturaCompra.getProveedor().getEmpresa();
+                } else {
+                    rows[5] = "Sin proveedor";
+                }
             }
 
             rows[2] = factura.getFechaFactura();
