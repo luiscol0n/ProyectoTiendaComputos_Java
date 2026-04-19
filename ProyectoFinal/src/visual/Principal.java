@@ -300,15 +300,7 @@ public class Principal extends JFrame {
 				ventanita.setVisible(true);
 			}
 		});
-		
-		JMenuItem mntmNewMenuItem_12 = new JMenuItem("Registrar Combo");
-		mntmNewMenuItem_12.setIcon(new ImageIcon(Principal.class.getResource("/Imagenes/bag_11959013.png")));
-		if (!Tienda.getLoginUser().getTipo().equalsIgnoreCase("Administrador")) {
-			mntmNewMenuItem_12.setVisible(false);
-		}
-		
-		mntmNewMenuItem_12.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-		menuAdministracion.add(mntmNewMenuItem_12);
+
 		mntmNewMenuItem_5.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 		menuAdministracion.add(mntmNewMenuItem_5);
 
