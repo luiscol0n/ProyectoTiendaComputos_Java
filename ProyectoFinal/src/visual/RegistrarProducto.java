@@ -218,6 +218,20 @@ public class RegistrarProducto extends JDialog {
 			panel_2.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 			panel_2.setLayout(null);
 
+			Proveedor proveedor = null;
+
+			if (cbxProveedor.getSelectedItem() != null) {
+			    proveedor = (Proveedor) Tienda.getInstance().buscarPersonaId(cbxProveedor.getSelectedItem().toString());
+			}
+
+			if (proveedor == null) {
+			    ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/cancel.png"));
+			    MensajeAlerta mensajito = new MensajeAlerta(iconito, "Debe seleccionar un proveedor.");
+			    mensajito.setModal(true);
+			    mensajito.setVisible(true);
+			    return;
+			}
+			
 			rbtnMotherBoard = new JRadioButton("MotherBoard");
 			rbtnMotherBoard.setBackground(FondoClarito);
 			rbtnMotherBoard.addActionListener(new ActionListener() {

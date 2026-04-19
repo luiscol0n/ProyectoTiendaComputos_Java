@@ -27,8 +27,4 @@ public class FacturaVenta extends Factura {
 		this.vendedor = vendedor;
 		
 	}
-	
-	
-	
-
 }

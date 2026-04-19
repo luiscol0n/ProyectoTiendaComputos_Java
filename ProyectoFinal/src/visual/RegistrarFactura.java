@@ -315,11 +315,8 @@ public class RegistrarFactura extends JDialog {
 		    tableComCarrito.getColumnModel().getColumn(i).setHeaderRenderer(headerRendererComCarrito);
 		}
 
-		
 		pnlComCarrito.add(scrollComCarrito);
 		
-
-
 		
 		btnAgregarPro = new JButton("Agregar ");
 		btnAgregarPro.setForeground(new Color(255, 255, 255));
@@ -390,7 +387,6 @@ public class RegistrarFactura extends JDialog {
 		btnProducto.setBounds(10, 131, 108, 23);
 		panel.add(btnProducto);
 
-
 		txtTotal = new JTextField();
 		txtTotal.setEditable(false);
 		txtTotal.setBounds(310, 134, 86, 20);
@@ -398,8 +394,6 @@ public class RegistrarFactura extends JDialog {
 		txtTotal.setBorder(bottomBorder);
 		panel.add(txtTotal);
 		txtTotal.setColumns(10);
-
-
 
 		JLabel lblNewLabel_2 = new JLabel("Total:");
 		lblNewLabel_2.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
@@ -465,7 +459,6 @@ public class RegistrarFactura extends JDialog {
 					mensajito.setVisible(true);
 					btnBuscarCliente.setEnabled(false);
 				}
-
 			}
 		});
 		btnBuscarCliente.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
@@ -502,7 +495,6 @@ public class RegistrarFactura extends JDialog {
 		txtHora.setBorder(bottomBorder);
 		panel.add(txtHora);
 		txtHora.setColumns(10);
-
 		
 		JPanel buttonPane = new JPanel();
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -520,24 +512,42 @@ public class RegistrarFactura extends JDialog {
 					productosComprados.add(prod);
 				}
 
-				LocalDate hoy= LocalDate.now();
-				if(esCV)
-				{	
-					Proveedor proveedor = null;
-					if (txtProveedor.getText().isEmpty()) {
-						proveedor = (Proveedor) Tienda.getInstance().buscarPersonaId(txtProveedor.getText());
-					}
-					int cant=0;
-					for (Producto pro : productos) {
-	            		pro.setCantDisponible(pro.getSiemprePedir()+pro.getCantDisponible());
-	            		cant+=pro.getCantDisponible();
-	            		pro.setSeleccionado(false);
-					}
-					Factura compra = new FacturaCompra(txtID.getText(), hoy,productosComprados,proveedor,cant,precioTotal);
-					Tienda.getInstance().registrarFactura(compra);
-					
-					
-					clean();
+				LocalDate hoy = LocalDate.now();
+
+				if (esCV) {
+				    Proveedor proveedor = null;
+
+				    if (!txtProveedor.getText().trim().isEmpty()) {
+				        proveedor = (Proveedor) Tienda.getInstance().buscarPersonaId(txtProveedor.getText().trim());
+				    }
+
+				    if (proveedor == null) {
+				        ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/alert.png"));
+				        MensajeAlerta mensajito = new MensajeAlerta(iconito, "Debe seleccionar un proveedor válido.");
+				        mensajito.setModal(true);
+				        mensajito.setVisible(true);
+				        return;
+				    }
+
+				    if (productos.isEmpty()) {
+				        ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/alert.png"));
+				        MensajeAlerta mensajito = new MensajeAlerta(iconito, "Debe agregar al menos un producto.");
+				        mensajito.setModal(true);
+				        mensajito.setVisible(true);
+				        return;
+				    }
+
+				    int cant = 0;
+				    for (Producto pro : productos) {
+				        pro.setCantDisponible(pro.getSiemprePedir() + pro.getCantDisponible());
+				        cant += pro.getCantDisponible();
+				        pro.setSeleccionado(false);
+				    }
+
+				    Factura compra = new FacturaCompra(txtID.getText(), hoy, productosComprados, proveedor, cant, precioTotal);
+				    Tienda.getInstance().registrarFactura(compra);
+
+				    clean();
 				}
 				else
 				{
@@ -550,9 +560,7 @@ public class RegistrarFactura extends JDialog {
 					}	
 					
 				}
-				
-				
-				
+					
 				ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));
 				MensajeAlerta mensajito = new MensajeAlerta(iconito, "Factura registrada correctamente.");
 				mensajito.setModal(true);
@@ -707,8 +715,7 @@ public class RegistrarFactura extends JDialog {
 
 		LocalDateTime ahora = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-		txtHora.setText(ahora.format(formatter));
-		
+		txtHora.setText(ahora.format(formatter));		
 
 		modeloPro.setRowCount(0);
 		modeloProCarri.setRowCount(0);
@@ -727,14 +734,11 @@ public class RegistrarFactura extends JDialog {
 		indexComCarrito = 0;
 		indexComDisponible = 0;
 
-
 		productosComprados.clear();
 
 		btnAgregarPro.setEnabled(false);
 		btnQuitarPro.setEnabled(false);
 		btnProducto.setEnabled(false);
-
-
 
 		btnProducto.setEnabled(false);
 		pnlComCarrito.setVisible(false);
