@@ -20,6 +20,8 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 
 import logico.Cliente;
 import logico.Factura;
@@ -36,6 +38,7 @@ public class ListadoFacturas extends JDialog {
     private DefaultTableModel tableModel;
     private Object[] rows;
     private String codigo = "";
+    private JComboBox<String> comboBoxFiltro;
 
     public static void main(String[] args) {
         try {
@@ -60,6 +63,32 @@ public class ListadoFacturas extends JDialog {
         contentPanel.setBackground(new Color(240, 255, 240));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
         contentPanel.setLayout(new BorderLayout(0, 0));
+
+        // Panel superior para el filtro
+        JPanel panelFiltro = new JPanel();
+        panelFiltro.setBackground(new Color(240, 255, 240));
+        panelFiltro.setBorder(new EmptyBorder(5, 10, 5, 5));
+        panelFiltro.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 5));
+
+        JLabel lblFiltro = new JLabel("Filtrar Facturas:");
+        lblFiltro.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
+        panelFiltro.add(lblFiltro);
+
+        comboBoxFiltro = new JComboBox<String>();
+        comboBoxFiltro.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
+        comboBoxFiltro.addItem("Todas");
+        comboBoxFiltro.addItem("Facturas de Venta");
+        comboBoxFiltro.addItem("Facturas de Compra");
+        comboBoxFiltro.setPrototypeDisplayValue("Facturas de Compra");
+
+        comboBoxFiltro.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                loadFacturas();
+            }
+        });
+
+        panelFiltro.add(comboBoxFiltro);
+        contentPanel.add(panelFiltro, BorderLayout.NORTH);
 
         String[] columnas = {"ID", "Tipo", "Fecha", "Cantidad", "Monto Total", "Cliente / Proveedor"};
         tableModel = new DefaultTableModel(columnas, 0);
@@ -160,36 +189,41 @@ public class ListadoFacturas extends JDialog {
     public void loadFacturas() {
         tableModel.setRowCount(0);
         rows = new Object[tableModel.getColumnCount()];
+        String filtroSeleccionado = (String) comboBoxFiltro.getSelectedItem();
 
         for (Factura factura : Tienda.getInstance().getListaFacturas()) {
-            rows[0] = factura.getId();
 
-            if (factura instanceof FacturaVenta) {
-                rows[1] = "Venta";
+            if (filtroSeleccionado.equals("Todas")
+                    || (filtroSeleccionado.equals("Facturas de Venta") && factura instanceof FacturaVenta)
+                    || (filtroSeleccionado.equals("Facturas de Compra") && factura instanceof FacturaCompra)) {
 
-                FacturaVenta facturaVenta = (FacturaVenta) factura;
-                if (facturaVenta.getCliente() != null) {
-                    rows[5] = facturaVenta.getCliente().getNombre();
-                } else {
-                    rows[5] = "Sin cliente";
+                rows[0] = factura.getId();
+
+                if (factura instanceof FacturaVenta) {
+                    rows[1] = "Venta";
+                    FacturaVenta facturaVenta = (FacturaVenta) factura;
+                    if (facturaVenta.getCliente() != null) {
+                        rows[5] = facturaVenta.getCliente().getNombre();
+                    } else {
+                        rows[5] = "Sin cliente";
+                    }
+
+                } else if (factura instanceof FacturaCompra) {
+                    rows[1] = "Compra";
+                    FacturaCompra facturaCompra = (FacturaCompra) factura;
+                    if (facturaCompra.getProveedor() != null) {
+                        rows[5] = facturaCompra.getProveedor().getEmpresa();
+                    } else {
+                        rows[5] = "Sin proveedor";
+                    }
                 }
 
-            } else if (factura instanceof FacturaCompra) {
-                rows[1] = "Compra";
+                rows[2] = factura.getFechaFactura();
+                rows[3] = factura.getCantidadxProducto();
+                rows[4] = String.format("%.2f", factura.getmontoTotal());
 
-                FacturaCompra facturaCompra = (FacturaCompra) factura;
-                if (facturaCompra.getProveedor() != null) {
-                    rows[5] = facturaCompra.getProveedor().getEmpresa();
-                } else {
-                    rows[5] = "Sin proveedor";
-                }
+                tableModel.addRow(rows);
             }
-
-            rows[2] = factura.getFechaFactura();
-            rows[3] = factura.getCantidadxProducto();
-            rows[4] = String.format("%.2f", factura.getmontoTotal());
-
-            tableModel.addRow(rows);
         }
     }
 }
