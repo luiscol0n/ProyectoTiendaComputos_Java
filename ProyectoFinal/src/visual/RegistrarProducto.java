@@ -34,10 +34,7 @@ import javax.swing.JRadioButton;
 import java.awt.Font;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
-import javax.swing.JList;
-import javax.swing.AbstractListModel;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
+import javax.swing.JCheckBox;
 import java.awt.Color;
 import java.awt.Toolkit;
 
@@ -57,7 +54,7 @@ public class RegistrarProducto extends JDialog {
     private JPanel pnlMotherBoard;
     private JTextField txtMBModelo;
     private JTextField txtMBSocket;
-    private JList<String> listMBDiscosAceptados;
+    private JCheckBox[] chkDiscosAceptados;
     private JPanel pnlMemoriaRAM;
     private JSpinner spnMRCantidad;
     private JComboBox<String> cbxMRTipo;
@@ -87,6 +84,9 @@ public class RegistrarProducto extends JDialog {
     }
 
     
+    /**
+     * @wbp.parser.constructor
+     */
     public RegistrarProducto(Producto producto) {
         this(producto, false);
     }
@@ -361,9 +361,9 @@ public class RegistrarProducto extends JDialog {
             lblMBTipoRam.setBounds(15, 60, 81, 16);
             pnlMotherBoard.add(lblMBTipoRam);
 
-            JLabel lblDiscosAceptados = new JLabel("Discos Aceptados:");
+            JLabel lblDiscosAceptados = new JLabel("Discos");
             lblDiscosAceptados.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-            lblDiscosAceptados.setBounds(262, 60, 116, 16);
+            lblDiscosAceptados.setBounds(215, 58, 116, 16);
             pnlMotherBoard.add(lblDiscosAceptados);
 
             cbxMBTipoRam = new JComboBox();
@@ -371,24 +371,21 @@ public class RegistrarProducto extends JDialog {
             cbxMBTipoRam.setBackground(CyanClaro);
             cbxMBTipoRam.setBorder(bottomBorder);
             cbxMBTipoRam.setModel(new DefaultComboBoxModel(new String[]{"<Seleccione uno>", "DDR3", "DDR4", "DDR5"}));
-            cbxMBTipoRam.setBounds(90, 58, 156, 22);
+            cbxMBTipoRam.setBounds(90, 58, 116, 22);
             pnlMotherBoard.add(cbxMBTipoRam);
 
-            JScrollPane scrollPane = new JScrollPane();
-            scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-            scrollPane.setBounds(389, 58, 133, 22);
-            pnlMotherBoard.add(scrollPane);
-
-            listMBDiscosAceptados = new JList();
-            listMBDiscosAceptados.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-            listMBDiscosAceptados.setBackground(CyanClaro);
-            listMBDiscosAceptados.setBorder(bottomBorder);
-            listMBDiscosAceptados.setModel(new AbstractListModel() {
-                String[] values = new String[]{"<Seleccione uno>", "PATA", "SATA", "SCSI", "SSD", "SSD"};
-                public int getSize() { return values.length; }
-                public Object getElementAt(int index) { return values[index]; }
-            });
-            scrollPane.setViewportView(listMBDiscosAceptados);
+            // ---- CORRECCIÓN: Checkboxes en lugar de JList ----
+            String[] tiposDiscos = {"PATA", "SATA", "SCSI", "SSD", "NVMe"};
+            chkDiscosAceptados = new JCheckBox[tiposDiscos.length];
+            int chkX = 262;
+            for (int i = 0; i < tiposDiscos.length; i++) {
+                chkDiscosAceptados[i] = new JCheckBox(tiposDiscos[i]);
+                chkDiscosAceptados[i].setFont(new Font("Bahnschrift", Font.PLAIN, 11));
+                chkDiscosAceptados[i].setBackground(CyanClaro);
+                chkDiscosAceptados[i].setBounds(chkX, 55, 54, 22);
+                pnlMotherBoard.add(chkDiscosAceptados[i]);
+                chkX += 54;
+            }
 
 
             pnlMemoriaRAM = new JPanel();
@@ -576,7 +573,10 @@ public class RegistrarProducto extends JDialog {
                                     String modelo = txtMBModelo.getText();
                                     String socket = txtMBSocket.getText();
                                     String tipoRAM = cbxMBTipoRam.getSelectedItem().toString();
-                                    ArrayList<String> aux = new ArrayList<>(listMBDiscosAceptados.getSelectedValuesList());
+                                    ArrayList<String> aux = new ArrayList<>();
+                                    for (JCheckBox chk : chkDiscosAceptados) {
+                                        if (chk.isSelected()) aux.add(chk.getText());
+                                    }
                                     nuevoProd = new MotherBoard(numSerie, cantidad, proveedor, marca, precio, modelo, socket, tipoRAM, aux);
                                 }
                             }
@@ -639,7 +639,10 @@ public class RegistrarProducto extends JDialog {
                                 ((MotherBoard) producto).setModelo(txtMBModelo.getText());
                                 ((MotherBoard) producto).setTipoSocket(txtMBSocket.getText());
                                 ((MotherBoard) producto).setTipoRam(cbxMBTipoRam.getSelectedItem().toString());
-                                ArrayList<String> aux = new ArrayList<>(listMBDiscosAceptados.getSelectedValuesList());
+                                ArrayList<String> aux = new ArrayList<>();
+                                for (JCheckBox chk : chkDiscosAceptados) {
+                                    if (chk.isSelected()) aux.add(chk.getText());
+                                }
                                 ((MotherBoard) producto).setListaDiscoDuroAceptados(aux);
                             }
                             if (producto instanceof MemoriaRam) {
@@ -727,14 +730,13 @@ public class RegistrarProducto extends JDialog {
 
         loadProducto(producto);
 
-        //si es soloLectura, deshabilitar todos los campos editables despues de cargar los datos
+        // si es soloLectura, deshabilitar todos los campos editables despues de cargar los datos
         if (soloLectura) {
             aplicarModoSoloLectura();
         }
     }
 
-    //modo lectura
-   
+    // modo lectura
     private void aplicarModoSoloLectura() {
         txtMarca.setEditable(false);
         txtNumSerie.setEditable(false);
@@ -750,7 +752,9 @@ public class RegistrarProducto extends JDialog {
         txtMBModelo.setEditable(false);
         txtMBSocket.setEditable(false);
         cbxMBTipoRam.setEnabled(false);
-        listMBDiscosAceptados.setEnabled(false);
+        for (JCheckBox chk : chkDiscosAceptados) {
+            chk.setEnabled(false);
+        }
 
         spnMRCantidad.setEnabled(false);
         cbxMRTipo.setEnabled(false);
@@ -787,6 +791,20 @@ public class RegistrarProducto extends JDialog {
                 txtMBModelo.setText(((MotherBoard) producto).getModelo());
                 txtMBSocket.setText(((MotherBoard) producto).getTipoSocket());
                 cbxMBTipoRam.setSelectedIndex(buscarIndiceSeleccionado(cbxMBTipoRam, ((MotherBoard) producto).getTipoRam()));
+
+                // ---- CORRECCIÓN: Restaurar discos seleccionados con checkboxes ----
+                ArrayList<String> discosGuardados = ((MotherBoard) producto).getListaDiscoDuroAceptados();
+                if (discosGuardados != null) {
+                    for (JCheckBox chk : chkDiscosAceptados) {
+                        chk.setSelected(false);
+                        for (String disco : discosGuardados) {
+                            if (disco.equalsIgnoreCase(chk.getText())) {
+                                chk.setSelected(true);
+                                break;
+                            }
+                        }
+                    }
+                }
             }
 
             if (producto instanceof MemoriaRam) {
@@ -870,6 +888,7 @@ public class RegistrarProducto extends JDialog {
         txtMBModelo.setText("");
         txtMBSocket.setText("");
         cbxMBTipoRam.setSelectedIndex(0);
+        for (JCheckBox chk : chkDiscosAceptados) { chk.setSelected(false); } // ---- CORRECCIÓN: limpiar checkboxes ----
         spnMRCantidad.setValue(new Integer(0));
         cbxMRTipo.setSelectedIndex(0);
         txtMPModelo.setText("");
