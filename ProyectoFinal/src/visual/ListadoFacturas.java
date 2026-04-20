@@ -12,7 +12,6 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -23,11 +22,9 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 
-import logico.Cliente;
 import logico.Factura;
 import logico.FacturaCompra;
 import logico.FacturaVenta;
-import logico.Proveedor;
 import logico.Tienda;
 
 public class ListadoFacturas extends JDialog {
@@ -131,35 +128,8 @@ public class ListadoFacturas extends JDialog {
                     Factura factura = Tienda.getInstance().buscarFacturaId(codigo);
 
                     if (factura != null) {
-                        String detalle = "Factura: " + factura.getId()
-                                + "\nFecha: " + factura.getFechaFactura()
-                                + "\nCantidad: " + factura.getCantidadxProducto()
-                                + "\nMonto Total: " + String.format("%.2f", factura.getmontoTotal());
-
-                        if (factura instanceof FacturaCompra) {
-                            FacturaCompra fc = (FacturaCompra) factura;
-                            Proveedor proveedor = fc.getProveedor();
-                            if (proveedor != null) {
-                                detalle += "\nProveedor: " + proveedor.getEmpresa() + " (" + proveedor.getId() + ")";
-                            } else {
-                                detalle += "\nProveedor: Sin proveedor";
-                            }
-                        } else if (factura instanceof FacturaVenta) {
-                            FacturaVenta fv = (FacturaVenta) factura;
-                            Cliente cliente = fv.getCliente();
-                            if (cliente != null) {
-                                detalle += "\nCliente: " + cliente.getNombre() + " (" + cliente.getId() + ")";
-                            } else {
-                                detalle += "\nCliente: Sin cliente";
-                            }
-                        }
-
-                        JOptionPane.showMessageDialog(
-                                null,
-                                detalle,
-                                "Detalle de la Factura",
-                                JOptionPane.INFORMATION_MESSAGE
-                        );
+                        DetalleFactura detalle = new DetalleFactura(factura);
+                        detalle.setVisible(true);
                     }
                 }
             }

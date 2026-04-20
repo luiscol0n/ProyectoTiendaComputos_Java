@@ -324,7 +324,6 @@ public class RegistrarProducto extends JDialog {
             rbtnDiscoDuro.setBounds(425, 23, 101, 25);
             panel_2.add(rbtnDiscoDuro);
 
-            // ---- Panel MotherBoard ----
             pnlMotherBoard = new JPanel();
             pnlMotherBoard.setBackground(FondoClarito);
             pnlMotherBoard.setBorder(new TitledBorder(null, "Mother Board", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -374,7 +373,6 @@ public class RegistrarProducto extends JDialog {
             cbxMBTipoRam.setBounds(90, 58, 116, 22);
             pnlMotherBoard.add(cbxMBTipoRam);
 
-            // ---- CORRECCIÓN: Checkboxes en lugar de JList ----
             String[] tiposDiscos = {"PATA", "SATA", "SCSI", "SSD", "NVMe"};
             chkDiscosAceptados = new JCheckBox[tiposDiscos.length];
             int chkX = 262;

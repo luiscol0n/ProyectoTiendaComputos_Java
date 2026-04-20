@@ -37,6 +37,8 @@ import logico.DiscoDuro;
 import logico.Factura;
 import logico.FacturaCompra;
 import logico.FacturaVenta;
+import logico.DetalleFacturaCompra;
+import logico.DetalleFacturaVenta;
 import logico.MemoriaRam;
 import logico.Microprocesador;
 import logico.MotherBoard;
@@ -50,11 +52,9 @@ public class RegistrarFactura extends JDialog {
     private JTextField txtID;
     private JTextField txtFecha;
 
-   
     private DefaultTableModel modeloComDisp  = new DefaultTableModel();
     private DefaultTableModel modeloComCarri = new DefaultTableModel();
 
-    
     private DefaultTableModel modeloProDisp  = new DefaultTableModel();
     private DefaultTableModel modeloProCarri = new DefaultTableModel();
 
@@ -68,7 +68,6 @@ public class RegistrarFactura extends JDialog {
     private int indexComCarrito    = -1;
     private int indexComDisponible = -1;
 
-    
     private Map<String, Integer> cantidadesCarrito = new HashMap<String, Integer>();
 
     private double precioTotal = 0;
@@ -95,11 +94,11 @@ public class RegistrarFactura extends JDialog {
 
     private JSpinner spnCantidad;
 
-    private Producto productoSeleccionadoVista      = null;
-    private Producto productoEnCarritoSeleccionado  = null;
+    private Producto productoSeleccionadoVista     = null;
+    private Producto productoEnCarritoSeleccionado = null;
 
     private boolean esCV;
-    private boolean proveedorConfirmado=false;
+    private boolean proveedorConfirmado = false;
 
     public static void main(String[] args) {
         try {
@@ -139,7 +138,6 @@ public class RegistrarFactura extends JDialog {
         panel.setLayout(null);
         panel.setBackground(fondoClarito);
 
-        
         JLabel lblID = new JLabel("ID:");
         lblID.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
         lblID.setBounds(10, 13, 40, 14);
@@ -153,7 +151,6 @@ public class RegistrarFactura extends JDialog {
         txtID.setBackground(cyanClaro);
         panel.add(txtID);
 
-       
         JLabel lblFecha = new JLabel("Fecha:");
         lblFecha.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
         lblFecha.setBounds(200, 13, 55, 14);
@@ -167,7 +164,6 @@ public class RegistrarFactura extends JDialog {
         txtFecha.setBackground(cyanClaro);
         panel.add(txtFecha);
 
-        
         JLabel lblHora = new JLabel("Hora:");
         lblHora.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
         lblHora.setBounds(392, 13, 46, 14);
@@ -181,7 +177,6 @@ public class RegistrarFactura extends JDialog {
         txtHora.setBorder(bottomBorder);
         panel.add(txtHora);
 
-        
         pnlCompra = new JPanel();
         pnlCompra.setBounds(10, 40, 744, 35);
         panel.add(pnlCompra);
@@ -226,24 +221,24 @@ public class RegistrarFactura extends JDialog {
                     proveedorConfirmado = true;
                     btnBuscarProveedor.setEnabled(false);
                     habilitarSeleccionCompra();
-                    mostrarAlerta("check", "Búsqueda exitosa.");
+                    mostrarAlerta("check", "B�squeda exitosa.");
                 } else {
                     proveedorConfirmado = false;
                     bloquearSeleccionCompra();
-                    mostrarAlerta("cancel", "Debe seleccionar un proveedor válido.");
+                    mostrarAlerta("cancel", "Debe seleccionar un proveedor v�lido.");
                 }
 
                 cargaProductoDisponible();
             }
         });
         pnlCompra.add(btnBuscarProveedor);
+
         txtProveedor.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 btnBuscarProveedor.doClick();
             }
         });
 
-        
         pnlVenta = new JPanel();
         pnlVenta.setBounds(10, 40, 744, 35);
         panel.add(pnlVenta);
@@ -278,13 +273,14 @@ public class RegistrarFactura extends JDialog {
                     txtIdCliente.setText("Cliente - " + (Tienda.getInstance().numCliente - 1));
                 } else {
                     txtIdCliente.setText(client.getId());
-                    mostrarAlerta("check", "Búsqueda exitosa.");
+                    mostrarAlerta("check", "B�squeda exitosa.");
                     btnBuscarCliente.setEnabled(false);
                 }
             }
         });
         btnBuscarCliente.setBounds(194, 6, 80, 22);
         pnlVenta.add(btnBuscarCliente);
+
         txtIdCliente.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 btnBuscarCliente.doClick();
@@ -304,7 +300,6 @@ public class RegistrarFactura extends JDialog {
         txtEmpleado.setBorder(bottomBorder);
         pnlVenta.add(txtEmpleado);
 
-        
         JLabel lblCantidad = new JLabel("Cantidad:");
         lblCantidad.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
         lblCantidad.setBounds(10, 85, 70, 16);
@@ -334,24 +329,22 @@ public class RegistrarFactura extends JDialog {
         btnProducto.setBounds(170, 83, 120, 22);
         panel.add(btnProducto);
 
-        // ── Etiquetas de columnas ────────────────────────────────────────────
         JLabel lblDisponibles = new JLabel("Disponibles");
         lblDisponibles.setFont(new Font("Bahnschrift", Font.BOLD, 13));
         lblDisponibles.setForeground(cyanOscuro);
-        lblDisponibles.setBounds(100, 114, 120, 16);
+        lblDisponibles.setBounds(118, 118, 88, 16);
         panel.add(lblDisponibles);
 
-        JLabel lblCarrito = new JLabel("Carrito");
+        JLabel lblCarrito = new JLabel("Carrito de Compra");
         lblCarrito.setFont(new Font("Bahnschrift", Font.BOLD, 13));
         lblCarrito.setForeground(cyanOscuro);
-        lblCarrito.setBounds(545, 114, 120, 16);
+        lblCarrito.setBounds(515, 118, 133, 16);
         panel.add(lblCarrito);
 
-        // ── Tabla DISPONIBLES ────────────────────────────────────────────────
         String[] headersDisp = {"ID", "Serie", "Tipo", "Precio", "Stock"};
 
         pnlComDisponible = new JPanel(new BorderLayout());
-        pnlComDisponible.setBounds(10, 133, 295, 210);
+        pnlComDisponible.setBounds(10, 143, 295, 200);
         pnlComDisponible.setBackground(fondoClarito);
         panel.add(pnlComDisponible);
 
@@ -385,7 +378,7 @@ public class RegistrarFactura extends JDialog {
         pnlComDisponible.add(new JScrollPane(tableComDisponible), BorderLayout.CENTER);
 
         pnlProDisponible = new JPanel(new BorderLayout());
-        pnlProDisponible.setBounds(10, 133, 295, 210);
+        pnlProDisponible.setBounds(10, 143, 295, 200);
         pnlProDisponible.setBackground(fondoClarito);
         panel.add(pnlProDisponible);
 
@@ -411,7 +404,6 @@ public class RegistrarFactura extends JDialog {
         });
         pnlProDisponible.add(new JScrollPane(tableProDisponible), BorderLayout.CENTER);
 
-        
         btnAgregarPro = new JButton("Agregar ");
         btnAgregarPro.setForeground(Color.WHITE);
         btnAgregarPro.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
@@ -438,11 +430,10 @@ public class RegistrarFactura extends JDialog {
         });
         panel.add(btnQuitarPro);
 
-      
         String[] headersCarri = {"ID", "Serie", "Tipo", "Precio", "Cantidad", "Subtotal"};
 
         pnlComCarrito = new JPanel(new BorderLayout());
-        pnlComCarrito.setBounds(431, 133, 308, 210);
+        pnlComCarrito.setBounds(431, 143, 308, 200);
         pnlComCarrito.setBackground(fondoClarito);
         panel.add(pnlComCarrito);
 
@@ -463,7 +454,7 @@ public class RegistrarFactura extends JDialog {
         pnlComCarrito.add(new JScrollPane(tableComCarrito), BorderLayout.CENTER);
 
         pnlProCarrito = new JPanel(new BorderLayout());
-        pnlProCarrito.setBounds(431, 133, 308, 210);
+        pnlProCarrito.setBounds(431, 143, 308, 200);
         pnlProCarrito.setBackground(fondoClarito);
         panel.add(pnlProCarrito);
 
@@ -483,34 +474,32 @@ public class RegistrarFactura extends JDialog {
         });
         pnlProCarrito.add(new JScrollPane(tableProCarrito), BorderLayout.CENTER);
 
-        // ── Subtotal + Total ─────────────────────────────────────────────────
         JLabel lblSubtotal = new JLabel("Subtotal producto:");
         lblSubtotal.setFont(new Font("Bahnschrift", Font.PLAIN, 13));
-        lblSubtotal.setBounds(431, 352, 145, 16);
+        lblSubtotal.setBounds(431, 366, 145, 16);
         panel.add(lblSubtotal);
 
         txtSubtotal = new JTextField();
         txtSubtotal.setEditable(false);
         txtSubtotal.setText("0.00");
-        txtSubtotal.setBounds(581, 350, 100, 20);
+        txtSubtotal.setBounds(542, 364, 100, 20);
         txtSubtotal.setBackground(cyanClaro);
         txtSubtotal.setBorder(bottomBorder);
         panel.add(txtSubtotal);
 
         JLabel lblTotal = new JLabel("Total factura:");
         lblTotal.setFont(new Font("Bahnschrift", Font.BOLD, 13));
-        lblTotal.setBounds(431, 380, 145, 16);
+        lblTotal.setBounds(441, 394, 100, 16);
         panel.add(lblTotal);
 
         txtTotal = new JTextField();
         txtTotal.setEditable(false);
         txtTotal.setText("0.00");
-        txtTotal.setBounds(581, 378, 100, 20);
+        txtTotal.setBounds(542, 392, 100, 20);
         txtTotal.setBackground(cyanClaro);
         txtTotal.setBorder(bottomBorder);
         panel.add(txtTotal);
 
-        
         JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
@@ -539,7 +528,6 @@ public class RegistrarFactura extends JDialog {
         });
         buttonPane.add(btnCancelar);
 
- 
         if (esCV) {
             pnlVenta.setVisible(false);
             pnlCompra.setVisible(true);
@@ -560,18 +548,24 @@ public class RegistrarFactura extends JDialog {
             bloquearSeleccionCompra();
         }
 
-        cargaProductoDisponible();
-        actualizarTotales();
-     
+        reinicializarVentana();
     }
 
-   
+    @Override
+    public void setVisible(boolean b) {
+        if (b) {
+            reinicializarVentana();
+        }
+        super.setVisible(b);
+    }
+
     private void agregarAlCarrito() {
-    	if (esCV && !proveedorConfirmado) {
+        if (esCV && !proveedorConfirmado) {
             mostrarAlerta("alert", "Debe buscar y confirmar un proveedor antes de agregar productos.");
             bloquearSeleccionCompra();
             return;
         }
+
         int idx = esCV ? indexComDisponible : indexProDisponible;
         ArrayList<Producto> disponibles = obtenerProductosDisponibles(esCV);
         if (idx < 0 || idx >= disponibles.size()) return;
@@ -587,15 +581,13 @@ public class RegistrarFactura extends JDialog {
             int yaEnCarrito = cantidadesCarrito.containsKey(producto.getId())
                     ? cantidadesCarrito.get(producto.getId()) : 0;
             if ((yaEnCarrito + cantPedida) > producto.getCantDisponible()) {
-                mostrarAlerta("cancel", "La cantidad solicitada supera el stock disponible ("
-                        + producto.getCantDisponible() + ").");
+                mostrarAlerta("cancel", "La cantidad solicitada supera el stock disponible (" + producto.getCantDisponible() + ").");
                 return;
             }
         }
 
         if (cantidadesCarrito.containsKey(producto.getId())) {
-            cantidadesCarrito.put(producto.getId(),
-                    cantidadesCarrito.get(producto.getId()) + cantPedida);
+            cantidadesCarrito.put(producto.getId(), cantidadesCarrito.get(producto.getId()) + cantPedida);
         } else {
             producto.setSeleccionado(true);
             cantidadesCarrito.put(producto.getId(), cantPedida);
@@ -637,7 +629,6 @@ public class RegistrarFactura extends JDialog {
         actualizarTotales();
     }
 
-    
     private void registrarFactura() {
         ArrayList<Producto> carrito = Tienda.getInstance().getProductosSeleccionados();
 
@@ -648,48 +639,64 @@ public class RegistrarFactura extends JDialog {
 
         LocalDate hoy = LocalDate.now();
 
-        if (esCV) { 
-            Proveedor proveedor = (Proveedor) Tienda.getInstance()
-                    .buscarPersonaId(txtProveedor.getText().trim());
+        if (esCV) {
+            Proveedor proveedor = (Proveedor) Tienda.getInstance().buscarPersonaId(txtProveedor.getText().trim());
             if (proveedor == null) {
-                mostrarAlerta("alert", "Debe seleccionar un proveedor válido.");
+                mostrarAlerta("alert", "Debe seleccionar un proveedor v�lido.");
                 return;
             }
 
             int cantTotal = 0;
             ArrayList<Producto> copia = new ArrayList<Producto>(carrito);
             for (Producto pro : copia) {
-                int cant = cantidadesCarrito.containsKey(pro.getId())
-                        ? cantidadesCarrito.get(pro.getId()) : 1;
+                int cant = cantidadesCarrito.containsKey(pro.getId()) ? cantidadesCarrito.get(pro.getId()) : 1;
                 pro.setCantDisponible(pro.getCantDisponible() + cant);
                 cantTotal += cant;
                 pro.setSeleccionado(false);
             }
 
-            Factura compra = new FacturaCompra(txtID.getText(), hoy,
-                    copia, proveedor, cantTotal, precioTotal);
+            FacturaCompra compra = new FacturaCompra(txtID.getText(), hoy, copia, proveedor, cantTotal, precioTotal);
+
+            ArrayList<DetalleFacturaCompra> detallesCompra = new ArrayList<DetalleFacturaCompra>();
+            int numeroLinea = 1;
+
+            for (Producto pro : copia) {
+                int cant = cantidadesCarrito.containsKey(pro.getId()) ? cantidadesCarrito.get(pro.getId()) : 1;
+                double precioUnitario = pro.getPrecio();
+
+                DetalleFacturaCompra detalle = new DetalleFacturaCompra(
+                        compra.getId(),
+                        numeroLinea,
+                        pro,
+                        cant,
+                        precioUnitario
+                );
+
+                detallesCompra.add(detalle);
+                numeroLinea++;
+            }
+
+            compra.setDetallesCompra(detallesCompra);
+
             Tienda.getInstance().registrarFactura(compra);
             mostrarAlerta("check", "Factura de compra registrada correctamente.");
 
-        } else { 
+        } else {
             if (txtIdCliente.getText().trim().isEmpty()) {
                 mostrarAlerta("alert", "Todos los campos deben estar llenos.");
                 return;
             }
-            Cliente cliente = (Cliente) Tienda.getInstance()
-                    .buscarPersonaId(txtIdCliente.getText().trim());
+
+            Cliente cliente = (Cliente) Tienda.getInstance().buscarPersonaId(txtIdCliente.getText().trim());
             if (cliente == null) {
-                mostrarAlerta("alert", "Debe seleccionar un cliente válido.");
+                mostrarAlerta("alert", "Debe seleccionar un cliente v�lido.");
                 return;
             }
 
-            
             for (Producto pro : carrito) {
-                int cant = cantidadesCarrito.containsKey(pro.getId())
-                        ? cantidadesCarrito.get(pro.getId()) : 1;
+                int cant = cantidadesCarrito.containsKey(pro.getId()) ? cantidadesCarrito.get(pro.getId()) : 1;
                 if (pro.getCantDisponible() < cant) {
-                    mostrarAlerta("alert", "El producto " + pro.getId()
-                            + " no tiene stock suficiente (" + pro.getCantDisponible() + ").");
+                    mostrarAlerta("alert", "El producto " + pro.getId() + " no tiene stock suficiente (" + pro.getCantDisponible() + ").");
                     return;
                 }
             }
@@ -697,15 +704,35 @@ public class RegistrarFactura extends JDialog {
             int cantTotal = 0;
             ArrayList<Producto> copia = new ArrayList<Producto>(carrito);
             for (Producto pro : copia) {
-                int cant = cantidadesCarrito.containsKey(pro.getId())
-                        ? cantidadesCarrito.get(pro.getId()) : 1;
+                int cant = cantidadesCarrito.containsKey(pro.getId()) ? cantidadesCarrito.get(pro.getId()) : 1;
                 pro.setCantDisponible(pro.getCantDisponible() - cant);
                 cantTotal += cant;
                 pro.setSeleccionado(false);
             }
 
-            Factura venta = new FacturaVenta(txtID.getText(), hoy,
-                    copia, cliente, cantTotal, precioTotal);
+            FacturaVenta venta = new FacturaVenta(txtID.getText(), hoy, copia, cliente, cantTotal, precioTotal);
+
+            ArrayList<DetalleFacturaVenta> detallesVenta = new ArrayList<DetalleFacturaVenta>();
+            int numeroLinea = 1;
+
+            for (Producto pro : copia) {
+                int cant = cantidadesCarrito.containsKey(pro.getId()) ? cantidadesCarrito.get(pro.getId()) : 1;
+                double precioUnitario = pro.getPrecio();
+
+                DetalleFacturaVenta detalle = new DetalleFacturaVenta(
+                        venta.getId(),
+                        numeroLinea,
+                        pro,
+                        cant,
+                        precioUnitario
+                );
+
+                detallesVenta.add(detalle);
+                numeroLinea++;
+            }
+
+            venta.setDetallesVenta(detallesVenta);
+
             Tienda.getInstance().registrarFactura(venta);
             mostrarAlerta("check", "Factura de venta registrada correctamente.");
         }
@@ -714,8 +741,6 @@ public class RegistrarFactura extends JDialog {
         Tienda.getInstance().recargaSelecionado();
         clean();
     }
-
-   
     public void cargaProductoDisponible() {
         modeloComDisp.setRowCount(0);
         modeloProDisp.setRowCount(0);
@@ -736,8 +761,7 @@ public class RegistrarFactura extends JDialog {
             if (!esCV && pro.getCantDisponible() <= 0) continue;
 
             if (esCV) {
-                if (pro.getProveedor() == null ||
-                    !pro.getProveedor().getId().equals(filtroProveedor.getId())) {
+                if (pro.getProveedor() == null || !pro.getProveedor().getId().equals(filtroProveedor.getId())) {
                     continue;
                 }
             }
@@ -763,8 +787,7 @@ public class RegistrarFactura extends JDialog {
         modeloProCarri.setRowCount(0);
 
         for (Producto pro : Tienda.getInstance().getProductosSeleccionados()) {
-            int cant = cantidadesCarrito.containsKey(pro.getId())
-                    ? cantidadesCarrito.get(pro.getId()) : 1;
+            int cant = cantidadesCarrito.containsKey(pro.getId()) ? cantidadesCarrito.get(pro.getId()) : 1;
             double subtotal = pro.getPrecio() * cant;
             Object[] fila = {
                 pro.getId(),
@@ -784,8 +807,7 @@ public class RegistrarFactura extends JDialog {
         precioTotal = 0;
 
         for (Producto pro : Tienda.getInstance().getProductosSeleccionados()) {
-            int cant = cantidadesCarrito.containsKey(pro.getId())
-                    ? cantidadesCarrito.get(pro.getId()) : 1;
+            int cant = cantidadesCarrito.containsKey(pro.getId()) ? cantidadesCarrito.get(pro.getId()) : 1;
             double sub = pro.getPrecio() * cant;
             precioTotal += sub;
         }
@@ -804,21 +826,19 @@ public class RegistrarFactura extends JDialog {
             txtSubtotal.setText(String.format("%.2f", subtotalSel));
         }
     }
- 
 
     private ArrayList<Producto> obtenerProductosDisponibles(boolean compra) {
         ArrayList<Producto> resultado = new ArrayList<Producto>();
         Proveedor filtroProveedor = null;
         if (compra && txtProveedor != null) {
-            filtroProveedor = (Proveedor) Tienda.getInstance()
-                    .buscarPersonaId(txtProveedor.getText().trim());
+            filtroProveedor = (Proveedor) Tienda.getInstance().buscarPersonaId(txtProveedor.getText().trim());
         }
+
         for (Producto pro : Tienda.getInstance().getProductoNoSeleccionados()) {
             if (!pro.isEstado()) continue;
             if (!compra && pro.getCantDisponible() <= 0) continue;
             if (compra && filtroProveedor != null) {
-                if (pro.getProveedor() == null ||
-                        !pro.getProveedor().getId().equals(filtroProveedor.getId())) continue;
+                if (pro.getProveedor() == null || !pro.getProveedor().getId().equals(filtroProveedor.getId())) continue;
             }
             resultado.add(pro);
         }
@@ -832,6 +852,7 @@ public class RegistrarFactura extends JDialog {
         if (pro instanceof MemoriaRam)      return "Memoria RAM";
         return "Desconocido";
     }
+
     private void bloquearSeleccionCompra() {
         if (tableComDisponible != null) {
             tableComDisponible.clearSelection();
@@ -855,9 +876,11 @@ public class RegistrarFactura extends JDialog {
     private void habilitarSeleccionCompra() {
         if (tableComDisponible != null) {
             tableComDisponible.setEnabled(true);
+            tableComDisponible.clearSelection();
         }
         if (tableComCarrito != null) {
             tableComCarrito.setEnabled(true);
+            tableComCarrito.clearSelection();
         }
 
         btnAgregarPro.setEnabled(false);
@@ -894,35 +917,85 @@ public class RegistrarFactura extends JDialog {
         }
     }
 
-    public void clean() {
+    private void reinicializarVentana() {
         txtID.setText("Factura - " + Tienda.getInstance().numFactura);
         txtFecha.setText(LocalDate.now().toString());
+        txtHora.setText(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+
         txtTotal.setText("0.00");
         txtSubtotal.setText("0.00");
+
         txtIdCliente.setText("Cliente - ");
         txtProveedor.setText("Proveedor - ");
+
         btnBuscarCliente.setEnabled(true);
         btnBuscarProveedor.setEnabled(true);
+
         proveedorConfirmado = false;
+
         spnCantidad.setValue(1);
+
         txtEmpleado.setText(Tienda.getInstance().getLoginUser().getUserName());
-        txtHora.setText(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+
         modeloProDisp.setRowCount(0);
         modeloProCarri.setRowCount(0);
         modeloComDisp.setRowCount(0);
         modeloComCarri.setRowCount(0);
-        indexProCarrito    = -1;
+
+        indexProCarrito = -1;
         indexProDisponible = -1;
-        indexComCarrito    = -1;
+        indexComCarrito = -1;
         indexComDisponible = -1;
+
         cantidadesCarrito.clear();
         precioTotal = 0;
+
         btnAgregarPro.setEnabled(false);
         btnQuitarPro.setEnabled(false);
         btnProducto.setEnabled(false);
-        productoSeleccionadoVista     = null;
+
+        productoSeleccionadoVista = null;
         productoEnCarritoSeleccionado = null;
+
         Tienda.getInstance().recargaSelecionado();
+
+        if (esCV) {
+            pnlVenta.setVisible(false);
+            pnlCompra.setVisible(true);
+
+            pnlProCarrito.setVisible(false);
+            pnlProDisponible.setVisible(false);
+
+            pnlComCarrito.setVisible(true);
+            pnlComDisponible.setVisible(true);
+
+            bloquearSeleccionCompra();
+        } else {
+            pnlCompra.setVisible(false);
+            pnlVenta.setVisible(true);
+
+            pnlComCarrito.setVisible(false);
+            pnlComDisponible.setVisible(false);
+
+            pnlProCarrito.setVisible(true);
+            pnlProDisponible.setVisible(true);
+
+            if (tableProDisponible != null) {
+                tableProDisponible.setEnabled(true);
+                tableProDisponible.clearSelection();
+            }
+            if (tableProCarrito != null) {
+                tableProCarrito.setEnabled(true);
+                tableProCarrito.clearSelection();
+            }
+        }
+
         cargaProductoDisponible();
+        cargaCarrito();
+        actualizarTotales();
+    }
+
+    public void clean() {
+        reinicializarVentana();
     }
 }
