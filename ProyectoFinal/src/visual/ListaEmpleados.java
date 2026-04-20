@@ -166,7 +166,7 @@ public class ListaEmpleados extends JDialog {
                     empleado.getNombre(),
                     empleado.getCedula(),
                     empleado.getCorreo(),
-                    empleado.getComisionVentas(),
+                    String.format("%.2f%%", empleado.getComisionVentas() * 100),
                     empleado.isEmpleadoMes() ? "Sí" : "No"
                 };
                 tableModel.addRow(row);

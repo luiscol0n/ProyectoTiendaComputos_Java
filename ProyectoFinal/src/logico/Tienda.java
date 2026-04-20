@@ -482,16 +482,17 @@ public class Tienda implements Serializable {
 	{
 		int [] array =new int[4];
 		for (Producto producto : listaProductos) {
+			int cantidad = producto.getCantDisponible();
 				if(producto instanceof MotherBoard)
 				{
-					array[0]++;
+					array[0] += cantidad;
 				}
 				else if (producto instanceof DiscoDuro) {
-					array[1]++; 
+					array[1] += cantidad; 
 				} else if (producto instanceof MemoriaRam) {
-					array[2]++;
+					array[2] += cantidad;
 				} else if (producto instanceof Microprocesador) {
-					array[3]++;
+					array[3] += cantidad;
 				}	
 		}
 		return array;
