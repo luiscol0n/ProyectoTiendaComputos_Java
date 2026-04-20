@@ -14,6 +14,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -21,8 +23,10 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -33,6 +37,7 @@ import logico.DiscoDuro;
 import logico.Factura;
 import logico.FacturaCompra;
 import logico.FacturaVenta;
+import logico.MemoriaRam;
 import logico.Microprocesador;
 import logico.MotherBoard;
 import logico.Producto;
@@ -44,29 +49,36 @@ public class RegistrarFactura extends JDialog {
     private final JPanel contentPanel = new JPanel();
     private JTextField txtID;
     private JTextField txtFecha;
-    private DefaultTableModel modeloPro = new DefaultTableModel();
-    private DefaultTableModel modeloProCarri = new DefaultTableModel();
-    private DefaultTableModel modeloCom = new DefaultTableModel();
+
+   
+    private DefaultTableModel modeloComDisp  = new DefaultTableModel();
     private DefaultTableModel modeloComCarri = new DefaultTableModel();
-    private Object[] dispProRows;
-    private Object[] caProRows;
-    private Object[] dispComRows;
-    private Object[] caComRows;
+
+    
+    private DefaultTableModel modeloProDisp  = new DefaultTableModel();
+    private DefaultTableModel modeloProCarri = new DefaultTableModel();
+
     private JTable tableProDisponible;
     private JTable tableProCarrito;
     private JTable tableComDisponible;
     private JTable tableComCarrito;
-    private int indexProCarrito = -1;
+
+    private int indexProCarrito    = -1;
     private int indexProDisponible = -1;
-    private int indexComCarrito = -1;
+    private int indexComCarrito    = -1;
     private int indexComDisponible = -1;
-    private ArrayList<Producto> productosComprados = new ArrayList<Producto>();
+
+    
+    private Map<String, Integer> cantidadesCarrito = new HashMap<String, Integer>();
+
     private double precioTotal = 0;
     private JTextField txtTotal;
-    private JTextField txtDescuento;
+    private JTextField txtSubtotal;
+
     private JButton btnAgregarPro;
     private JButton btnQuitarPro;
     private JButton btnProducto;
+
     private JPanel pnlCompra;
     private JTextField txtIdCliente;
     private JTextField txtEmpleado;
@@ -76,12 +88,18 @@ public class RegistrarFactura extends JDialog {
     private JPanel pnlProCarrito;
     private JPanel pnlComDisponible;
     private JPanel pnlComCarrito;
+
     private JButton btnBuscarCliente;
-    private JButton btnBuscarProoveedor;
+    private JButton btnBuscarProveedor;
     private JTextField txtProveedor;
 
-    // guardo el producto actualmente seleccionado en cualquier tabla para el botn "Ver Producto"
-    private Producto productoSeleccionadoVista = null;
+    private JSpinner spnCantidad;
+
+    private Producto productoSeleccionadoVista      = null;
+    private Producto productoEnCarritoSeleccionado  = null;
+
+    private boolean esCV;
+    private boolean proveedorConfirmado=false;
 
     public static void main(String[] args) {
         try {
@@ -94,397 +112,151 @@ public class RegistrarFactura extends JDialog {
     }
 
     public RegistrarFactura(boolean esCV) {
-        setIconImage(Toolkit.getDefaultToolkit().getImage(RegistrarFactura.class.getResource("/Imagenes/invoice.png")));
+        this.esCV = esCV;
 
-        Color cyanOscuro = new Color(70, 133, 133);
-        Color cyanMid = new Color(80, 180, 152);
-        Color cyanClaro = new Color(222, 249, 196);
+        setIconImage(Toolkit.getDefaultToolkit().getImage(
+                RegistrarFactura.class.getResource("/Imagenes/invoice.png")));
+
+        Color cyanOscuro   = new Color(70, 133, 133);
+        Color cyanMid      = new Color(80, 180, 152);
+        Color cyanClaro    = new Color(222, 249, 196);
         Color fondoClarito = new Color(240, 255, 240);
         MatteBorder bottomBorder = new MatteBorder(0, 0, 2, 0, cyanOscuro);
 
-        setTitle("Registrar Factura");
-        setBounds(100, 100, 750, 500);
+        setTitle(esCV ? "Registrar Factura de Compra" : "Registrar Factura de Venta");
+        setBounds(100, 100, 780, 560);
         getContentPane().setLayout(new BorderLayout());
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
         contentPanel.setLayout(null);
         setLocationRelativeTo(null);
         contentPanel.setBackground(fondoClarito);
+        setModal(true);
 
         JPanel panel = new JPanel();
-        panel.setBounds(10, 11, 714, 404);
+        panel.setBounds(10, 11, 744, 460);
         contentPanel.add(panel);
         panel.setLayout(null);
         panel.setBackground(fondoClarito);
 
+        
         JLabel lblID = new JLabel("ID:");
         lblID.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-        lblID.setBounds(10, 13, 71, 14);
+        lblID.setBounds(10, 13, 40, 14);
         panel.add(lblID);
 
         txtID = new JTextField();
         txtID.setText("Factura - " + Tienda.getInstance().numFactura);
         txtID.setEditable(false);
-        txtID.setBounds(60, 10, 133, 20);
+        txtID.setBounds(50, 10, 133, 20);
         txtID.setBorder(bottomBorder);
         txtID.setBackground(cyanClaro);
         panel.add(txtID);
 
+       
         JLabel lblFecha = new JLabel("Fecha:");
         lblFecha.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-        lblFecha.setBounds(203, 13, 65, 14);
+        lblFecha.setBounds(200, 13, 55, 14);
         panel.add(lblFecha);
 
         txtFecha = new JTextField();
         txtFecha.setEditable(false);
-        txtFecha.setBounds(278, 10, 138, 20);
-        LocalDate hoy = LocalDate.now();
-        txtFecha.setText(hoy.toString());
+        txtFecha.setBounds(258, 10, 120, 20);
+        txtFecha.setText(LocalDate.now().toString());
         txtFecha.setBorder(bottomBorder);
         txtFecha.setBackground(cyanClaro);
         panel.add(txtFecha);
 
-        pnlProDisponible = new JPanel();
-        pnlProDisponible.setBorder(new EmptyBorder(5, 5, 5, 5));
-        pnlProDisponible.setBounds(10, 165, 300, 200);
-        panel.add(pnlProDisponible);
-        pnlProDisponible.setLayout(new BorderLayout());
+        
+        JLabel lblHora = new JLabel("Hora:");
+        lblHora.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
+        lblHora.setBounds(392, 13, 46, 14);
+        panel.add(lblHora);
 
-        String[] proHeaders = {"ID", "Num Serie", "Tipo", "Precio"};
-        modeloPro.setColumnIdentifiers(proHeaders);
-        tableProDisponible = new JTable(modeloPro);
-        tableProDisponible.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        tableProDisponible.setBackground(cyanClaro);
-        tableProDisponible.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                indexProDisponible = tableProDisponible.getSelectedRow();
-                btnAgregarPro.setEnabled(indexProDisponible >= 0);
+        txtHora = new JTextField();
+        txtHora.setEditable(false);
+        txtHora.setText(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+        txtHora.setBounds(442, 10, 100, 20);
+        txtHora.setBackground(cyanClaro);
+        txtHora.setBorder(bottomBorder);
+        panel.add(txtHora);
 
-                // habilito boton "Ver Producto" y guardo referencia al producto seleccionado
-                if (indexProDisponible >= 0 && indexProDisponible < Tienda.getInstance().getProductoNoSeleccionados().size()) {
-                    productoSeleccionadoVista = Tienda.getInstance().getProductoNoSeleccionados().get(indexProDisponible);
-                    btnProducto.setEnabled(true);
-                } else {
-                    productoSeleccionadoVista = null;
-                    btnProducto.setEnabled(false);
-                }
-            }
-        });
-
-        JScrollPane scrollProDisponible = new JScrollPane(tableProDisponible);
-        pnlProDisponible.add(scrollProDisponible, BorderLayout.CENTER);
-        scrollProDisponible.getViewport().setBackground(fondoClarito);
-
-        DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                setBackground(cyanMid);
-                setForeground(Color.WHITE);
-                setFont(new Font("Bahnschrift", Font.BOLD, 12));
-                return this;
-            }
-        };
-        for (int i = 0; i < tableProDisponible.getColumnModel().getColumnCount(); i++) {
-            tableProDisponible.getColumnModel().getColumn(i).setHeaderRenderer(headerRenderer);
-        }
-
-        pnlProCarrito = new JPanel();
-        pnlProCarrito.setBorder(new EmptyBorder(5, 5, 5, 5));
-        pnlProCarrito.setBounds(400, 165, 300, 200);
-        panel.add(pnlProCarrito);
-        pnlProCarrito.setLayout(new BorderLayout());
-
-        modeloProCarri.setColumnIdentifiers(proHeaders);
-        tableProCarrito = new JTable(modeloProCarri);
-        tableProCarrito.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        tableProCarrito.setBackground(cyanClaro);
-        tableProCarrito.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                indexProCarrito = tableProCarrito.getSelectedRow();
-                btnQuitarPro.setEnabled(indexProCarrito >= 0);
-
-                // habilito boton "Ver Producto" y guardo referencia al carrito
-                if (indexProCarrito >= 0 && indexProCarrito < Tienda.getInstance().getProductosSeleccionados().size()) {
-                    productoSeleccionadoVista = Tienda.getInstance().getProductosSeleccionados().get(indexProCarrito);
-                    btnProducto.setEnabled(true);
-                } else {
-                    productoSeleccionadoVista = null;
-                    btnProducto.setEnabled(false);
-                }
-            }
-        });
-
-        JScrollPane scrollProCarrito = new JScrollPane(tableProCarrito);
-        pnlProCarrito.add(scrollProCarrito, BorderLayout.CENTER);
-        scrollProCarrito.getViewport().setBackground(fondoClarito);
-
-        DefaultTableCellRenderer headerRendererCarrito = new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                setBackground(cyanMid);
-                setForeground(Color.WHITE);
-                setFont(new Font("Bahnschrift", Font.BOLD, 12));
-                return this;
-            }
-        };
-        for (int i = 0; i < tableProCarrito.getColumnModel().getColumnCount(); i++) {
-            tableProCarrito.getColumnModel().getColumn(i).setHeaderRenderer(headerRendererCarrito);
-        }
-
-        pnlComDisponible = new JPanel();
-        pnlComDisponible.setBorder(new EmptyBorder(5, 5, 5, 5));
-        pnlComDisponible.setBounds(10, 165, 300, 200);
-        panel.add(pnlComDisponible);
-        pnlComDisponible.setLayout(new BorderLayout());
-
-        String[] comHeaders = {"ID", "Num Serie", "Tipo", "Precio"};
-        modeloCom.setColumnIdentifiers(comHeaders);
-        tableComDisponible = new JTable(modeloCom);
-        tableComDisponible.setBackground(cyanClaro);
-        tableComDisponible.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                indexComDisponible = tableComDisponible.getSelectedRow();
-                btnAgregarPro.setEnabled(indexComDisponible >= 0);
-
-                // habilitar boton "Ver Producto"
-                if (indexComDisponible >= 0 && indexComDisponible < Tienda.getInstance().getProductoNoSeleccionados().size()) {
-                    productoSeleccionadoVista = Tienda.getInstance().getProductoNoSeleccionados().get(indexComDisponible);
-                    btnProducto.setEnabled(true);
-                } else {
-                    productoSeleccionadoVista = null;
-                    btnProducto.setEnabled(false);
-                }
-            }
-        });
-
-        JScrollPane scrollComDisponible = new JScrollPane(tableComDisponible);
-        pnlComDisponible.add(scrollComDisponible, BorderLayout.CENTER);
-        scrollComDisponible.getViewport().setBackground(fondoClarito);
-
-        DefaultTableCellRenderer headerRendererComDisponible = new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                setBackground(cyanMid);
-                setForeground(Color.WHITE);
-                setFont(new Font("Bahnschrift", Font.BOLD, 12));
-                return this;
-            }
-        };
-        for (int i = 0; i < tableComDisponible.getColumnModel().getColumnCount(); i++) {
-            tableComDisponible.getColumnModel().getColumn(i).setHeaderRenderer(headerRendererComDisponible);
-        }
-
-        pnlComCarrito = new JPanel();
-        pnlComCarrito.setBorder(new EmptyBorder(5, 5, 5, 5));
-        pnlComCarrito.setBounds(400, 165, 300, 200);
-        panel.add(pnlComCarrito);
-        pnlComCarrito.setLayout(new BorderLayout());
-
-        modeloComCarri.setColumnIdentifiers(comHeaders);
-        tableComCarrito = new JTable(modeloComCarri);
-        tableComCarrito.setBackground(cyanClaro);
-        tableComCarrito.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                indexComCarrito = tableComCarrito.getSelectedRow();
-                btnQuitarPro.setEnabled(indexComCarrito >= 0);
-
-                // habilitar boton "Ver Producto"
-                if (indexComCarrito >= 0 && indexComCarrito < Tienda.getInstance().getProductosSeleccionados().size()) {
-                    productoSeleccionadoVista = Tienda.getInstance().getProductosSeleccionados().get(indexComCarrito);
-                    btnProducto.setEnabled(true);
-                } else {
-                    productoSeleccionadoVista = null;
-                    btnProducto.setEnabled(false);
-                }
-            }
-        });
-
-        JScrollPane scrollComCarrito = new JScrollPane(tableComCarrito);
-        pnlComCarrito.add(scrollComCarrito, BorderLayout.CENTER);
-        scrollComCarrito.getViewport().setBackground(fondoClarito);
-
-        DefaultTableCellRenderer headerRendererComCarrito = new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                setBackground(cyanMid);
-                setForeground(Color.WHITE);
-                setFont(new Font("Bahnschrift", Font.BOLD, 12));
-                return this;
-            }
-        };
-        for (int i = 0; i < tableComCarrito.getColumnModel().getColumnCount(); i++) {
-            tableComCarrito.getColumnModel().getColumn(i).setHeaderRenderer(headerRendererComCarrito);
-        }
-
-        btnAgregarPro = new JButton("Agregar");
-        btnAgregarPro.setForeground(Color.WHITE);
-        btnAgregarPro.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-        btnAgregarPro.setBackground(cyanMid);
-        btnAgregarPro.setEnabled(false);
-        btnAgregarPro.setBounds(307, 220, 97, 25);
-        btnAgregarPro.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (esCV) {
-                    if (indexProDisponible >= 0) {
-                        Producto producto = Tienda.getInstance().getProductoNoSeleccionados().get(indexProDisponible);
-                        producto.setSeleccionado(true);
-                        productoSeleccionadoVista = null;
-                        btnProducto.setEnabled(false);
-                        cargaProCarritoDisponible();
-                        cargaProductoDisponible();
-                    }
-                } else {
-                    if (indexComDisponible >= 0) {
-                        Producto producto = Tienda.getInstance().getProductoNoSeleccionados().get(indexComDisponible);
-                        producto.setSeleccionado(true);
-                        productoSeleccionadoVista = null;
-                        btnProducto.setEnabled(false);
-                        cargaProCarritoDisponible();
-                        cargaProductoDisponible();
-                    }
-                }
-            }
-        });
-        panel.add(btnAgregarPro);
-
-        btnQuitarPro = new JButton("Quitar");
-        btnQuitarPro.setBounds(307, 260, 97, 25);
-        btnQuitarPro.setEnabled(false);
-        btnQuitarPro.setBackground(new Color(250, 128, 114));
-        btnQuitarPro.setForeground(Color.WHITE);
-        btnQuitarPro.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-        btnQuitarPro.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (esCV) {
-                    if (indexProCarrito >= 0) {
-                        Producto producto = Tienda.getInstance().getProductosSeleccionados().get(indexProCarrito);
-                        producto.setSeleccionado(false);
-                        productoSeleccionadoVista = null;
-                        btnProducto.setEnabled(false);
-                        cargaProCarritoDisponible();
-                        cargaProductoDisponible();
-                    }
-                } else {
-                    if (indexComCarrito >= 0) {
-                        Producto producto = Tienda.getInstance().getProductosSeleccionados().get(indexComCarrito);
-                        producto.setSeleccionado(false);
-                        productoSeleccionadoVista = null;
-                        btnProducto.setEnabled(false);
-                        cargaProCarritoDisponible();
-                        cargaProductoDisponible();
-                    }
-                }
-            }
-        });
-        panel.add(btnQuitarPro);
-
+        
         pnlCompra = new JPanel();
-        pnlCompra.setBounds(10, 53, 656, 52);
+        pnlCompra.setBounds(10, 40, 744, 35);
         panel.add(pnlCompra);
         pnlCompra.setLayout(null);
         pnlCompra.setBackground(fondoClarito);
 
         JLabel lblProveedor = new JLabel("Proveedor:");
         lblProveedor.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-        lblProveedor.setBounds(10, 11, 89, 14);
+        lblProveedor.setBounds(0, 9, 85, 14);
         pnlCompra.add(lblProveedor);
 
         txtProveedor = new JTextField();
-        txtProveedor.setBounds(93, 10, 164, 20);
+        txtProveedor.setBounds(88, 7, 160, 20);
         txtProveedor.setText("Proveedor - ");
         txtProveedor.setBackground(cyanClaro);
         txtProveedor.setBorder(bottomBorder);
         pnlCompra.add(txtProveedor);
 
-        btnBuscarProoveedor = new JButton("Buscar");
-        btnBuscarProoveedor.setBackground(cyanMid);
-        btnBuscarProoveedor.setForeground(Color.WHITE);
-        btnBuscarProoveedor.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-        btnBuscarProoveedor.setBounds(267, 9, 89, 23);
-        btnBuscarProoveedor.addActionListener(new ActionListener() {
+        btnBuscarProveedor = new JButton("Buscar");
+        btnBuscarProveedor.setBackground(cyanMid);
+        btnBuscarProveedor.setForeground(Color.WHITE);
+        btnBuscarProveedor.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
+        btnBuscarProveedor.setBounds(258, 6, 80, 22);
+        btnBuscarProveedor.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Proveedor prove = (Proveedor) Tienda.getInstance().buscarPersonaId(txtProveedor.getText().trim());
+                Proveedor prove = (Proveedor) Tienda.getInstance()
+                        .buscarPersonaId(txtProveedor.getText().trim());
+
                 if (prove == null) {
-                    btnBuscarProoveedor.setEnabled(false);
                     RegistrarProveedor reg = new RegistrarProveedor(null);
                     reg.setModal(true);
                     reg.setVisible(true);
+
                     txtProveedor.setText("Proveedor - " + (Tienda.getInstance().numProveedor - 1));
-                } else {
+
+                    prove = (Proveedor) Tienda.getInstance()
+                            .buscarPersonaId(txtProveedor.getText().trim());
+                }
+
+                if (prove != null) {
                     txtProveedor.setText(prove.getId());
-                    ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));
-                    MensajeAlerta mensajito = new MensajeAlerta(iconito, "B�squeda exitosa.");
-                    mensajito.setModal(true);
-                    mensajito.setVisible(true);
-                    btnBuscarProoveedor.setEnabled(false);
+                    proveedorConfirmado = true;
+                    btnBuscarProveedor.setEnabled(false);
+                    habilitarSeleccionCompra();
+                    mostrarAlerta("check", "Búsqueda exitosa.");
+                } else {
+                    proveedorConfirmado = false;
+                    bloquearSeleccionCompra();
+                    mostrarAlerta("cancel", "Debe seleccionar un proveedor válido.");
                 }
+
+                cargaProductoDisponible();
             }
         });
-        pnlCompra.add(btnBuscarProoveedor);
-
-        btnProducto = new JButton(" Ver Producto");
-        btnProducto.setEnabled(false);
-        btnProducto.setForeground(Color.WHITE);
-        btnProducto.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-        btnProducto.setBackground(cyanMid);
-        btnProducto.addActionListener(new ActionListener() {
+        pnlCompra.add(btnBuscarProveedor);
+        txtProveedor.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (productoSeleccionadoVista != null) {
-                    RegistrarProducto ventanaProducto = new RegistrarProducto(productoSeleccionadoVista, true);
-                    ventanaProducto.setModal(true);
-                    ventanaProducto.setVisible(true);
-                }
+                btnBuscarProveedor.doClick();
             }
         });
-        btnProducto.setBounds(10, 131, 108, 23);
-        panel.add(btnProducto);
 
-        txtTotal = new JTextField();
-        txtTotal.setEditable(false);
-        txtTotal.setBounds(310, 134, 86, 20);
-        txtTotal.setBackground(cyanClaro);
-        txtTotal.setBorder(bottomBorder);
-        panel.add(txtTotal);
-
-        JLabel lblTotal = new JLabel("Total:");
-        lblTotal.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-        lblTotal.setBounds(230, 135, 65, 14);
-        panel.add(lblTotal);
-
-        txtDescuento = new JTextField();
-        txtDescuento.setEditable(false);
-        txtDescuento.setText("0");
-        txtDescuento.setBounds(312, 190, 86, 20);
-        txtDescuento.setBackground(cyanClaro);
-        txtDescuento.setBorder(bottomBorder);
-        panel.add(txtDescuento);
-
-        JLabel lblDescuento = new JLabel("Descuento:");
-        lblDescuento.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-        lblDescuento.setBounds(312, 165, 83, 14);
-        panel.add(lblDescuento);
-
+        
         pnlVenta = new JPanel();
-        pnlVenta.setBounds(10, 53, 656, 52);
+        pnlVenta.setBounds(10, 40, 744, 35);
         panel.add(pnlVenta);
         pnlVenta.setLayout(null);
         pnlVenta.setBackground(fondoClarito);
 
-        JLabel lblCliente = new JLabel("ID cliente:");
+        JLabel lblCliente = new JLabel("ID Cliente:");
         lblCliente.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-        lblCliente.setBounds(10, 11, 106, 14);
+        lblCliente.setBounds(0, 9, 80, 14);
         pnlVenta.add(lblCliente);
 
         txtIdCliente = new JTextField();
-        txtIdCliente.setBounds(89, 10, 86, 20);
+        txtIdCliente.setBounds(84, 7, 100, 20);
         txtIdCliente.setText("Cliente - ");
         txtIdCliente.setBackground(cyanClaro);
         txtIdCliente.setBorder(bottomBorder);
@@ -492,11 +264,12 @@ public class RegistrarFactura extends JDialog {
 
         btnBuscarCliente = new JButton("Buscar");
         btnBuscarCliente.setForeground(Color.WHITE);
-        btnBuscarCliente.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
+        btnBuscarCliente.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
         btnBuscarCliente.setBackground(cyanMid);
         btnBuscarCliente.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Cliente client = (Cliente) Tienda.getInstance().buscarPersonaId(txtIdCliente.getText().trim());
+                Cliente client = (Cliente) Tienda.getInstance()
+                        .buscarPersonaId(txtIdCliente.getText().trim());
                 if (client == null) {
                     btnBuscarCliente.setEnabled(false);
                     RegistrarCliente reg = new RegistrarCliente(null);
@@ -505,47 +278,240 @@ public class RegistrarFactura extends JDialog {
                     txtIdCliente.setText("Cliente - " + (Tienda.getInstance().numCliente - 1));
                 } else {
                     txtIdCliente.setText(client.getId());
-                    ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));
-                    MensajeAlerta mensajito = new MensajeAlerta(iconito, "B�squeda exitosa.");
-                    mensajito.setModal(true);
-                    mensajito.setVisible(true);
+                    mostrarAlerta("check", "Búsqueda exitosa.");
                     btnBuscarCliente.setEnabled(false);
                 }
             }
         });
-        btnBuscarCliente.setBounds(185, 9, 89, 23);
+        btnBuscarCliente.setBounds(194, 6, 80, 22);
         pnlVenta.add(btnBuscarCliente);
+        txtIdCliente.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                btnBuscarCliente.doClick();
+            }
+        });
 
         JLabel lblEmpleado = new JLabel("Empleado:");
         lblEmpleado.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-        lblEmpleado.setBounds(365, 11, 73, 14);
+        lblEmpleado.setBounds(340, 9, 75, 14);
         pnlVenta.add(lblEmpleado);
 
         txtEmpleado = new JTextField();
         txtEmpleado.setText(Tienda.getInstance().getLoginUser().getUserName());
         txtEmpleado.setEditable(false);
-        txtEmpleado.setBounds(450, 10, 134, 20);
+        txtEmpleado.setBounds(420, 7, 150, 20);
         txtEmpleado.setBackground(cyanClaro);
         txtEmpleado.setBorder(bottomBorder);
         pnlVenta.add(txtEmpleado);
 
-        JLabel lblHora = new JLabel("Hora:");
-        lblHora.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-        lblHora.setBounds(446, 13, 46, 14);
-        panel.add(lblHora);
+        
+        JLabel lblCantidad = new JLabel("Cantidad:");
+        lblCantidad.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
+        lblCantidad.setBounds(10, 85, 70, 16);
+        panel.add(lblCantidad);
 
-        txtHora = new JTextField();
-        txtHora.setEditable(false);
-        LocalDateTime ahora = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-        txtHora.setText(ahora.format(formatter));
-        txtHora.setBounds(502, 12, 153, 20);
-        txtHora.setBackground(cyanClaro);
-        txtHora.setBorder(bottomBorder);
-        panel.add(txtHora);
+        spnCantidad = new JSpinner();
+        spnCantidad.setModel(new SpinnerNumberModel(1, 1, null, 1));
+        spnCantidad.setBounds(84, 83, 70, 22);
+        spnCantidad.setBackground(cyanClaro);
+        spnCantidad.setBorder(bottomBorder);
+        panel.add(spnCantidad);
 
-        JPanel buttonPane = new JPanel();
-        buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        btnProducto = new JButton("Ver Producto");
+        btnProducto.setEnabled(false);
+        btnProducto.setForeground(Color.WHITE);
+        btnProducto.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
+        btnProducto.setBackground(cyanMid);
+        btnProducto.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (productoSeleccionadoVista != null) {
+                    RegistrarProducto v = new RegistrarProducto(productoSeleccionadoVista, true);
+                    v.setModal(true);
+                    v.setVisible(true);
+                }
+            }
+        });
+        btnProducto.setBounds(170, 83, 120, 22);
+        panel.add(btnProducto);
+
+        // ── Etiquetas de columnas ────────────────────────────────────────────
+        JLabel lblDisponibles = new JLabel("Disponibles");
+        lblDisponibles.setFont(new Font("Bahnschrift", Font.BOLD, 13));
+        lblDisponibles.setForeground(cyanOscuro);
+        lblDisponibles.setBounds(100, 114, 120, 16);
+        panel.add(lblDisponibles);
+
+        JLabel lblCarrito = new JLabel("Carrito");
+        lblCarrito.setFont(new Font("Bahnschrift", Font.BOLD, 13));
+        lblCarrito.setForeground(cyanOscuro);
+        lblCarrito.setBounds(545, 114, 120, 16);
+        panel.add(lblCarrito);
+
+        // ── Tabla DISPONIBLES ────────────────────────────────────────────────
+        String[] headersDisp = {"ID", "Serie", "Tipo", "Precio", "Stock"};
+
+        pnlComDisponible = new JPanel(new BorderLayout());
+        pnlComDisponible.setBounds(10, 133, 295, 210);
+        pnlComDisponible.setBackground(fondoClarito);
+        panel.add(pnlComDisponible);
+
+        modeloComDisp.setColumnIdentifiers(headersDisp);
+        tableComDisponible = new JTable(modeloComDisp) {
+            public boolean isCellEditable(int r, int c) { return false; }
+        };
+        tableComDisponible.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        tableComDisponible.setBackground(cyanClaro);
+        aplicarHeaderRenderer(tableComDisponible, cyanMid);
+        tableComDisponible.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (!proveedorConfirmado) {
+                    bloquearSeleccionCompra();
+                    return;
+                }
+
+                indexComDisponible = tableComDisponible.getSelectedRow();
+                btnAgregarPro.setEnabled(indexComDisponible >= 0);
+
+                if (indexComDisponible >= 0) {
+                    ArrayList<Producto> lista = obtenerProductosDisponibles(true);
+                    if (indexComDisponible < lista.size()) {
+                        productoSeleccionadoVista = lista.get(indexComDisponible);
+                        btnProducto.setEnabled(true);
+                        actualizarTotales();
+                    }
+                }
+            }
+        });
+        pnlComDisponible.add(new JScrollPane(tableComDisponible), BorderLayout.CENTER);
+
+        pnlProDisponible = new JPanel(new BorderLayout());
+        pnlProDisponible.setBounds(10, 133, 295, 210);
+        pnlProDisponible.setBackground(fondoClarito);
+        panel.add(pnlProDisponible);
+
+        modeloProDisp.setColumnIdentifiers(headersDisp);
+        tableProDisponible = new JTable(modeloProDisp) {
+            public boolean isCellEditable(int r, int c) { return false; }
+        };
+        tableProDisponible.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        tableProDisponible.setBackground(cyanClaro);
+        aplicarHeaderRenderer(tableProDisponible, cyanMid);
+        tableProDisponible.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                indexProDisponible = tableProDisponible.getSelectedRow();
+                btnAgregarPro.setEnabled(indexProDisponible >= 0);
+                if (indexProDisponible >= 0) {
+                    ArrayList<Producto> lista = obtenerProductosDisponibles(false);
+                    if (indexProDisponible < lista.size()) {
+                        productoSeleccionadoVista = lista.get(indexProDisponible);
+                        btnProducto.setEnabled(true);
+                    }
+                }
+            }
+        });
+        pnlProDisponible.add(new JScrollPane(tableProDisponible), BorderLayout.CENTER);
+
+        
+        btnAgregarPro = new JButton("Agregar ");
+        btnAgregarPro.setForeground(Color.WHITE);
+        btnAgregarPro.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
+        btnAgregarPro.setBackground(cyanMid);
+        btnAgregarPro.setEnabled(false);
+        btnAgregarPro.setBounds(313, 198, 110, 25);
+        btnAgregarPro.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                agregarAlCarrito();
+            }
+        });
+        panel.add(btnAgregarPro);
+
+        btnQuitarPro = new JButton("Quitar");
+        btnQuitarPro.setBounds(313, 238, 110, 25);
+        btnQuitarPro.setEnabled(false);
+        btnQuitarPro.setBackground(new Color(250, 128, 114));
+        btnQuitarPro.setForeground(Color.WHITE);
+        btnQuitarPro.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
+        btnQuitarPro.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                quitarDelCarrito();
+            }
+        });
+        panel.add(btnQuitarPro);
+
+      
+        String[] headersCarri = {"ID", "Serie", "Tipo", "Precio", "Cantidad", "Subtotal"};
+
+        pnlComCarrito = new JPanel(new BorderLayout());
+        pnlComCarrito.setBounds(431, 133, 308, 210);
+        pnlComCarrito.setBackground(fondoClarito);
+        panel.add(pnlComCarrito);
+
+        modeloComCarri.setColumnIdentifiers(headersCarri);
+        tableComCarrito = new JTable(modeloComCarri) {
+            public boolean isCellEditable(int r, int c) { return false; }
+        };
+        tableComCarrito.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        tableComCarrito.setBackground(cyanClaro);
+        aplicarHeaderRenderer(tableComCarrito, cyanMid);
+        tableComCarrito.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                indexComCarrito = tableComCarrito.getSelectedRow();
+                btnQuitarPro.setEnabled(indexComCarrito >= 0);
+                seleccionarProductoCarrito(indexComCarrito);
+            }
+        });
+        pnlComCarrito.add(new JScrollPane(tableComCarrito), BorderLayout.CENTER);
+
+        pnlProCarrito = new JPanel(new BorderLayout());
+        pnlProCarrito.setBounds(431, 133, 308, 210);
+        pnlProCarrito.setBackground(fondoClarito);
+        panel.add(pnlProCarrito);
+
+        modeloProCarri.setColumnIdentifiers(headersCarri);
+        tableProCarrito = new JTable(modeloProCarri) {
+            public boolean isCellEditable(int r, int c) { return false; }
+        };
+        tableProCarrito.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        tableProCarrito.setBackground(cyanClaro);
+        aplicarHeaderRenderer(tableProCarrito, cyanMid);
+        tableProCarrito.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                indexProCarrito = tableProCarrito.getSelectedRow();
+                btnQuitarPro.setEnabled(indexProCarrito >= 0);
+                seleccionarProductoCarrito(indexProCarrito);
+            }
+        });
+        pnlProCarrito.add(new JScrollPane(tableProCarrito), BorderLayout.CENTER);
+
+        // ── Subtotal + Total ─────────────────────────────────────────────────
+        JLabel lblSubtotal = new JLabel("Subtotal producto:");
+        lblSubtotal.setFont(new Font("Bahnschrift", Font.PLAIN, 13));
+        lblSubtotal.setBounds(431, 352, 145, 16);
+        panel.add(lblSubtotal);
+
+        txtSubtotal = new JTextField();
+        txtSubtotal.setEditable(false);
+        txtSubtotal.setText("0.00");
+        txtSubtotal.setBounds(581, 350, 100, 20);
+        txtSubtotal.setBackground(cyanClaro);
+        txtSubtotal.setBorder(bottomBorder);
+        panel.add(txtSubtotal);
+
+        JLabel lblTotal = new JLabel("Total factura:");
+        lblTotal.setFont(new Font("Bahnschrift", Font.BOLD, 13));
+        lblTotal.setBounds(431, 380, 145, 16);
+        panel.add(lblTotal);
+
+        txtTotal = new JTextField();
+        txtTotal.setEditable(false);
+        txtTotal.setText("0.00");
+        txtTotal.setBounds(581, 378, 100, 20);
+        txtTotal.setBackground(cyanClaro);
+        txtTotal.setBorder(bottomBorder);
+        panel.add(txtTotal);
+
+        
+        JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
         JButton btnRegistrarFactura = new JButton("Registrar Factura");
@@ -554,107 +520,7 @@ public class RegistrarFactura extends JDialog {
         btnRegistrarFactura.setBackground(cyanMid);
         btnRegistrarFactura.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
-                productosComprados.clear();
-
-                ArrayList<Producto> productos = Tienda.getInstance().getProductosSeleccionados();
-                for (Producto prod : productos) {
-                    productosComprados.add(prod);
-                }
-
-                LocalDate hoy = LocalDate.now();
-
-                if (productosComprados.isEmpty()) {
-                    ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/alert.png"));
-                    MensajeAlerta mensajito = new MensajeAlerta(iconito, "Debe seleccionar al menos un producto.");
-                    mensajito.setModal(true);
-                    mensajito.setVisible(true);
-                    return;
-                }
-
-                if (esCV) { // FACTURA DE COMPRA
-
-                    Proveedor proveedor = null;
-                    if (!txtProveedor.getText().trim().isEmpty()) {
-                        proveedor = (Proveedor) Tienda.getInstance().buscarPersonaId(txtProveedor.getText().trim());
-                    }
-                    if (proveedor == null) {
-                        ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/alert.png"));
-                        MensajeAlerta mensajito = new MensajeAlerta(iconito, "Debe seleccionar un proveedor v�lido.");
-                        mensajito.setModal(true);
-                        mensajito.setVisible(true);
-                        return;
-                    }
-
-                    int cant = 0;
-                    for (Producto pro : productos) {
-                        pro.setCantDisponible(pro.getSiemprePedir() + pro.getCantDisponible());
-                        cant += pro.getCantDisponible();
-                        pro.setSeleccionado(false);
-                    }
-
-                    Factura compra = new FacturaCompra(txtID.getText(), hoy, productosComprados, proveedor, cant, precioTotal);
-                    Tienda.getInstance().registrarFactura(compra);
-
-                    ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));
-                    MensajeAlerta mensajito = new MensajeAlerta(iconito, "Factura de compra registrada correctamente.");
-                    mensajito.setModal(true);
-                    mensajito.setVisible(true);
-
-                    Tienda.getInstance().recargaSelecionado();
-                    clean();
-                    cargaProCarritoDisponible();
-                    cargaProductoDisponible();
-
-                } else { // FACTURA DE VENTA
-
-                    if (txtID.getText().trim().isEmpty() || txtIdCliente.getText().trim().isEmpty()) {
-                        ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/alert.png"));
-                        MensajeAlerta mensajito = new MensajeAlerta(iconito, "Operaci�n err�nea.\nTodos los campos deben de estar llenos.");
-                        mensajito.setModal(true);
-                        mensajito.setVisible(true);
-                        return;
-                    }
-
-                    Cliente cliente = null;
-                    if (!txtIdCliente.getText().trim().isEmpty()) {
-                        cliente = (Cliente) Tienda.getInstance().buscarPersonaId(txtIdCliente.getText().trim());
-                    }
-                    if (cliente == null) {
-                        ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/alert.png"));
-                        MensajeAlerta mensajito = new MensajeAlerta(iconito, "Debe seleccionar un cliente v�lido.");
-                        mensajito.setModal(true);
-                        mensajito.setVisible(true);
-                        return;
-                    }
-
-                    int cant = 0;
-                    for (Producto pro : productos) {
-                        if (pro.getCantDisponible() <= 0) {
-                            ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/alert.png"));
-                            MensajeAlerta mensajito = new MensajeAlerta(iconito, "Uno de los productos no tiene disponibilidad.");
-                            mensajito.setModal(true);
-                            mensajito.setVisible(true);
-                            return;
-                        }
-                        pro.setCantDisponible(pro.getCantDisponible() - 1);
-                        cant++;
-                        pro.setSeleccionado(false);
-                    }
-
-                    Factura venta = new FacturaVenta(txtID.getText(), hoy, productosComprados, cliente, cant, precioTotal);
-                    Tienda.getInstance().registrarFactura(venta);
-
-                    ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));
-                    MensajeAlerta mensajito = new MensajeAlerta(iconito, "Factura de venta registrada correctamente.");
-                    mensajito.setModal(true);
-                    mensajito.setVisible(true);
-
-                    Tienda.getInstance().recargaSelecionado();
-                    clean();
-                    cargaProCarritoDisponible();
-                    cargaProductoDisponible();
-                }
+                registrarFactura();
             }
         });
         buttonPane.add(btnRegistrarFactura);
@@ -666,127 +532,397 @@ public class RegistrarFactura extends JDialog {
         btnCancelar.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
         btnCancelar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                Tienda.getInstance().recargaSelecionado();
+                cantidadesCarrito.clear();
                 dispose();
             }
         });
         buttonPane.add(btnCancelar);
 
+ 
         if (esCV) {
             pnlVenta.setVisible(false);
             pnlCompra.setVisible(true);
-            pnlComCarrito.setVisible(false);
-            pnlComDisponible.setVisible(false);
-            pnlProCarrito.setVisible(true);
-            pnlProDisponible.setVisible(true);
-
-            for (Producto pro : Tienda.getInstance().getListaProductos()) {
-                pro.setEstado(true);
-            }
-        } else {
-            pnlCompra.setVisible(false);
-            pnlVenta.setVisible(true);
             pnlProCarrito.setVisible(false);
             pnlProDisponible.setVisible(false);
             pnlComCarrito.setVisible(true);
             pnlComDisponible.setVisible(true);
+        } else {
+            pnlCompra.setVisible(false);
+            pnlVenta.setVisible(true);
+            pnlComCarrito.setVisible(false);
+            pnlComDisponible.setVisible(false);
+            pnlProCarrito.setVisible(true);
+            pnlProDisponible.setVisible(true);
         }
 
-        cargaProCarritoDisponible();
-        cargaProductoDisponible();
+        if (esCV) {
+            bloquearSeleccionCompra();
+        }
 
-        pnlComCarrito.setBackground(fondoClarito);
-        pnlComDisponible.setBackground(fondoClarito);
-        pnlProCarrito.setBackground(fondoClarito);
-        pnlProDisponible.setBackground(fondoClarito);
+        cargaProductoDisponible();
+        actualizarTotales();
+     
     }
 
-    public void cargaProductoDisponible() {
-        modeloPro.setRowCount(0);
-        modeloCom.setRowCount(0);
+   
+    private void agregarAlCarrito() {
+    	if (esCV && !proveedorConfirmado) {
+            mostrarAlerta("alert", "Debe buscar y confirmar un proveedor antes de agregar productos.");
+            bloquearSeleccionCompra();
+            return;
+        }
+        int idx = esCV ? indexComDisponible : indexProDisponible;
+        ArrayList<Producto> disponibles = obtenerProductosDisponibles(esCV);
+        if (idx < 0 || idx >= disponibles.size()) return;
 
-        dispProRows = new Object[tableProDisponible.getColumnCount()];
-        dispComRows = new Object[tableComDisponible.getColumnCount()];
+        Producto producto = disponibles.get(idx);
+        int cantPedida = (int) spnCantidad.getValue();
+
+        if (!esCV) {
+            if (producto.getCantDisponible() <= 0) {
+                mostrarAlerta("cancel", "Este producto no tiene stock disponible.");
+                return;
+            }
+            int yaEnCarrito = cantidadesCarrito.containsKey(producto.getId())
+                    ? cantidadesCarrito.get(producto.getId()) : 0;
+            if ((yaEnCarrito + cantPedida) > producto.getCantDisponible()) {
+                mostrarAlerta("cancel", "La cantidad solicitada supera el stock disponible ("
+                        + producto.getCantDisponible() + ").");
+                return;
+            }
+        }
+
+        if (cantidadesCarrito.containsKey(producto.getId())) {
+            cantidadesCarrito.put(producto.getId(),
+                    cantidadesCarrito.get(producto.getId()) + cantPedida);
+        } else {
+            producto.setSeleccionado(true);
+            cantidadesCarrito.put(producto.getId(), cantPedida);
+        }
+
+        productoSeleccionadoVista = null;
+        btnProducto.setEnabled(false);
+        cargaCarrito();
+        cargaProductoDisponible();
+    }
+
+    private void quitarDelCarrito() {
+        int idx = esCV ? indexComCarrito : indexProCarrito;
+        ArrayList<Producto> enCarrito = Tienda.getInstance().getProductosSeleccionados();
+        if (idx < 0 || idx >= enCarrito.size()) return;
+
+        Producto producto = enCarrito.get(idx);
+        producto.setSeleccionado(false);
+        cantidadesCarrito.remove(producto.getId());
+
+        productoSeleccionadoVista = null;
+        productoEnCarritoSeleccionado = null;
+        btnProducto.setEnabled(false);
+        cargaCarrito();
+        cargaProductoDisponible();
+    }
+
+    private void seleccionarProductoCarrito(int idx) {
+        ArrayList<Producto> carrito = Tienda.getInstance().getProductosSeleccionados();
+        if (idx >= 0 && idx < carrito.size()) {
+            productoEnCarritoSeleccionado = carrito.get(idx);
+            productoSeleccionadoVista = productoEnCarritoSeleccionado;
+            btnProducto.setEnabled(true);
+        } else {
+            productoEnCarritoSeleccionado = null;
+            productoSeleccionadoVista = null;
+            btnProducto.setEnabled(false);
+        }
+        actualizarTotales();
+    }
+
+    
+    private void registrarFactura() {
+        ArrayList<Producto> carrito = Tienda.getInstance().getProductosSeleccionados();
+
+        if (carrito.isEmpty()) {
+            mostrarAlerta("alert", "Debe seleccionar al menos un producto.");
+            return;
+        }
+
+        LocalDate hoy = LocalDate.now();
+
+        if (esCV) { 
+            Proveedor proveedor = (Proveedor) Tienda.getInstance()
+                    .buscarPersonaId(txtProveedor.getText().trim());
+            if (proveedor == null) {
+                mostrarAlerta("alert", "Debe seleccionar un proveedor válido.");
+                return;
+            }
+
+            int cantTotal = 0;
+            ArrayList<Producto> copia = new ArrayList<Producto>(carrito);
+            for (Producto pro : copia) {
+                int cant = cantidadesCarrito.containsKey(pro.getId())
+                        ? cantidadesCarrito.get(pro.getId()) : 1;
+                pro.setCantDisponible(pro.getCantDisponible() + cant);
+                cantTotal += cant;
+                pro.setSeleccionado(false);
+            }
+
+            Factura compra = new FacturaCompra(txtID.getText(), hoy,
+                    copia, proveedor, cantTotal, precioTotal);
+            Tienda.getInstance().registrarFactura(compra);
+            mostrarAlerta("check", "Factura de compra registrada correctamente.");
+
+        } else { 
+            if (txtIdCliente.getText().trim().isEmpty()) {
+                mostrarAlerta("alert", "Todos los campos deben estar llenos.");
+                return;
+            }
+            Cliente cliente = (Cliente) Tienda.getInstance()
+                    .buscarPersonaId(txtIdCliente.getText().trim());
+            if (cliente == null) {
+                mostrarAlerta("alert", "Debe seleccionar un cliente válido.");
+                return;
+            }
+
+            
+            for (Producto pro : carrito) {
+                int cant = cantidadesCarrito.containsKey(pro.getId())
+                        ? cantidadesCarrito.get(pro.getId()) : 1;
+                if (pro.getCantDisponible() < cant) {
+                    mostrarAlerta("alert", "El producto " + pro.getId()
+                            + " no tiene stock suficiente (" + pro.getCantDisponible() + ").");
+                    return;
+                }
+            }
+
+            int cantTotal = 0;
+            ArrayList<Producto> copia = new ArrayList<Producto>(carrito);
+            for (Producto pro : copia) {
+                int cant = cantidadesCarrito.containsKey(pro.getId())
+                        ? cantidadesCarrito.get(pro.getId()) : 1;
+                pro.setCantDisponible(pro.getCantDisponible() - cant);
+                cantTotal += cant;
+                pro.setSeleccionado(false);
+            }
+
+            Factura venta = new FacturaVenta(txtID.getText(), hoy,
+                    copia, cliente, cantTotal, precioTotal);
+            Tienda.getInstance().registrarFactura(venta);
+            mostrarAlerta("check", "Factura de venta registrada correctamente.");
+        }
+
+        cantidadesCarrito.clear();
+        Tienda.getInstance().recargaSelecionado();
+        clean();
+    }
+
+   
+    public void cargaProductoDisponible() {
+        modeloComDisp.setRowCount(0);
+        modeloProDisp.setRowCount(0);
+
+        Proveedor filtroProveedor = null;
+        if (esCV) {
+            Object selProv = txtProveedor != null ? txtProveedor.getText().trim() : "";
+            filtroProveedor = (Proveedor) Tienda.getInstance().buscarPersonaId((String) selProv);
+
+            if (!proveedorConfirmado || filtroProveedor == null) {
+                bloquearSeleccionCompra();
+                return;
+            }
+        }
 
         for (Producto pro : Tienda.getInstance().getProductoNoSeleccionados()) {
-            if (pro.isEstado()) {
-                Object[] fila = new Object[4];
-                fila[0] = pro.getId();
-                fila[1] = pro.getNumSerie();
-                if (pro instanceof MotherBoard) {
-                    fila[2] = "MotherBoard";
-                } else if (pro instanceof Microprocesador) {
-                    fila[2] = "Microprocesador";
-                } else if (pro instanceof DiscoDuro) {
-                    fila[2] = "Disco Duro";
-                } else {
-                    fila[2] = "Memoria RAM";
+            if (!pro.isEstado()) continue;
+            if (!esCV && pro.getCantDisponible() <= 0) continue;
+
+            if (esCV) {
+                if (pro.getProveedor() == null ||
+                    !pro.getProveedor().getId().equals(filtroProveedor.getId())) {
+                    continue;
                 }
-                fila[3] = pro.getPrecio();
-                modeloPro.addRow(fila);
-                modeloCom.addRow(fila);
+            }
+
+            Object[] fila = {
+                pro.getId(),
+                pro.getNumSerie(),
+                getTipo(pro),
+                String.format("%.2f", pro.getPrecio()),
+                pro.getCantDisponible()
+            };
+
+            if (esCV) {
+                modeloComDisp.addRow(fila);
+            } else {
+                modeloProDisp.addRow(fila);
             }
         }
     }
 
-    public void cargaProCarritoDisponible() {
-        precioTotal = 0;
-        modeloProCarri.setRowCount(0);
+    public void cargaCarrito() {
         modeloComCarri.setRowCount(0);
+        modeloProCarri.setRowCount(0);
 
         for (Producto pro : Tienda.getInstance().getProductosSeleccionados()) {
-            if (pro.isEstado()) {
-                precioTotal += pro.getPrecio();
-                Object[] fila = new Object[4];
-                fila[0] = pro.getId();
-                fila[1] = pro.getNumSerie();
-                if (pro instanceof MotherBoard) {
-                    fila[2] = "MotherBoard";
-                } else if (pro instanceof Microprocesador) {
-                    fila[2] = "Microprocesador";
-                } else if (pro instanceof DiscoDuro) {
-                    fila[2] = "Disco Duro";
-                } else {
-                    fila[2] = "Memoria RAM";
-                }
-                fila[3] = pro.getPrecio();
-                modeloProCarri.addRow(fila);
-                modeloComCarri.addRow(fila);
-            }
+            int cant = cantidadesCarrito.containsKey(pro.getId())
+                    ? cantidadesCarrito.get(pro.getId()) : 1;
+            double subtotal = pro.getPrecio() * cant;
+            Object[] fila = {
+                pro.getId(),
+                pro.getNumSerie(),
+                getTipo(pro),
+                String.format("%.2f", pro.getPrecio()),
+                cant,
+                String.format("%.2f", subtotal)
+            };
+            modeloComCarri.addRow(fila);
+            modeloProCarri.addRow(fila);
         }
-        txtTotal.setText(String.format("%.2f", precioTotal));
+        actualizarTotales();
+    }
+
+    private void actualizarTotales() {
+        precioTotal = 0;
+
+        for (Producto pro : Tienda.getInstance().getProductosSeleccionados()) {
+            int cant = cantidadesCarrito.containsKey(pro.getId())
+                    ? cantidadesCarrito.get(pro.getId()) : 1;
+            double sub = pro.getPrecio() * cant;
+            precioTotal += sub;
+        }
+
+        double subtotalSel = 0;
+        if (productoSeleccionadoVista != null) {
+            int cantidadSeleccionada = Integer.parseInt(spnCantidad.getValue().toString());
+            subtotalSel = productoSeleccionadoVista.getPrecio() * cantidadSeleccionada;
+        }
+
+        if (txtTotal != null) {
+            txtTotal.setText(String.format("%.2f", precioTotal));
+        }
+
+        if (txtSubtotal != null) {
+            txtSubtotal.setText(String.format("%.2f", subtotalSel));
+        }
+    }
+ 
+
+    private ArrayList<Producto> obtenerProductosDisponibles(boolean compra) {
+        ArrayList<Producto> resultado = new ArrayList<Producto>();
+        Proveedor filtroProveedor = null;
+        if (compra && txtProveedor != null) {
+            filtroProveedor = (Proveedor) Tienda.getInstance()
+                    .buscarPersonaId(txtProveedor.getText().trim());
+        }
+        for (Producto pro : Tienda.getInstance().getProductoNoSeleccionados()) {
+            if (!pro.isEstado()) continue;
+            if (!compra && pro.getCantDisponible() <= 0) continue;
+            if (compra && filtroProveedor != null) {
+                if (pro.getProveedor() == null ||
+                        !pro.getProveedor().getId().equals(filtroProveedor.getId())) continue;
+            }
+            resultado.add(pro);
+        }
+        return resultado;
+    }
+
+    private String getTipo(Producto pro) {
+        if (pro instanceof MotherBoard)     return "MotherBoard";
+        if (pro instanceof Microprocesador) return "Microprocesador";
+        if (pro instanceof DiscoDuro)       return "Disco Duro";
+        if (pro instanceof MemoriaRam)      return "Memoria RAM";
+        return "Desconocido";
+    }
+    private void bloquearSeleccionCompra() {
+        if (tableComDisponible != null) {
+            tableComDisponible.clearSelection();
+            tableComDisponible.setEnabled(false);
+        }
+        if (tableComCarrito != null) {
+            tableComCarrito.clearSelection();
+            tableComCarrito.setEnabled(false);
+        }
+
+        btnAgregarPro.setEnabled(false);
+        btnQuitarPro.setEnabled(false);
+        btnProducto.setEnabled(false);
+
+        indexComDisponible = -1;
+        indexComCarrito = -1;
+        productoSeleccionadoVista = null;
+        productoEnCarritoSeleccionado = null;
+    }
+
+    private void habilitarSeleccionCompra() {
+        if (tableComDisponible != null) {
+            tableComDisponible.setEnabled(true);
+        }
+        if (tableComCarrito != null) {
+            tableComCarrito.setEnabled(true);
+        }
+
+        btnAgregarPro.setEnabled(false);
+        btnQuitarPro.setEnabled(false);
+        btnProducto.setEnabled(false);
+
+        indexComDisponible = -1;
+        indexComCarrito = -1;
+        productoSeleccionadoVista = null;
+        productoEnCarritoSeleccionado = null;
+    }
+
+    private void mostrarAlerta(String icono, String msg) {
+        ImageIcon ico = new ImageIcon(
+                MensajeAlerta.class.getResource("/Imagenes/" + icono + ".png"));
+        MensajeAlerta m = new MensajeAlerta(ico, msg);
+        m.setModal(true);
+        m.setVisible(true);
+    }
+
+    private void aplicarHeaderRenderer(JTable tabla, Color bg) {
+        DefaultTableCellRenderer r = new DefaultTableCellRenderer() {
+            public Component getTableCellRendererComponent(JTable t, Object v,
+                    boolean sel, boolean foc, int row, int col) {
+                super.getTableCellRendererComponent(t, v, sel, foc, row, col);
+                setBackground(bg);
+                setForeground(Color.WHITE);
+                setFont(new Font("Bahnschrift", Font.BOLD, 12));
+                return this;
+            }
+        };
+        for (int i = 0; i < tabla.getColumnModel().getColumnCount(); i++) {
+            tabla.getColumnModel().getColumn(i).setHeaderRenderer(r);
+        }
     }
 
     public void clean() {
         txtID.setText("Factura - " + Tienda.getInstance().numFactura);
-        LocalDate hoy = LocalDate.now();
-        txtFecha.setText(hoy.toString());
-        txtTotal.setText("0.0");
-        txtDescuento.setText("0.0");
+        txtFecha.setText(LocalDate.now().toString());
+        txtTotal.setText("0.00");
+        txtSubtotal.setText("0.00");
         txtIdCliente.setText("Cliente - ");
         txtProveedor.setText("Proveedor - ");
         btnBuscarCliente.setEnabled(true);
-        btnBuscarProoveedor.setEnabled(true);
+        btnBuscarProveedor.setEnabled(true);
+        proveedorConfirmado = false;
+        spnCantidad.setValue(1);
         txtEmpleado.setText(Tienda.getInstance().getLoginUser().getUserName());
-        LocalDateTime ahora = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-        txtHora.setText(ahora.format(formatter));
-        modeloPro.setRowCount(0);
+        txtHora.setText(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+        modeloProDisp.setRowCount(0);
         modeloProCarri.setRowCount(0);
-        modeloCom.setRowCount(0);
+        modeloComDisp.setRowCount(0);
         modeloComCarri.setRowCount(0);
-        dispProRows = null;
-        caProRows = null;
-        dispComRows = null;
-        caComRows = null;
-        indexProCarrito = -1;
+        indexProCarrito    = -1;
         indexProDisponible = -1;
-        indexComCarrito = -1;
+        indexComCarrito    = -1;
         indexComDisponible = -1;
-        productosComprados.clear();
+        cantidadesCarrito.clear();
+        precioTotal = 0;
         btnAgregarPro.setEnabled(false);
         btnQuitarPro.setEnabled(false);
         btnProducto.setEnabled(false);
-        productoSeleccionadoVista = null;
+        productoSeleccionadoVista     = null;
+        productoEnCarritoSeleccionado = null;
         Tienda.getInstance().recargaSelecionado();
+        cargaProductoDisponible();
     }
 }
