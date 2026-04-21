@@ -34,11 +34,10 @@ import javax.swing.table.DefaultTableModel;
 
 import logico.Cliente;
 import logico.DiscoDuro;
-import logico.Factura;
-import logico.FacturaCompra;
-import logico.FacturaVenta;
 import logico.DetalleFacturaCompra;
 import logico.DetalleFacturaVenta;
+import logico.FacturaCompra;
+import logico.FacturaVenta;
 import logico.MemoriaRam;
 import logico.Microprocesador;
 import logico.MotherBoard;
@@ -52,10 +51,10 @@ public class RegistrarFactura extends JDialog {
     private JTextField txtID;
     private JTextField txtFecha;
 
-    private DefaultTableModel modeloComDisp  = new DefaultTableModel();
+    private DefaultTableModel modeloComDisp = new DefaultTableModel();
     private DefaultTableModel modeloComCarri = new DefaultTableModel();
 
-    private DefaultTableModel modeloProDisp  = new DefaultTableModel();
+    private DefaultTableModel modeloProDisp = new DefaultTableModel();
     private DefaultTableModel modeloProCarri = new DefaultTableModel();
 
     private JTable tableProDisponible;
@@ -63,9 +62,9 @@ public class RegistrarFactura extends JDialog {
     private JTable tableComDisponible;
     private JTable tableComCarrito;
 
-    private int indexProCarrito    = -1;
+    private int indexProCarrito = -1;
     private int indexProDisponible = -1;
-    private int indexComCarrito    = -1;
+    private int indexComCarrito = -1;
     private int indexComDisponible = -1;
 
     private Map<String, Integer> cantidadesCarrito = new HashMap<String, Integer>();
@@ -94,11 +93,13 @@ public class RegistrarFactura extends JDialog {
 
     private JSpinner spnCantidad;
 
-    private Producto productoSeleccionadoVista     = null;
+    private Producto productoSeleccionadoVista = null;
     private Producto productoEnCarritoSeleccionado = null;
 
     private boolean esCV;
     private boolean proveedorConfirmado = false;
+
+    private static final double PORCENTAJE_GANANCIA_VENTA = 0.50;
 
     public static void main(String[] args) {
         try {
@@ -116,9 +117,9 @@ public class RegistrarFactura extends JDialog {
         setIconImage(Toolkit.getDefaultToolkit().getImage(
                 RegistrarFactura.class.getResource("/Imagenes/invoice.png")));
 
-        Color cyanOscuro   = new Color(70, 133, 133);
-        Color cyanMid      = new Color(80, 180, 152);
-        Color cyanClaro    = new Color(222, 249, 196);
+        Color cyanOscuro = new Color(70, 133, 133);
+        Color cyanMid = new Color(80, 180, 152);
+        Color cyanClaro = new Color(222, 249, 196);
         Color fondoClarito = new Color(240, 255, 240);
         MatteBorder bottomBorder = new MatteBorder(0, 0, 2, 0, cyanOscuro);
 
@@ -559,6 +560,18 @@ public class RegistrarFactura extends JDialog {
         super.setVisible(b);
     }
 
+    private double getPrecioAplicado(Producto pro) {
+        if (esCV) {
+            return pro.getPrecio();
+        } else {
+            return pro.getPrecio() * (1 + PORCENTAJE_GANANCIA_VENTA);
+        }
+    }
+
+    private double getSubtotalAplicado(Producto pro, int cantidad) {
+        return getPrecioAplicado(pro) * cantidad;
+    }
+
     private void agregarAlCarrito() {
         if (esCV && !proveedorConfirmado) {
             mostrarAlerta("alert", "Debe buscar y confirmar un proveedor antes de agregar productos.");
@@ -717,7 +730,7 @@ public class RegistrarFactura extends JDialog {
 
             for (Producto pro : copia) {
                 int cant = cantidadesCarrito.containsKey(pro.getId()) ? cantidadesCarrito.get(pro.getId()) : 1;
-                double precioUnitario = pro.getPrecio();
+                double precioUnitario = getPrecioAplicado(pro);
 
                 DetalleFacturaVenta detalle = new DetalleFacturaVenta(
                         venta.getId(),
@@ -741,6 +754,7 @@ public class RegistrarFactura extends JDialog {
         Tienda.getInstance().recargaSelecionado();
         clean();
     }
+
     public void cargaProductoDisponible() {
         modeloComDisp.setRowCount(0);
         modeloProDisp.setRowCount(0);
@@ -788,15 +802,19 @@ public class RegistrarFactura extends JDialog {
 
         for (Producto pro : Tienda.getInstance().getProductosSeleccionados()) {
             int cant = cantidadesCarrito.containsKey(pro.getId()) ? cantidadesCarrito.get(pro.getId()) : 1;
-            double subtotal = pro.getPrecio() * cant;
+
+            double precioMostrado = getPrecioAplicado(pro);
+            double subtotal = getSubtotalAplicado(pro, cant);
+
             Object[] fila = {
                 pro.getId(),
                 pro.getNumSerie(),
                 getTipo(pro),
-                String.format("%.2f", pro.getPrecio()),
+                String.format("%.2f", precioMostrado),
                 cant,
                 String.format("%.2f", subtotal)
             };
+
             modeloComCarri.addRow(fila);
             modeloProCarri.addRow(fila);
         }
@@ -808,14 +826,14 @@ public class RegistrarFactura extends JDialog {
 
         for (Producto pro : Tienda.getInstance().getProductosSeleccionados()) {
             int cant = cantidadesCarrito.containsKey(pro.getId()) ? cantidadesCarrito.get(pro.getId()) : 1;
-            double sub = pro.getPrecio() * cant;
+            double sub = getSubtotalAplicado(pro, cant);
             precioTotal += sub;
         }
 
         double subtotalSel = 0;
         if (productoSeleccionadoVista != null) {
             int cantidadSeleccionada = Integer.parseInt(spnCantidad.getValue().toString());
-            subtotalSel = productoSeleccionadoVista.getPrecio() * cantidadSeleccionada;
+            subtotalSel = getSubtotalAplicado(productoSeleccionadoVista, cantidadSeleccionada);
         }
 
         if (txtTotal != null) {
@@ -846,10 +864,10 @@ public class RegistrarFactura extends JDialog {
     }
 
     private String getTipo(Producto pro) {
-        if (pro instanceof MotherBoard)     return "MotherBoard";
+        if (pro instanceof MotherBoard) return "MotherBoard";
         if (pro instanceof Microprocesador) return "Microprocesador";
-        if (pro instanceof DiscoDuro)       return "Disco Duro";
-        if (pro instanceof MemoriaRam)      return "Memoria RAM";
+        if (pro instanceof DiscoDuro) return "Disco Duro";
+        if (pro instanceof MemoriaRam) return "Memoria RAM";
         return "Desconocido";
     }
 
