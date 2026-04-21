@@ -214,15 +214,15 @@ public class DetalleFactura extends JDialog {
             return "Sin producto";
         }
 
+        String id = p.getId() != null ? p.getId() : "";
         String marca = p.getMarca() != null ? p.getMarca() : "";
-        String serie = p.getNumSerie() != null ? p.getNumSerie() : "";
 
-        if (!marca.isEmpty() && !serie.isEmpty()) {
-            return marca + " - " + serie;
+        if (!id.isEmpty() && !marca.isEmpty()) {
+            return id + " - " + marca;
+        } else if (!id.isEmpty()) {
+            return id;
         } else if (!marca.isEmpty()) {
             return marca;
-        } else if (!serie.isEmpty()) {
-            return serie;
         } else {
             return p.getId();
         }
