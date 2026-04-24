@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
+import database.TiendaComputos;
 import logico.Empleado;
 import logico.Persona;
 import logico.Proveedor;
@@ -239,12 +240,18 @@ public class RegistrarEmpleado extends JDialog {
 
 						if (empleado ==  null) {
 							Empleado newEmpleado = new Empleado(nombreApellido, edad, cedula, correo, (float) (comision / 100.0), usuario);
-							Tienda.getInstance().registrarPersona(newEmpleado);
-							ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));
-							MensajeAlerta mensajito = new MensajeAlerta(iconito, "Operación satisfactoria.\nEmpleado registrado!");
-							mensajito.setModal(true);
-							mensajito.setVisible(true);
-							clear();
+							//------- para SQL ---------
+							TiendaComputos db = new TiendaComputos();
+							boolean exito = db.insertarEmpleado(newEmpleado);							
+							//-----------------------------
+							if (exito) {
+								Tienda.getInstance().registrarPersona(newEmpleado);
+								ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));
+								MensajeAlerta mensajito = new MensajeAlerta(iconito, "Operación satisfactoria.\nEmpleado registrado!");
+								mensajito.setModal(true);
+								mensajito.setVisible(true);
+								clear();								
+							}
 						} else {
 							empleado.setNombre(nombreApellido);
 							empleado.setCedula(cedula);

@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
+import database.TiendaComputos;
 import logico.Proveedor;
 import logico.Tienda;
 
@@ -197,14 +198,20 @@ public class RegistrarProveedor extends JDialog {
                     
                     if (proveedor == null) {
                         Proveedor newProveedor = new Proveedor(nombreApellido, edad, cedula, correo, empresa);
-                        Tienda.getInstance().registrarPersona(newProveedor);
+        				//------- para SQL ---------
+						TiendaComputos db = new TiendaComputos();
+						boolean exito = db.insertarProveedor(newProveedor);							
+						//-----------------------------
+						if (exito) {
+	                        Tienda.getInstance().registrarPersona(newProveedor);
+							ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));
+							MensajeAlerta mensajito = new MensajeAlerta(iconito, "Operación satisfactoria.\nProveedor registrado!");
+							mensajito.setModal(true);
+							mensajito.setVisible(true);
+							
+	                        clear();	
+						}
                         
-                        ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));
-						MensajeAlerta mensajito = new MensajeAlerta(iconito, "Operación satisfactoria.\nProveedor registrado!");
-						mensajito.setModal(true);
-						mensajito.setVisible(true);
-						
-                        clear();
                     } else {
                     	proveedor.setNombre(nombreApellido);
                     	proveedor.setCedula(cedula);

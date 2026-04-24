@@ -25,6 +25,9 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.JSpinner;
 import javax.swing.border.MatteBorder;
+
+import database.TiendaComputos;
+
 import java.awt.Toolkit;
 
 public class RegistrarCliente extends JDialog {
@@ -204,13 +207,19 @@ public class RegistrarCliente extends JDialog {
 
 						if (cliente ==  null) {
 							Cliente newCliente = new Cliente(nombreApellido, edad, cedula, correo);
-							Tienda.getInstance().registrarPersona(newCliente);
-							ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));
-							MensajeAlerta mensajito = new MensajeAlerta(iconito, "Operación satisfactoria.\nCliente registrado!");
-							mensajito.setModal(true);
-							mensajito.setVisible(true);
+							//------- para SQL ---------
+							TiendaComputos db = new TiendaComputos();
+							boolean exito = db.insertarCliente(newCliente);							
+							//-----------------------------
+							if (exito) {
+								Tienda.getInstance().registrarPersona(newCliente);
+								ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));
+								MensajeAlerta mensajito = new MensajeAlerta(iconito, "Operación satisfactoria.\nCliente registrado!");
+								mensajito.setModal(true);
+								mensajito.setVisible(true);
+								clear();
+							}	
 							
-							clear();
 						} else {
 							cliente.setNombre(nombreApellido);
 							cliente.setCedula(cedula);
