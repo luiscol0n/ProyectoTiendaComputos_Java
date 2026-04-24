@@ -14,7 +14,7 @@ public class TiendaComputos {
 
 	// MÉTODOS DE USUARIO
 	public boolean insertarUsuario(String tipo, String user, String pass) {
-		String sql = "INSERT INTO Users (Tipo, UserName, Password) VALUES (?, ?, ?)";
+		String sql = "INSERT INTO Usuario (Tipo, UserName, Password) VALUES (?, ?, ?)";
 
 		try (Connection con = conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
 
@@ -31,7 +31,7 @@ public class TiendaComputos {
 	}
 
 	public boolean actualizarUsuario(String tipo, String oldUser, String user, String pass) {
-		String sql = "UPDATE Users SET Tipo = ?, UserName = ?, Password = ? WHERE UserName = ?";
+		String sql = "UPDATE Usuario SET Tipo = ?, UserName = ?, Password = ? WHERE UserName = ?";
 
 		try (Connection con = conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
 
@@ -49,7 +49,7 @@ public class TiendaComputos {
 	}
 
 	public boolean eliminarUsuario(String user) {
-		String sql = "DELETE FROM Users WHERE UserName = ?";
+		String sql = "DELETE FROM Usuario WHERE UserName = ?";
 
 		try (Connection con = conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
 
