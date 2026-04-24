@@ -38,35 +38,35 @@ public class Tienda implements Serializable {
 	}
 	
 	public String generarIdProducto() {		
-		String id = "Producto - " + numProducto;
+		String id = "PDT-" + numProducto;
 		numProducto++;
 		return id;
 
 	}
 	
 	public String generarIdCliente() {		
-		String id = "Cliente - " + numCliente;
+		String id = "CLI-" + numCliente;
 		numCliente++;
 		return id;
 
 	}
 	
 	public String generarIdEmpleado() {		
-		String id = "Empleado - " + numEmpleado;
+		String id = "EMP-" + numEmpleado;
 		numEmpleado++;
 		return id;
 
 	}
 	
 	public String generarIdProveedor() {		
-		String id = "Proveedor - " + numProveedor;
+		String id = "PVD-" + numProveedor;
 		numProveedor++;
 		return id;
 
 	}
 	
 	public String generarIdFactura() {		
-		String id = "Factura - " + numFactura;
+		String id = "FAC-" + numFactura;
 		numFactura++;
 		return id;
 
@@ -162,64 +162,49 @@ public class Tienda implements Serializable {
 	
 	// Funcion que genera los IDs
 	public void generarIds() {
-		ArrayList<Cliente> auxClien = new ArrayList<>();
-		ArrayList<Empleado> auxEmpl = new ArrayList<>();
-		ArrayList<Proveedor> auxProv = new ArrayList<>();
-		
-		// PARA ANALIZAR LOS PRODUCTOS
-		if (!getListaProductos().isEmpty()) {
-			numProducto = Integer.parseInt(getListaProductos().get(getListaProductos().size() - 1).getId().substring(11)) + 1;
-		} else {
-			numProducto = 1;
-		}
-			
-		// PARA ANALIZAR LAS PERSONAS
-		if (!getListaPersonas().isEmpty()) {
-			for (Persona persona : getListaPersonas()) {
-				if (persona instanceof Cliente) {
-					auxClien.add((Cliente) persona);
-				}
-				
-				if (persona instanceof Empleado) {
-					auxEmpl.add((Empleado) persona);
-				}
-				if (persona instanceof Proveedor) {
-					auxProv.add((Proveedor) persona);
-				}
-				
-				if (!auxClien.isEmpty()) {
-					numCliente = Integer.parseInt(auxClien.get((auxClien.size()-1)).getId().substring(10)) + 1;
-				} else {
-					numCliente = 1;
-				}
+	    // 1. ANALIZAR PRODUCTOS
+	    if (!getListaProductos().isEmpty()) {
+	        String lastId = getListaProductos().get(getListaProductos().size() - 1).getId();
+	        // Usamos indexOf("-") + 1 para saltar el prefijo dinámicamente
+	        numProducto = Integer.parseInt(lastId.substring(lastId.indexOf("-") + 1)) + 1;
+	    } else {
+	        numProducto = 1;
+	    }
 
-				if (!auxEmpl.isEmpty()) {
-					numEmpleado = Integer.parseInt(auxEmpl.get((auxEmpl.size()-1)).getId().substring(11)) + 1;
-				} else {
-					numEmpleado = 1;
-				}
+	    // 2. ANALIZAR PERSONAS (Fuera del bucle para evitar reinicios)
+	    numCliente = 1;
+	    numEmpleado = 1;
+	    numProveedor = 1;
 
-				if (!auxProv.isEmpty()) {
-					numProveedor = Integer.parseInt(auxProv.get((auxProv.size() - 1)).getId().substring(12)) + 1;
-				} else {
-					numProveedor = 1;
-				}
+	    if (!getListaPersonas().isEmpty()) {
+	        for (Persona persona : getListaPersonas()) {
+	            if (persona instanceof Cliente) {
+	                String id = ((Cliente) persona).getId();
+	                int val = Integer.parseInt(id.substring(id.indexOf("-") + 1));
+	                if (val >= numCliente) numCliente = val + 1;
+	            }
+	            if (persona instanceof Empleado) {
+	                // Aquí usamos el método que tengas para obtener el String "EMP-X"
+	                String id = ((Empleado) persona).getId(); 
+	                int val = Integer.parseInt(id.substring(id.indexOf("-") + 1));
+	                if (val >= numEmpleado) numEmpleado = val + 1;
+	            }
+	            if (persona instanceof Proveedor) {
+	                String id = ((Proveedor) persona).getId(); // Ajustar según tu atributo
+	                int val = Integer.parseInt(id.substring(id.indexOf("-") + 1));
+	                if (val >= numProveedor) numProveedor = val + 1;
+	            }
+	        }
+	    }
 
-			}
-		} else {
-			numCliente = 1;
-			numEmpleado = 1;
-			numProveedor = 1;
-		}
-		
-		// PARA ANALIZAR LAS FACTURAS
-		if (!getListaFacturas().isEmpty()) {
-			numFactura = Integer.parseInt(getListaFacturas().get((getListaFacturas().size() - 1)).getId().substring(10)) + 1;
-		} else {
-			numFactura = 1;
-		}
+	    // 3. ANALIZAR FACTURAS
+	    if (!getListaFacturas().isEmpty()) {
+	        String lastId = getListaFacturas().get(getListaFacturas().size() - 1).getId();
+	        numFactura = Integer.parseInt(lastId.substring(lastId.indexOf("-") + 1)) + 1;
+	    } else {
+	        numFactura = 1;
+	    }
 	}
-
 	
 	public boolean registrarPersona(Persona newPersona) {
 		listaPersonas.add(newPersona);
@@ -602,7 +587,7 @@ public class Tienda implements Serializable {
 		return index;
 	}
 	
-	public User buscarUsuarioNombre(String nombreUsuario) {
+	public User buscarUsuarioPorUsername(String nombreUsuario) {
 		User usuario = null;
 		boolean encontrado = false;
 		int i = 0;
@@ -625,7 +610,7 @@ public class Tienda implements Serializable {
 	}
 
 	public void eliminarUsuario(String nombreUsuario) {
-		User aux = buscarUsuarioNombre(nombreUsuario);
+		User aux = buscarUsuarioPorUsername(nombreUsuario);
 		if (aux != null) {
 			misUsers.remove(aux);
 		}
@@ -640,6 +625,49 @@ public class Tienda implements Serializable {
 		}
 	}
 
+	public Empleado buscarEmpleadoPorUsuario(User usuario) {
+	    Empleado empleadoEncontrado = null;
+	    
+	    for (Persona p : listaPersonas) {
+	        if (p instanceof Empleado) {
+	            Empleado emp = (Empleado) p;
+	            // Comparamos el ID del usuario del empleado con el ID del usuario que recibimos
+	            if (emp.getUsuario() != null && emp.getUsuario().getUserName() == usuario.getUserName()) {
+	                empleadoEncontrado = emp;
+	                break; // Terminamos la búsqueda al encontrarlo
+	            }
+	        }
+	    }
+	    
+	    return empleadoEncontrado;
+	}
+
+	public ArrayList<User> usuariosSinEmpleado() {
+	    ArrayList<User> disponibles = new ArrayList<>();
+	    
+	    for (User user : misUsers) {
+	        boolean asignado = false;
+	        // Buscamos si este usuario ya lo tiene algún empleado
+	        for (Persona persona : listaPersonas) {
+	        	if (persona instanceof Empleado) {
+	        		Empleado emp = (Empleado) persona;
+		            // Comparamos por el nombre de usuario
+		            if (emp.getUsuario() != null && emp.getUsuario().getUserName().equals(user.getUserName())) {
+		                asignado = true;
+		                break;
+		            }
+	        	}
+	        }
+	        // Si nadie lo tiene, lo agregamos a la lista de disponibles
+	        if (!asignado) {
+	            disponibles.add(user);
+	        }
+	    }
+	    
+	    return disponibles;
+	}
+	
+	
 }
 
 //.

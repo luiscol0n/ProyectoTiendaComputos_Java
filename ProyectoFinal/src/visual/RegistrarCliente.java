@@ -277,7 +277,7 @@ public class RegistrarCliente extends JDialog {
 		if (cliente != null) {
 			cargarDatosCliente();
 		} else {
-			idField.setText("Cliente - " + Tienda.numCliente);
+			idField.setText("CLI-" + Tienda.numCliente);
 		}
 	}
 
@@ -290,7 +290,7 @@ public class RegistrarCliente extends JDialog {
 	}
 
 	private void clear() { 
-		idField.setText("Cliente - " + Tienda.numCliente);
+		idField.setText("CLI-" + Tienda.numCliente);
 		nombreField.setText("");
 		cedulaField.setText("");
 		correoField.setText("");

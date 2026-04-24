@@ -122,7 +122,7 @@ public class ListadoUsuarios extends JDialog {
 				updateBtn.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						if(!codigo.equalsIgnoreCase("")){
-							User usuario = Tienda.getInstance().buscarUsuarioNombre(codigo);
+							User usuario = Tienda.getInstance().buscarUsuarioPorUsername(codigo);
 							if(usuario!= null){
 								RegUser regUser = new RegUser(usuario);
 								regUser.setVisible(true);

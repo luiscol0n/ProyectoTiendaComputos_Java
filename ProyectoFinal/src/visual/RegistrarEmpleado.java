@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -14,7 +15,10 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
 import logico.Empleado;
+import logico.Persona;
+import logico.Proveedor;
 import logico.Tienda;
+import logico.User;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -27,6 +31,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerModel;
 import java.awt.Toolkit;
+import javax.swing.JComboBox;
 
 public class RegistrarEmpleado extends JDialog {
 
@@ -37,8 +42,11 @@ public class RegistrarEmpleado extends JDialog {
 	private JTextField correoField;
 	private JSpinner edadSpinner;
 	private JSpinner Comsionspinner;
-	private Empleado empleado; 
+	private JComboBox<User> cbxUser;
+	private Empleado empleado;
+	private User usuario;
 	private String codigo = "";
+    private DefaultComboBoxModel<User> usuariosRegistrados = new DefaultComboBoxModel<User>();
 
 	/**
 	 * Launch the application.
@@ -73,7 +81,7 @@ public class RegistrarEmpleado extends JDialog {
 		} else {
 			setTitle("Registrar Empleado");
 		}
-		setBounds(100, 100, 447, 320);
+		setBounds(100, 100, 447, 355);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -182,6 +190,21 @@ public class RegistrarEmpleado extends JDialog {
 			spinnerEditor.getTextField().setBackground(CyanClaro);
 		}
 		contentPanel.add(Comsionspinner);
+		
+		JLabel usuarioTxt = new JLabel("Usuario:");
+		usuarioTxt.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
+		usuarioTxt.setBounds(29, 240, 57, 14);
+		contentPanel.add(usuarioTxt);
+		
+		cbxUser = new JComboBox();
+        cbxUser.setBackground(CyanClaro);
+        cbxUser.setBorder(bottomBorder);
+		cbxUser.setBounds(121, 236, 247, 22);
+		  for (User usuario : Tienda.getInstance().usuariosSinEmpleado()) {
+                  usuariosRegistrados.addElement(usuario);
+          }
+        cbxUser.setModel(usuariosRegistrados);		
+		contentPanel.add(cbxUser);
 
 		{
 			JPanel buttonPane = new JPanel();
@@ -211,16 +234,16 @@ public class RegistrarEmpleado extends JDialog {
 						String cedula = cedulaField.getText();
 						String correo = correoField.getText();
 						int edad = (int) edadSpinner.getValue();
-						int comision = (int) Comsionspinner.getValue();                        
+						int comision = (int) Comsionspinner.getValue();
+						usuario = Tienda.getInstance().buscarUsuarioPorUsername(cbxUser.getSelectedItem().toString());
 
 						if (empleado ==  null) {
-							Empleado newEmpleado = new Empleado(nombreApellido, edad, cedula, correo, (float) (comision / 100.0));
+							Empleado newEmpleado = new Empleado(nombreApellido, edad, cedula, correo, (float) (comision / 100.0), usuario);
 							Tienda.getInstance().registrarPersona(newEmpleado);
 							ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));
 							MensajeAlerta mensajito = new MensajeAlerta(iconito, "Operación satisfactoria.\nEmpleado registrado!");
 							mensajito.setModal(true);
 							mensajito.setVisible(true);
-
 							clear();
 						} else {
 							empleado.setNombre(nombreApellido);
@@ -291,7 +314,7 @@ public class RegistrarEmpleado extends JDialog {
 		if (empleado != null) {
 			cargarDatosCliente();
 		} else {
-			idField.setText("Empleado - " + Tienda.numEmpleado);
+			idField.setText("EMP-" + Tienda.getNumEmpleado());
 		}
 	}
 
@@ -305,11 +328,17 @@ public class RegistrarEmpleado extends JDialog {
 	}
 
 	private void clear() { 
-		idField.setText("Empleado - " + Tienda.numEmpleado);
+		idField.setText("EMP-" + Tienda.getNumEmpleado());
 		nombreField.setText("");
 		cedulaField.setText("");
 		correoField.setText("");
 		edadSpinner.setValue(18);
 		Comsionspinner.setValue(0);
+		usuariosRegistrados.removeAllElements();
+		for (User usuario : Tienda.getInstance().usuariosSinEmpleado()) {
+              usuariosRegistrados.addElement(usuario);
+		}
+		cbxUser.setModel(usuariosRegistrados);		
+		contentPanel.add(cbxUser);
 	}
 }

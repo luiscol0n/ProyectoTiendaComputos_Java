@@ -857,12 +857,12 @@ public class RegistrarProducto extends JDialog {
             }
 
         } else {
-            txtId.setText("Producto - " + Tienda.getInstance().numProducto);
+            txtId.setText("PDT-" + Tienda.getInstance().numProducto);
         }
     }
 
     public void clean() {
-        txtId.setText("Producto - " + Tienda.getInstance().numProducto);
+        txtId.setText("PDT-" + Tienda.getInstance().numProducto);
         txtNumSerie.setText("");
         txtMarca.setText("");
         int cantProveedores = 0;

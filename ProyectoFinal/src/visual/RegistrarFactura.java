@@ -146,7 +146,7 @@ public class RegistrarFactura extends JDialog {
         panel.add(lblID);
 
         txtID = new JTextField();
-        txtID.setText("Factura - " + Tienda.getInstance().numFactura);
+        txtID.setText("FAC-" + Tienda.getInstance().numFactura);
         txtID.setEditable(false);
         txtID.setBounds(50, 10, 133, 20);
         txtID.setBorder(bottomBorder);
@@ -192,7 +192,7 @@ public class RegistrarFactura extends JDialog {
 
         txtProveedor = new JTextField();
         txtProveedor.setBounds(88, 7, 160, 20);
-        txtProveedor.setText("Proveedor - ");
+        txtProveedor.setText("PVD-");
         txtProveedor.setBackground(cyanClaro);
         txtProveedor.setBorder(bottomBorder);
         pnlCompra.add(txtProveedor);
@@ -212,7 +212,7 @@ public class RegistrarFactura extends JDialog {
                     reg.setModal(true);
                     reg.setVisible(true);
 
-                    txtProveedor.setText("Proveedor - " + (Tienda.getInstance().numProveedor - 1));
+                    txtProveedor.setText("PVD-" + (Tienda.getInstance().numProveedor - 1));
 
                     prove = (Proveedor) Tienda.getInstance()
                             .buscarPersonaId(txtProveedor.getText().trim());
@@ -254,7 +254,7 @@ public class RegistrarFactura extends JDialog {
 
         txtIdCliente = new JTextField();
         txtIdCliente.setBounds(84, 7, 100, 20);
-        txtIdCliente.setText("Cliente - ");
+        txtIdCliente.setText("CLI-");
         txtIdCliente.setBackground(cyanClaro);
         txtIdCliente.setBorder(bottomBorder);
         pnlVenta.add(txtIdCliente);
@@ -272,7 +272,7 @@ public class RegistrarFactura extends JDialog {
                     RegistrarCliente reg = new RegistrarCliente(null);
                     reg.setModal(true);
                     reg.setVisible(true);
-                    txtIdCliente.setText("Cliente - " + (Tienda.getInstance().numCliente - 1));
+                    txtIdCliente.setText("CLI-" + (Tienda.getInstance().numCliente - 1));
                 } else {
                     txtIdCliente.setText(client.getId());
                     mostrarAlerta("check", "Búsqueda exitosa.");
@@ -937,15 +937,15 @@ public class RegistrarFactura extends JDialog {
     }
 
     private void reinicializarVentana() {
-        txtID.setText("Factura - " + Tienda.getInstance().numFactura);
+        txtID.setText("FAC-" + Tienda.getInstance().numFactura);
         txtFecha.setText(LocalDate.now().toString());
         txtHora.setText(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
 
         txtTotal.setText("0.00");
         txtSubtotal.setText("0.00");
 
-        txtIdCliente.setText("Cliente - ");
-        txtProveedor.setText("Proveedor - ");
+        txtIdCliente.setText("CLI-");
+        txtProveedor.setText("PVD-");
 
         btnBuscarCliente.setEnabled(true);
         btnBuscarProveedor.setEnabled(true);

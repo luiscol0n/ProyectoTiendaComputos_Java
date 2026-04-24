@@ -14,7 +14,7 @@ public class TiendaComputos {
      * Método para insertar un nuevo usuario en la tabla Users
      */
     public boolean insertarUsuario(String tipo, String user, String pass) {
-        String sql = "INSERT INTO Users (Tipo, UserName, Password) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO Usuario (Tipo, UserName, Contrasena) VALUES (?, ?, ?)";
         
         try (Connection con = conexion.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -33,7 +33,7 @@ public class TiendaComputos {
     }
     
     public boolean actualizarUsuario(String tipo, String oldUser, String user, String pass) {
-        String sql = "UPDATE Users SET Tipo = ?, UserName = ?, Password = ? where UserName = ?";
+        String sql = "UPDATE Usuario SET Tipo = ?, UserName = ?, Contrasena = ? where UserName = ?";
         
         try (Connection con = conexion.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -51,7 +51,7 @@ public class TiendaComputos {
     }
     
     public boolean eliminarUsuario(String user) {
-        String sql = "DELETE FROM Users where UserName = ?";
+        String sql = "DELETE FROM Usuario where UserName = ?";
         
         try (Connection con = conexion.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {

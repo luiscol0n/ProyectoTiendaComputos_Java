@@ -271,7 +271,7 @@ public class RegistrarProveedor extends JDialog {
 		if (proveedor != null) {
 			cargarDatosProveedor();
 	    } else {
-	        idField.setText("Proveedor - " + Tienda.numProveedor);
+	        idField.setText("PVD-" + Tienda.numProveedor);
 	    }
 	}
 	
@@ -285,7 +285,7 @@ public class RegistrarProveedor extends JDialog {
     }
     
     private void clear() { 
-        idField.setText("Proveedor - " + Tienda.numProveedor);
+        idField.setText("PVD-" + Tienda.numProveedor);
         nombreField.setText("");
         cedulaField.setText("");
         correoField.setText("");

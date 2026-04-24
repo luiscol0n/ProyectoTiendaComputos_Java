@@ -8,6 +8,8 @@ public class Empleado extends Persona implements Serializable {
 	private boolean empleadoMes;
 	private int cantVentas;
 	private float comisionVentas;
+	private User usuario;
+	
 	public boolean isEmpleadoMes() {
 		return empleadoMes;
 	}
@@ -26,15 +28,26 @@ public class Empleado extends Persona implements Serializable {
 	public void setComisionVentas(float comisionVentas) {
 		this.comisionVentas = comisionVentas;
 	}
+	public User getUsuario() {
+		return usuario;
+	}
+	public void setUsuario(User usuario) {
+		this.usuario = usuario;
+	}
 	
+	@Override
+	public String toString() {
+		return id;
+	}
 	
 	public Empleado(String nombre, int edad, String cedula, String correo,
-			float comisionVentas) {
+			float comisionVentas, User usuario) {
 		super(nombre, edad, cedula, correo);
 		super.id = Tienda.getInstance().generarIdEmpleado();
 		this.empleadoMes = false;/*Empiece asi por default*/
 		this.cantVentas = 0;/*Empiece asi por default*/
 		this.comisionVentas = comisionVentas;
+		this.usuario = usuario;
 	}
 
 }
