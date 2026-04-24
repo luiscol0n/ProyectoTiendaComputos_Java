@@ -112,12 +112,12 @@ public class RegUser extends JDialog {
 		textField_1.setBackground(CyanClaro);
 		textField_1.setColumns(10);
 
-		JLabel lblPassword = new JLabel("Password:");
+		JLabel lblPassword = new JLabel("Contraseña:");
 		lblPassword.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 		lblPassword.setBounds(189, 26, 97, 14);
 		contentPanel.add(lblPassword);
 
-		JLabel lblConfirmarPassword = new JLabel("Confirmar Password:");
+		JLabel lblConfirmarPassword = new JLabel("Confirmar Contraseña:");
 		lblConfirmarPassword.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 		lblConfirmarPassword.setBounds(189, 88, 167, 14);
 		contentPanel.add(lblConfirmarPassword);
@@ -166,7 +166,7 @@ public class RegUser extends JDialog {
 									if (exito) {
 										JOptionPane.showMessageDialog(null, "!Usuario registrado en SQL Server!");
 									}	
-									//-----------------------------------
+
 									Tienda.getInstance().RegistrarUser(user);
 									ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));
 									MensajeAlerta mensajito = new MensajeAlerta(iconito, "Operación satisfactoria.\nUsuario registrado!");
@@ -183,7 +183,6 @@ public class RegUser extends JDialog {
 									if (exito) {
 										JOptionPane.showMessageDialog(null, "!Usuario modificado en SQL Server!");
 									}									
-									//--------------------------
 									
 									
 									ImageIcon icono = new ImageIcon(VentanaOpcion.class.getResource("/Imagenes/alert.png"));
