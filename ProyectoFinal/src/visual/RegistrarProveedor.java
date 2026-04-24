@@ -233,6 +233,8 @@ public class RegistrarProveedor extends JDialog {
 			okButton.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 			okButton.setActionCommand("OK");
 			buttonPane.add(okButton);
+			getRootPane().setDefaultButton(okButton);
+
 			
 			JButton cancelButton = new JButton("Cancelar");
 			cancelButton.setForeground(Color.WHITE);
@@ -273,6 +275,12 @@ public class RegistrarProveedor extends JDialog {
 	    } else {
 	        idField.setText("PVD-" + Tienda.numProveedor);
 	    }
+		this.addWindowListener(new java.awt.event.WindowAdapter() {
+			@Override
+			public void windowOpened(java.awt.event.WindowEvent e) {
+				nombreField.requestFocusInWindow();
+			}
+		});
 	}
 	
 	private void cargarDatosProveedor() {
@@ -291,5 +299,7 @@ public class RegistrarProveedor extends JDialog {
         correoField.setText("");
         empresaField.setText("");
         EdadSpinner.setValue(18);
+        
+        nombreField.requestFocusInWindow();
     }
 }

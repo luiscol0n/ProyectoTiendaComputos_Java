@@ -139,6 +139,7 @@ public class RegistrarCliente extends JDialog {
 		nombreField.setBorder(bottomBorder);
 		nombreField.setBackground(CyanClaro);
 		contentPanel.add(nombreField);
+		
 		{
 			cedulaField = new JTextField();
 			cedulaField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
@@ -279,6 +280,13 @@ public class RegistrarCliente extends JDialog {
 		} else {
 			idField.setText("CLI-" + Tienda.numCliente);
 		}
+		
+		this.addWindowListener(new java.awt.event.WindowAdapter() {
+			@Override
+			public void windowOpened(java.awt.event.WindowEvent e) {
+				nombreField.requestFocusInWindow();
+			}
+		});
 	}
 
 	private void cargarDatosCliente() {
@@ -295,5 +303,7 @@ public class RegistrarCliente extends JDialog {
 		cedulaField.setText("");
 		correoField.setText("");
 		edadSpinner.setValue(10);
+		
+		nombreField.requestFocusInWindow();
 	}
 }

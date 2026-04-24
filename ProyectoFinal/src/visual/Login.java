@@ -185,5 +185,6 @@ public class Login extends JFrame {
 		
 		passwordField.setBounds(37, 113, 191, 20);
 		panel.add(passwordField);
+		this.getRootPane().setDefaultButton(btnLogin);
 	}
 }

@@ -55,6 +55,8 @@ public class MensajeAlerta extends JDialog {
         okbutton.setBounds(115, 143, 73, 33);
         okbutton.setBackground(CyanMid);
         contentPanel.add(okbutton);
+		getRootPane().setDefaultButton(okbutton);
+
         
         /*Nota: lo del <html> es para que se formatee como uno y me deje usar textos con saltos de línea y "<br>" es salto de línea en HTML*/
         JLabel txtTxt = new JLabel("<html>" + Texto.replace("\n", "<br>") + "</html>");

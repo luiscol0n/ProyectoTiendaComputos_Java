@@ -647,6 +647,12 @@ public class Tienda implements Serializable {
 	    
 	    for (User user : misUsers) {
 	        boolean asignado = false;
+	        
+	        // Que el usuario no sea el Admin, Admin.
+	        if (user.getUserName().equalsIgnoreCase("Admin")) {
+	        	continue;
+	        }
+	        
 	        // Buscamos si este usuario ya lo tiene algún empleado
 	        for (Persona persona : listaPersonas) {
 	        	if (persona instanceof Empleado) {

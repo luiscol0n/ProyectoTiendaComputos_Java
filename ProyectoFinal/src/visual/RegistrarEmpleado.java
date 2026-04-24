@@ -316,6 +316,13 @@ public class RegistrarEmpleado extends JDialog {
 		} else {
 			idField.setText("EMP-" + Tienda.getNumEmpleado());
 		}
+		
+		this.addWindowListener(new java.awt.event.WindowAdapter() {
+			@Override
+			public void windowOpened(java.awt.event.WindowEvent e) {
+				nombreField.requestFocusInWindow();
+			}
+		});
 	}
 
 	private void cargarDatosCliente() {
@@ -340,5 +347,7 @@ public class RegistrarEmpleado extends JDialog {
 		}
 		cbxUser.setModel(usuariosRegistrados);		
 		contentPanel.add(cbxUser);
+		nombreField.requestFocusInWindow();
+
 	}
 }
