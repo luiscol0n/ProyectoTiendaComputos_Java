@@ -35,3 +35,5 @@ public class FacturaCompra extends Factura implements Serializable {
 	}
 
 }
+
+//.

@@ -35,3 +35,5 @@ public class Microprocesador extends Producto implements Serializable {
 		this.velocidadProcesamiento = velocidadProcesamiento;
 	}
 }
+
+//.

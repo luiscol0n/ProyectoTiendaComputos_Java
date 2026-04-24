@@ -70,3 +70,4 @@ public class TiendaComputos {
     // public boolean insertarProducto(...) { ... }
     // public boolean insertarCliente(...) { ... }
 }
+//.

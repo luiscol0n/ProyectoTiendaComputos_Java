@@ -72,3 +72,5 @@ public class DetalleFacturaVenta implements Serializable {
         this.subtotal = this.cantidad * this.precioUnitario;
     }
 }
+
+//.

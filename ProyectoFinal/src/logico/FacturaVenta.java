@@ -44,3 +44,5 @@ public class FacturaVenta extends Factura implements Serializable {
         this.detallesVenta = new ArrayList<DetalleFacturaVenta>();
     }
 }
+
+//.

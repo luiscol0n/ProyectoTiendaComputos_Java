@@ -26,3 +26,6 @@ public class Proveedor extends Persona implements Serializable {
 		return id;
 	}
 }
+
+
+//.
