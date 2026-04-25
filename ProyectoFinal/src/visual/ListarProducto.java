@@ -29,6 +29,7 @@ import logico.Microprocesador;
 import logico.MotherBoard;
 import logico.Producto;
 import logico.Tienda;
+import database.TiendaComputos;
 
 public class ListarProducto extends JDialog {
 
@@ -60,7 +61,8 @@ public class ListarProducto extends JDialog {
 		Color CyanMid = new Color(80, 180, 152);
 		Color Rojito = new Color(250, 128, 114);
 
-		setIconImage(Toolkit.getDefaultToolkit().getImage(ListarProducto.class.getResource("/Imagenes/to-do-list.png")));
+		setIconImage(
+				Toolkit.getDefaultToolkit().getImage(ListarProducto.class.getResource("/Imagenes/to-do-list.png")));
 		setTitle("Lista de Productos");
 		setBounds(100, 100, 1050, 505);
 		setLocationRelativeTo(null);
@@ -73,7 +75,7 @@ public class ListarProducto extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new BorderLayout(0, 0));
 
-		String[] columnas = {"ID", "NO. Serie", "Tipo", "Cantidad", "Proveedor", "Precio"};
+		String[] columnas = { "ID", "NO. Serie", "Tipo", "Cantidad", "Proveedor", "Precio" };
 		tableModel = new DefaultTableModel(columnas, 0) {
 			private static final long serialVersionUID = 1L;
 
@@ -184,6 +186,18 @@ public class ListarProducto extends JDialog {
 		botonEliminar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (!codigo.isEmpty()) {
+
+					Producto productoSeleccionado = Tienda.getInstance().buscarProductoId(codigo);
+
+					if (productoSeleccionado == null) {
+						ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/cancel.png"));
+						MensajeAlerta mensajito = new MensajeAlerta(iconito,
+								"No se encontró el producto seleccionado.");
+						mensajito.setModal(true);
+						mensajito.setVisible(true);
+						return;
+					}
+
 					ImageIcon icono = new ImageIcon(VentanaOpcion.class.getResource("/Imagenes/alert.png"));
 					String texto = "¿Seguro desea eliminar el producto con código: " + codigo + "?";
 					VentanaOpcion ventanita = new VentanaOpcion(icono, texto);
@@ -192,22 +206,36 @@ public class ListarProducto extends JDialog {
 					int option = ventanita.getResultado();
 
 					if (option == JOptionPane.YES_OPTION) {
-						Tienda.getInstance().eliminarProducto(codigo);
 
-						cargarProducto();
-						table.clearSelection();
-						table.revalidate();
-						table.repaint();
+						boolean eliminadoBD = TiendaComputos.getInstance()
+								.eliminarProducto(productoSeleccionado.getNumSerie());
 
-						btnVerMas.setEnabled(false);
-						botonEliminar.setEnabled(false);
-						botonActualizar.setEnabled(false);
-						codigo = "";
+						if (eliminadoBD) {
+							Tienda.getInstance().eliminarProducto(codigo);
 
-						ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));
-						MensajeAlerta mensajito = new MensajeAlerta(iconito, "Producto eliminado correctamente.");
-						mensajito.setModal(true);
-						mensajito.setVisible(true);
+							cargarProducto();
+							table.clearSelection();
+							table.revalidate();
+							table.repaint();
+
+							btnVerMas.setEnabled(false);
+							botonEliminar.setEnabled(false);
+							botonActualizar.setEnabled(false);
+							codigo = "";
+
+							ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));
+							MensajeAlerta mensajito = new MensajeAlerta(iconito, "Producto eliminado correctamente.");
+							mensajito.setModal(true);
+							mensajito.setVisible(true);
+
+						} else {
+							ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/cancel.png"));
+							MensajeAlerta mensajito = new MensajeAlerta(iconito,
+									"No se pudo eliminar el producto de la base de datos.");
+							mensajito.setModal(true);
+							mensajito.setVisible(true);
+						}
+
 					} else {
 						ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/cancel.png"));
 						MensajeAlerta mensajito = new MensajeAlerta(iconito, "Eliminación cancelada.");
@@ -255,7 +283,6 @@ public class ListarProducto extends JDialog {
 
 			row[5] = producto.getPrecio();
 
-	
 			tableModel.addRow(row);
 		}
 

@@ -1,4 +1,3 @@
-//.
 package visual;
 
 import java.awt.BorderLayout;
@@ -73,9 +72,6 @@ public class RegistrarProducto extends JDialog {
 	private JSpinner spnDDCapacidadAlmacenamiento;
 	private String codigo = "";
 
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 		try {
 			RegistrarProducto dialog = new RegistrarProducto(null);
@@ -86,9 +82,6 @@ public class RegistrarProducto extends JDialog {
 		}
 	}
 
-	/**
-	 * @wbp.parser.constructor
-	 */
 	public RegistrarProducto(Producto producto) {
 		this(producto, false);
 	}
@@ -101,7 +94,6 @@ public class RegistrarProducto extends JDialog {
 		Color CyanMid = new Color(80, 180, 152);
 		Color CyanClaro = new Color(222, 249, 196);
 		Color FondoClarito = new Color(240, 255, 240);
-		Color Rojito = new Color(250, 128, 114);
 		MatteBorder bottomBorder = new MatteBorder(0, 0, 2, 0, CyanOscuro);
 
 		if (soloLectura) {
@@ -132,8 +124,7 @@ public class RegistrarProducto extends JDialog {
 
 			JPanel panel_1 = new JPanel();
 			panel_1.setBackground(new Color(240, 255, 240));
-			panel_1.setBorder(
-					new TitledBorder(null, "Informaci�n General", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+			panel_1.setBorder(new TitledBorder(null, "Información General", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 			panel_1.setBounds(4, 4, 534, 127);
 			panel_1.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 			panel.add(panel_1);
@@ -221,20 +212,16 @@ public class RegistrarProducto extends JDialog {
 
 			JPanel panel_2 = new JPanel();
 			panel_2.setBackground(new Color(240, 255, 240));
-			panel_2.setBorder(
-					new TitledBorder(null, "Tipo Producto", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+			panel_2.setBorder(new TitledBorder(null, "Tipo Producto", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 			panel_2.setBounds(4, 135, 534, 63);
 			panel.add(panel_2);
 			panel_2.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 			panel_2.setLayout(null);
 
-			// Solo validar proveedor si NO estamos en modo soloLectura y NO hay producto
-			// cargado
 			if (!soloLectura) {
 				Proveedor proveedor = null;
 				if (cbxProveedor.getSelectedItem() != null) {
-					proveedor = (Proveedor) Tienda.getInstance()
-							.buscarPersonaId(cbxProveedor.getSelectedItem().toString());
+					proveedor = (Proveedor) Tienda.getInstance().buscarPersonaId(cbxProveedor.getSelectedItem().toString());
 				}
 				if (proveedor == null) {
 					ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/cancel.png"));
@@ -332,8 +319,7 @@ public class RegistrarProducto extends JDialog {
 
 			pnlMotherBoard = new JPanel();
 			pnlMotherBoard.setBackground(FondoClarito);
-			pnlMotherBoard.setBorder(
-					new TitledBorder(null, "Mother Board", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+			pnlMotherBoard.setBorder(new TitledBorder(null, "Mother Board", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 			pnlMotherBoard.setBounds(4, 204, 534, 93);
 			panel.add(pnlMotherBoard);
 			pnlMotherBoard.setLayout(null);
@@ -376,12 +362,11 @@ public class RegistrarProducto extends JDialog {
 			cbxMBTipoRam.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 			cbxMBTipoRam.setBackground(CyanClaro);
 			cbxMBTipoRam.setBorder(bottomBorder);
-			cbxMBTipoRam
-					.setModel(new DefaultComboBoxModel(new String[] { "<Seleccione uno>", "DDR3", "DDR4", "DDR5" }));
+			cbxMBTipoRam.setModel(new DefaultComboBoxModel(new String[]{"<Seleccione uno>", "DDR3", "DDR4", "DDR5"}));
 			cbxMBTipoRam.setBounds(90, 58, 116, 22);
 			pnlMotherBoard.add(cbxMBTipoRam);
 
-			String[] tiposDiscos = { "PATA", "SATA", "SCSI", "SSD", "NVMe" };
+			String[] tiposDiscos = {"PATA", "SATA", "SCSI", "SSD", "NVMe"};
 			chkDiscosAceptados = new JCheckBox[tiposDiscos.length];
 			int chkX = 262;
 			for (int i = 0; i < tiposDiscos.length; i++) {
@@ -396,8 +381,7 @@ public class RegistrarProducto extends JDialog {
 			pnlMemoriaRAM = new JPanel();
 			pnlMemoriaRAM.setBackground(new Color(240, 255, 240));
 			pnlMemoriaRAM.setLayout(null);
-			pnlMemoriaRAM.setBorder(
-					new TitledBorder(null, "Memoria RAM", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+			pnlMemoriaRAM.setBorder(new TitledBorder(null, "Memoria RAM", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 			pnlMemoriaRAM.setBounds(4, 204, 534, 63);
 			panel.add(pnlMemoriaRAM);
 			pnlMemoriaRAM.setVisible(false);
@@ -421,7 +405,7 @@ public class RegistrarProducto extends JDialog {
 			cbxMRTipo = new JComboBox();
 			cbxMRTipo.setBackground(CyanClaro);
 			cbxMRTipo.setBorder(bottomBorder);
-			cbxMRTipo.setModel(new DefaultComboBoxModel(new String[] { "<Seleccione uno>", "DDR3", "DDR4", "DDR5" }));
+			cbxMRTipo.setModel(new DefaultComboBoxModel(new String[]{"<Seleccione uno>", "DDR3", "DDR4", "DDR5"}));
 			cbxMRTipo.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 			cbxMRTipo.setBounds(355, 25, 167, 22);
 			pnlMemoriaRAM.add(cbxMRTipo);
@@ -429,8 +413,7 @@ public class RegistrarProducto extends JDialog {
 			pnlMicroprocesador = new JPanel();
 			pnlMicroprocesador.setBackground(new Color(240, 255, 240));
 			pnlMicroprocesador.setLayout(null);
-			pnlMicroprocesador.setBorder(
-					new TitledBorder(null, "Microprocesador", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+			pnlMicroprocesador.setBorder(new TitledBorder(null, "Microprocesador", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 			pnlMicroprocesador.setBounds(4, 204, 534, 93);
 			panel.add(pnlMicroprocesador);
 			pnlMicroprocesador.setVisible(false);
@@ -473,8 +456,7 @@ public class RegistrarProducto extends JDialog {
 			pnlDiscoDuro = new JPanel();
 			pnlDiscoDuro.setBackground(new Color(240, 255, 240));
 			pnlDiscoDuro.setLayout(null);
-			pnlDiscoDuro.setBorder(
-					new TitledBorder(null, "Disco Duro", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+			pnlDiscoDuro.setBorder(new TitledBorder(null, "Disco Duro", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 			pnlDiscoDuro.setBounds(4, 204, 534, 93);
 			panel.add(pnlDiscoDuro);
 			pnlDiscoDuro.setVisible(false);
@@ -511,8 +493,7 @@ public class RegistrarProducto extends JDialog {
 			cbxDDTipoConexion.setBackground(CyanClaro);
 			cbxDDTipoConexion.setBorder(bottomBorder);
 			cbxDDTipoConexion.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-			cbxDDTipoConexion.setModel(
-					new DefaultComboBoxModel(new String[] { "<Seleccione uno>", "IDE", "SCSI", "SAS", "PCI-e" }));
+			cbxDDTipoConexion.setModel(new DefaultComboBoxModel(new String[]{"<Seleccione uno>", "IDE", "SCSI", "SAS", "PCI-e"}));
 			cbxDDTipoConexion.setBounds(383, 25, 139, 22);
 			pnlDiscoDuro.add(cbxDDTipoConexion);
 		}
@@ -524,7 +505,6 @@ public class RegistrarProducto extends JDialog {
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
 			if (soloLectura) {
-				// boton "Cerrar" en modo soloLectura
 				JButton cerrarButton = new JButton("Cerrar");
 				cerrarButton.setForeground(Color.WHITE);
 				cerrarButton.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
@@ -550,7 +530,6 @@ public class RegistrarProducto extends JDialog {
 						String id = txtId.getText();
 						String numSerie = txtNumSerie.getText();
 						String marca = txtMarca.getText();
-
 						int cantidad = new Integer(spnCantidad.getValue().toString());
 						float precio = new Float(spnPrecio.getValue().toString());
 
@@ -564,10 +543,8 @@ public class RegistrarProducto extends JDialog {
 							Producto nuevoProd = null;
 
 							if (id.isEmpty() || numSerie.isEmpty() || cantidad == 0) {
-								ImageIcon iconito = new ImageIcon(
-										MensajeAlerta.class.getResource("/Imagenes/cancel.png"));
-								MensajeAlerta mensajito = new MensajeAlerta(iconito,
-										"Operaci�n err�nea.\nTodos los campos deben de estar llenos!");
+								ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/cancel.png"));
+								MensajeAlerta mensajito = new MensajeAlerta(iconito, "Operación errónea.\nTodos los campos deben de estar llenos!");
 								mensajito.setModal(true);
 								mensajito.setVisible(true);
 								return;
@@ -575,12 +552,9 @@ public class RegistrarProducto extends JDialog {
 
 							if (rbtnMotherBoard.isSelected()) {
 								if (txtMBModelo.getText().isEmpty() || txtMBSocket.getText().isEmpty()
-										|| "<Seleccione uno>"
-												.equalsIgnoreCase(cbxMBTipoRam.getSelectedItem().toString())) {
-									ImageIcon iconito = new ImageIcon(
-											MensajeAlerta.class.getResource("/Imagenes/cancel.png"));
-									MensajeAlerta mensajito = new MensajeAlerta(iconito,
-											"Operaci�n err�nea.\nTodos los campos deben de estar llenos!");
+										|| "<Seleccione uno>".equalsIgnoreCase(cbxMBTipoRam.getSelectedItem().toString())) {
+									ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/cancel.png"));
+									MensajeAlerta mensajito = new MensajeAlerta(iconito, "Operación errónea.\nTodos los campos deben de estar llenos!");
 									mensajito.setModal(true);
 									mensajito.setVisible(true);
 									return;
@@ -590,58 +564,46 @@ public class RegistrarProducto extends JDialog {
 									String tipoRAM = cbxMBTipoRam.getSelectedItem().toString();
 									ArrayList<String> aux = new ArrayList<>();
 									for (JCheckBox chk : chkDiscosAceptados) {
-										if (chk.isSelected())
-											aux.add(chk.getText());
+										if (chk.isSelected()) aux.add(chk.getText());
 									}
-									nuevoProd = new MotherBoard(numSerie, cantidad, proveedor, marca, precio, modelo,
-											socket, tipoRAM, aux);
+									nuevoProd = new MotherBoard(numSerie, cantidad, proveedor, marca, precio, modelo, socket, tipoRAM, aux);
 								}
 							}
 							if (rbtnMemoriaRAM.isSelected()) {
-								if ((int) spnMRCantidad.getValue() == 0 || "<Seleccione uno>"
-										.equalsIgnoreCase(cbxMRTipo.getSelectedItem().toString())) {
-									ImageIcon iconito = new ImageIcon(
-											MensajeAlerta.class.getResource("/Imagenes/cancel.png"));
-									MensajeAlerta mensajito = new MensajeAlerta(iconito,
-											"Operaci�n err�nea.\nTodos los campos deben de estar llenos!");
+								if ((int) spnMRCantidad.getValue() == 0
+										|| "<Seleccione uno>".equalsIgnoreCase(cbxMRTipo.getSelectedItem().toString())) {
+									ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/cancel.png"));
+									MensajeAlerta mensajito = new MensajeAlerta(iconito, "Operación errónea.\nTodos los campos deben de estar llenos!");
 									mensajito.setModal(true);
 									mensajito.setVisible(true);
 									return;
 								} else {
 									int cantidadRam = new Integer(spnMRCantidad.getValue().toString());
 									String tipoMem = cbxMRTipo.getSelectedItem().toString();
-									nuevoProd = new MemoriaRam(numSerie, cantidad, proveedor, marca, precio,
-											cantidadRam, tipoMem);
+									nuevoProd = new MemoriaRam(numSerie, cantidad, proveedor, marca, precio, cantidadRam, tipoMem);
 								}
 							}
 							if (rbtnMicroprocesador.isSelected()) {
 								if (txtMPModelo.getText().isEmpty() || txtMPSocket.getText().isEmpty()
 										|| (int) spnMPVelocidadProcesamiento.getValue() == 0) {
-									ImageIcon iconito = new ImageIcon(
-											MensajeAlerta.class.getResource("/Imagenes/cancel.png"));
-									MensajeAlerta mensajito = new MensajeAlerta(iconito,
-											"Operaci�n err�nea.\nTodos los campos deben de estar llenos!");
+									ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/cancel.png"));
+									MensajeAlerta mensajito = new MensajeAlerta(iconito, "Operación errónea.\nTodos los campos deben de estar llenos!");
 									mensajito.setModal(true);
 									mensajito.setVisible(true);
 									return;
 								} else {
 									String modelo = txtMPModelo.getText();
 									String socket = txtMPSocket.getText();
-									int velocidadProcesamiento = new Integer(
-											spnMPVelocidadProcesamiento.getValue().toString());
-									nuevoProd = new Microprocesador(numSerie, cantidad, proveedor, marca, precio,
-											modelo, socket, velocidadProcesamiento);
+									int velocidadProcesamiento = new Integer(spnMPVelocidadProcesamiento.getValue().toString());
+									nuevoProd = new Microprocesador(numSerie, cantidad, proveedor, marca, precio, modelo, socket, velocidadProcesamiento);
 								}
 							}
 							if (rbtnDiscoDuro.isSelected()) {
 								if (txtDDModelo.getText().isEmpty()
-										|| "<Seleccione uno>"
-												.equalsIgnoreCase(cbxDDTipoConexion.getSelectedItem().toString())
+										|| "<Seleccione uno>".equalsIgnoreCase(cbxDDTipoConexion.getSelectedItem().toString())
 										|| spnDDCapacidadAlmacenamiento.getValue().equals(0)) {
-									ImageIcon iconito = new ImageIcon(
-											MensajeAlerta.class.getResource("/Imagenes/cancel.png"));
-									MensajeAlerta mensajito = new MensajeAlerta(iconito,
-											"Operaci�n err�nea.\nTodos los campos deben de estar llenos!");
+									ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/cancel.png"));
+									MensajeAlerta mensajito = new MensajeAlerta(iconito, "Operación errónea.\nTodos los campos deben de estar llenos!");
 									mensajito.setModal(true);
 									mensajito.setVisible(true);
 									return;
@@ -649,12 +611,11 @@ public class RegistrarProducto extends JDialog {
 									String modelo = txtDDModelo.getText();
 									String tipoConex = cbxDDTipoConexion.getSelectedItem().toString();
 									int cantAlm = new Integer(spnDDCapacidadAlmacenamiento.getValue().toString());
-									nuevoProd = new DiscoDuro(numSerie, cantidad, proveedor, marca, precio, modelo,
-											cantAlm, tipoConex);
+									nuevoProd = new DiscoDuro(numSerie, cantidad, proveedor, marca, precio, modelo, cantAlm, tipoConex);
 								}
 							}
-							boolean exito = false;
 
+							boolean exito = false;
 							if (nuevoProd instanceof MotherBoard) {
 								exito = TiendaComputos.getInstance().insertarMotherBoard((MotherBoard) nuevoProd);
 							} else if (nuevoProd instanceof MemoriaRam) {
@@ -667,15 +628,15 @@ public class RegistrarProducto extends JDialog {
 
 							if (exito) {
 								Tienda.getInstance().registrarProducto(nuevoProd);
-								ImageIcon iconito = new ImageIcon(
-										MensajeAlerta.class.getResource("/Imagenes/check.png"));
-								MensajeAlerta mensajito = new MensajeAlerta(iconito,
-										"Operaci�n satisfactoria.\nProducto registrado!");
+								ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));
+								MensajeAlerta mensajito = new MensajeAlerta(iconito, "Operación satisfactoria.\nProducto registrado!");
 								mensajito.setModal(true);
 								mensajito.setVisible(true);
 								clean();
 							}
+
 						} else {
+							// ── MODO ACTUALIZAR ──────────────────────────────────
 							producto.setNumSerie(numSerie);
 							producto.setMarca(marca);
 							producto.setProveedor(proveedor);
@@ -688,14 +649,12 @@ public class RegistrarProducto extends JDialog {
 								((MotherBoard) producto).setTipoRam(cbxMBTipoRam.getSelectedItem().toString());
 								ArrayList<String> aux = new ArrayList<>();
 								for (JCheckBox chk : chkDiscosAceptados) {
-									if (chk.isSelected())
-										aux.add(chk.getText());
+									if (chk.isSelected()) aux.add(chk.getText());
 								}
 								((MotherBoard) producto).setListaDiscoDuroAceptados(aux);
 							}
 							if (producto instanceof MemoriaRam) {
-								((MemoriaRam) producto)
-										.setCantMemoria(new Integer(spnMRCantidad.getValue().toString()));
+								((MemoriaRam) producto).setCantMemoria(new Integer(spnMRCantidad.getValue().toString()));
 								((MemoriaRam) producto).setTipoMemoria(cbxMRTipo.getSelectedItem().toString());
 							}
 							if (producto instanceof Microprocesador) {
@@ -707,25 +666,27 @@ public class RegistrarProducto extends JDialog {
 							if (producto instanceof DiscoDuro) {
 								((DiscoDuro) producto).setModelo(txtDDModelo.getText());
 								((DiscoDuro) producto).setTipoConexion(cbxDDTipoConexion.getSelectedItem().toString());
-								((DiscoDuro) producto)
-										.setCapacidad(new Integer(spnDDCapacidadAlmacenamiento.getValue().toString()));
+								((DiscoDuro) producto).setCapacidad(new Integer(spnDDCapacidadAlmacenamiento.getValue().toString()));
 							}
 
 							ImageIcon icono = new ImageIcon(VentanaOpcion.class.getResource("/Imagenes/alert.png"));
-							String texto = "�Seguro desea modificar el producto con c�digo: " + codigo + "?";
+							String texto = "¿Seguro desea modificar el producto con código: " + codigo + "?";
 							VentanaOpcion ventanita = new VentanaOpcion(icono, texto);
 							ventanita.setModal(true);
 							ventanita.setVisible(true);
 							int option = ventanita.getResultado();
 
 							if (option == JOptionPane.YES_OPTION) {
-								Tienda.getInstance().updateProducto(producto);
-								ImageIcon iconito = new ImageIcon(
-										MensajeAlerta.class.getResource("/Imagenes/check.png"));
-								MensajeAlerta mensajito = new MensajeAlerta(iconito,
-										"Operaci�n satisfactoria.\nProducto modificado!");
-								mensajito.setModal(true);
-								mensajito.setVisible(true);
+								// ── CAMBIO: primero SQL, luego memoria ──
+								boolean exito = TiendaComputos.getInstance().modificarProducto(producto);
+								if (exito) {
+									Tienda.getInstance().updateProducto(producto);
+									ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));
+									MensajeAlerta mensajito = new MensajeAlerta(iconito, "Operación satisfactoria.\nProducto modificado!");
+									mensajito.setModal(true);
+									mensajito.setVisible(true);
+								}
+								// ────────────────────────────────────────
 							}
 
 							LocalDate hoy = LocalDate.now();
@@ -755,25 +716,20 @@ public class RegistrarProducto extends JDialog {
 					public void actionPerformed(ActionEvent arg0) {
 						if (producto == null) {
 							ImageIcon icono = new ImageIcon(VentanaOpcion.class.getResource("/Imagenes/alert.png"));
-							String texto = "�Seguro desea cancelar el registro del producto en curso?";
+							String texto = "¿Seguro desea cancelar el registro del producto en curso?";
 							VentanaOpcion ventanita = new VentanaOpcion(icono, texto);
 							ventanita.setModal(true);
 							ventanita.setVisible(true);
 							int option = ventanita.getResultado();
-							if (option == JOptionPane.YES_OPTION) {
-								dispose();
-							}
+							if (option == JOptionPane.YES_OPTION) dispose();
 						} else {
 							ImageIcon icono = new ImageIcon(VentanaOpcion.class.getResource("/Imagenes/alert.png"));
-							String texto = "�Seguro desea cancelar la modificaci�n del producto con c�digo: " + codigo
-									+ "?";
+							String texto = "¿Seguro desea cancelar la modificación del producto con código: " + codigo + "?";
 							VentanaOpcion ventanita = new VentanaOpcion(icono, texto);
 							ventanita.setModal(true);
 							ventanita.setVisible(true);
 							int option = ventanita.getResultado();
-							if (option == JOptionPane.YES_OPTION) {
-								dispose();
-							}
+							if (option == JOptionPane.YES_OPTION) dispose();
 						}
 					}
 				});
@@ -786,40 +742,30 @@ public class RegistrarProducto extends JDialog {
 
 		loadProducto(producto);
 
-		// si es soloLectura, deshabilitar todos los campos editables despues de cargar
-		// los datos
 		if (soloLectura) {
 			aplicarModoSoloLectura();
 		}
 	}
 
-	// modo lectura
 	private void aplicarModoSoloLectura() {
 		txtMarca.setEditable(false);
 		txtNumSerie.setEditable(false);
 		spnCantidad.setEnabled(false);
 		spnPrecio.setEnabled(false);
 		cbxProveedor.setEnabled(false);
-
 		rbtnMotherBoard.setEnabled(false);
 		rbtnMemoriaRAM.setEnabled(false);
 		rbtnMicroprocesador.setEnabled(false);
 		rbtnDiscoDuro.setEnabled(false);
-
 		txtMBModelo.setEditable(false);
 		txtMBSocket.setEditable(false);
 		cbxMBTipoRam.setEnabled(false);
-		for (JCheckBox chk : chkDiscosAceptados) {
-			chk.setEnabled(false);
-		}
-
+		for (JCheckBox chk : chkDiscosAceptados) chk.setEnabled(false);
 		spnMRCantidad.setEnabled(false);
 		cbxMRTipo.setEnabled(false);
-
 		txtMPModelo.setEditable(false);
 		txtMPSocket.setEditable(false);
 		spnMPVelocidadProcesamiento.setEnabled(false);
-
 		txtDDModelo.setEditable(false);
 		cbxDDTipoConexion.setEnabled(false);
 		spnDDCapacidadAlmacenamiento.setEnabled(false);
@@ -847,24 +793,17 @@ public class RegistrarProducto extends JDialog {
 				spnDDCapacidadAlmacenamiento.setVisible(false);
 				txtMBModelo.setText(((MotherBoard) producto).getModelo());
 				txtMBSocket.setText(((MotherBoard) producto).getTipoSocket());
-				cbxMBTipoRam.setSelectedIndex(
-						buscarIndiceSeleccionado(cbxMBTipoRam, ((MotherBoard) producto).getTipoRam()));
-
-				// ---- CORRECCI�N: Restaurar discos seleccionados con checkboxes ----
+				cbxMBTipoRam.setSelectedIndex(buscarIndiceSeleccionado(cbxMBTipoRam, ((MotherBoard) producto).getTipoRam()));
 				ArrayList<String> discosGuardados = ((MotherBoard) producto).getListaDiscoDuroAceptados();
 				if (discosGuardados != null) {
 					for (JCheckBox chk : chkDiscosAceptados) {
 						chk.setSelected(false);
 						for (String disco : discosGuardados) {
-							if (disco.equalsIgnoreCase(chk.getText())) {
-								chk.setSelected(true);
-								break;
-							}
+							if (disco.equalsIgnoreCase(chk.getText())) { chk.setSelected(true); break; }
 						}
 					}
 				}
 			}
-
 			if (producto instanceof MemoriaRam) {
 				rbtnMotherBoard.setSelected(false);
 				rbtnMemoriaRAM.setSelected(true);
@@ -878,10 +817,8 @@ public class RegistrarProducto extends JDialog {
 				pnlDiscoDuro.setVisible(false);
 				spnDDCapacidadAlmacenamiento.setVisible(false);
 				spnMRCantidad.setValue(((MemoriaRam) producto).getCantMemoria());
-				cbxMRTipo.setSelectedIndex(
-						buscarIndiceSeleccionado(cbxMRTipo, ((MemoriaRam) producto).getTipoMemoria()));
+				cbxMRTipo.setSelectedIndex(buscarIndiceSeleccionado(cbxMRTipo, ((MemoriaRam) producto).getTipoMemoria()));
 			}
-
 			if (producto instanceof Microprocesador) {
 				rbtnMotherBoard.setSelected(false);
 				rbtnMemoriaRAM.setSelected(false);
@@ -898,7 +835,6 @@ public class RegistrarProducto extends JDialog {
 				txtMPSocket.setText(((Microprocesador) producto).getSocket());
 				spnMPVelocidadProcesamiento.setValue(((Microprocesador) producto).getVelocidadProcesamiento());
 			}
-
 			if (producto instanceof DiscoDuro) {
 				rbtnMotherBoard.setSelected(false);
 				rbtnMemoriaRAM.setSelected(false);
@@ -912,11 +848,9 @@ public class RegistrarProducto extends JDialog {
 				pnlDiscoDuro.setVisible(true);
 				spnDDCapacidadAlmacenamiento.setVisible(true);
 				txtDDModelo.setText(((DiscoDuro) producto).getModelo());
-				cbxDDTipoConexion.setSelectedIndex(
-						buscarIndiceSeleccionado(cbxDDTipoConexion, ((DiscoDuro) producto).getTipoConexion()));
+				cbxDDTipoConexion.setSelectedIndex(buscarIndiceSeleccionado(cbxDDTipoConexion, ((DiscoDuro) producto).getTipoConexion()));
 				spnDDCapacidadAlmacenamiento.setValue(((DiscoDuro) producto).getCapacidad());
 			}
-
 		} else {
 			txtId.setText("PDT-" + Tienda.getInstance().numProducto);
 		}
@@ -928,13 +862,9 @@ public class RegistrarProducto extends JDialog {
 		txtMarca.setText("");
 		int cantProveedores = 0;
 		for (Persona persona : Tienda.getInstance().getListaPersonas()) {
-			if (persona instanceof Proveedor) {
-				cantProveedores++;
-			}
+			if (persona instanceof Proveedor) cantProveedores++;
 		}
-		if (cantProveedores > 0) {
-			cbxProveedor.setSelectedIndex(0);
-		}
+		if (cantProveedores > 0) cbxProveedor.setSelectedIndex(0);
 		spnCantidad.setValue(new Integer(1));
 		spnPrecio.setValue(new Float(0));
 		rbtnMotherBoard.setSelected(true);
@@ -948,9 +878,7 @@ public class RegistrarProducto extends JDialog {
 		txtMBModelo.setText("");
 		txtMBSocket.setText("");
 		cbxMBTipoRam.setSelectedIndex(0);
-		for (JCheckBox chk : chkDiscosAceptados) {
-			chk.setSelected(false);
-		} // ---- CORRECCI�N: limpiar checkboxes ----
+		for (JCheckBox chk : chkDiscosAceptados) chk.setSelected(false);
 		spnMRCantidad.setValue(new Integer(0));
 		cbxMRTipo.setSelectedIndex(0);
 		txtMPModelo.setText("");
@@ -964,9 +892,7 @@ public class RegistrarProducto extends JDialog {
 	private int buscarIndiceSeleccionado(JComboBox<String> aux, String item) {
 		int i = 0;
 		while (i < aux.getItemCount()) {
-			if (item.equalsIgnoreCase(aux.getItemAt(i))) {
-				return i;
-			}
+			if (item.equalsIgnoreCase(aux.getItemAt(i))) return i;
 			i++;
 		}
 		return 0;
