@@ -44,9 +44,11 @@ import logico.FacturaVenta;
 import logico.MemoriaRam;
 import logico.Microprocesador;
 import logico.MotherBoard;
+import logico.Persona;
 import logico.Producto;
 import logico.Proveedor;
 import logico.Tienda;
+import logico.User;
 
 public class RegistrarFactura extends JDialog {
 
@@ -296,11 +298,22 @@ public class RegistrarFactura extends JDialog {
         lblEmpleado.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
         lblEmpleado.setBounds(340, 9, 75, 14);
         pnlVenta.add(lblEmpleado);
-
+ 
         txtEmpleado = new JTextField();
-        txtEmpleado.setText(Tienda.getInstance().getLoginUser().getUserName());
+        Persona p = Tienda.getInstance().buscarEmpleadoPorUsuario(Tienda.getInstance().getLoginUser());
+
+        if(esCV == false && p instanceof Empleado) {
+            Empleado vendedor = (Empleado) p;
+            // Ahora es seguro usar vendedor.getId()
+            txtEmpleado.setText(vendedor.getId() + " | " + vendedor.getNombre());
+        } else {
+            // Si es Venta al Contado (esCV == true) o si el usuario es Admin (no es Empleado)
+            String user = (Tienda.getInstance().getLoginUser() != null) ? 
+                           Tienda.getInstance().getLoginUser().getUserName() : "Desconocido";
+            txtEmpleado.setText("N/A | " + user);
+        }
         txtEmpleado.setEditable(false);
-        txtEmpleado.setBounds(420, 7, 150, 20);
+        txtEmpleado.setBounds(420, 7, 270, 20);
         txtEmpleado.setBackground(cyanClaro);
         txtEmpleado.setBorder(bottomBorder);
         pnlVenta.add(txtEmpleado);
@@ -762,6 +775,7 @@ public class RegistrarFactura extends JDialog {
 
             Empleado vendedor = Tienda.getInstance()
                     .buscarEmpleadoPorUsuario(Tienda.getInstance().getLoginUser());
+            txtEmpleado.setText(vendedor.getId()+" | "+vendedor.getNombre());
 
             if (vendedor == null) {
                 mostrarAlerta("cancel", "No se encontró el empleado asociado al usuario logueado.");
@@ -1083,7 +1097,6 @@ public class RegistrarFactura extends JDialog {
 
         spnCantidad.setValue(1);
 
-        txtEmpleado.setText(Tienda.getInstance().getLoginUser().getUserName());
 
         modeloProDisp.setRowCount(0);
         modeloProCarri.setRowCount(0);

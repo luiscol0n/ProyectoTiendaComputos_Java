@@ -3,15 +3,25 @@ package logico;
 public class Main_pruebas {
 
 	public static void main(String[] args) {
-		/* Tienda miTienda = Tienda.getInstance();
+		Tienda miTienda = Tienda.getInstance();
 
 	        
-	        Persona cliente1 = new Cliente("Ambar Torres", 20, "40247211929", "ambar@gmail.com");
+	        Persona cliente1 = new Cliente("Triana Liranzo", 21, "40247211929", "triana@gmail.com");
 	        miTienda.registrarPersona(cliente1);
-	        Persona empleado1 = new Empleado("Luis Reynaldo", 18, "40245484712", "reynaldo@gmail.com", (float) 0.25);
+	        User usuario1 = new User("Administrador", "lcolon", "lcolon");
+	        miTienda.getInstance().RegistrarUser(usuario1);
+	        miTienda.setLoginUser(usuario1);
+	        Persona empleado1 = new Empleado("Luis Reynaldo", 18, "40245484712", "reynaldo@gmail.com", (float) 0.25, usuario1);
 	        miTienda.registrarPersona(empleado1);
 	        Persona proveedor1 = new Proveedor("Melanie Perez", 19, "40154874693", "melanie@gmail.com", "NVIDIA");
 	        miTienda.registrarPersona(proveedor1);
+	        
+	        
+            Empleado vendedor = (Empleado) Tienda.getInstance()
+                    .buscarEmpleadoPorUsuario(Tienda.getInstance().getLoginUser());
+            System.out.println(vendedor.getId()+" | "+vendedor.getNombre());
+	        
+	        
 	        for (Persona persona : miTienda.getListaPersonas()) {
 	            System.out.println(persona.id +" "+ persona.nombre);
 	        }
@@ -60,7 +70,7 @@ public class Main_pruebas {
 	        {
 	        	 System.out.println("Quedan disponibles");
 	        }
-	        */
+	        
 	        
 	     
 	    }
