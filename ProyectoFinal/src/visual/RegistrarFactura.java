@@ -33,6 +33,7 @@ import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import database.TiendaComputos;
 import logico.Cliente;
 import logico.DiscoDuro;
 import logico.DetalleFacturaCompra;

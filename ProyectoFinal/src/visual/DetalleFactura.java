@@ -23,6 +23,9 @@ import logico.FacturaCompra;
 import logico.FacturaVenta;
 import logico.Producto;
 
+import database.TiendaComputos;
+
+
 public class DetalleFactura extends JDialog {
 
     private final JPanel contentPanel = new JPanel();

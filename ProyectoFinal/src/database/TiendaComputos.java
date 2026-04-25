@@ -958,7 +958,7 @@ public class TiendaComputos {
 			int idProveedorSQL = obtenerIdPersonaPorCedula(factura.getProveedor().getCedula());
 
 			if (idProveedorSQL == -1) {
-				throw new SQLException("No se encontr� el ID del proveedor con la c�dula proporcionada.");
+				throw new SQLException("No se encontr� el ID del proveedor con la c�dula proporcionada.");
 			}
 
 			psCompra.setInt(2, idProveedorSQL);
@@ -972,7 +972,7 @@ public class TiendaComputos {
 				int idProductoSQL = obtenerIdProductoPorSerie(det.getProducto().getNumSerie());
 
 				if (idProductoSQL == -1) {
-					throw new SQLException("No se encontr� el producto con serie: " + det.getProducto().getNumSerie());
+					throw new SQLException("No se encontr� el producto con serie: " + det.getProducto().getNumSerie());
 				}
 
 				psDetalle.setInt(1, idProductoSQL);
@@ -984,7 +984,7 @@ public class TiendaComputos {
 			}
 			psDetalle.executeBatch();
 
-			con.commit(); // �xito total
+			con.commit(); // �xito total
 			return true;
 
 		} catch (SQLException e) {
@@ -1196,7 +1196,7 @@ public class TiendaComputos {
 				double monto = rs.getDouble("MontoTotal");
 				String codVenta = rs.getString("CodVenta");
 
-				// Aqu� buscas tus objetos l�gicos usando los IDs de SQL
+				// Aqui buscas tus objetos l�gicos usando los IDs de SQL
 				Cliente cliente = Tienda.getInstance().buscarClientePorIdSQL(rs.getInt("Id_P_Cliente"));
 				Empleado vendedor = Tienda.getInstance().buscarEmpleadoPorIdSQL(rs.getInt("Id_P_Empleado"));
 
@@ -1320,7 +1320,7 @@ public class TiendaComputos {
 					rs.close();
 				if (ps != null)
 					ps.close();
-				// No cerramos la conexi�n aqu� si se est� usando una compartida,
+				// No cerramos la conexi�n aqu� si se est� usando una compartida,
 				// pero si es una nueva por cada llamada, se deber�a cerrar.
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -1329,9 +1329,7 @@ public class TiendaComputos {
 		return detalles;
 	}
 
-	// ─────────────────────────────────────────
 	// ACTUALIZAR PRODUCTO
-	// ─────────────────────────────────────────
 	public boolean modificarProducto(Producto producto) {
 		Connection con = null;
 		PreparedStatement psProd = null;
@@ -1438,9 +1436,7 @@ public class TiendaComputos {
 		return exito;
 	}
 
-	// ─────────────────────────────────────────
 	// ELIMINAR PRODUCTO
-	// ─────────────────────────────────────────
 	public boolean eliminarProducto(String numSerie) {
 		Connection con = null;
 		PreparedStatement psId = null;
@@ -1463,8 +1459,7 @@ public class TiendaComputos {
 			}
 			int idSQL = rs.getInt("Id_Producto");
 
-			// 2. Borrar desde Producto (SQL eliminará la tabla hija automáticamente por
-			// CASCADE)
+			// 2. Borrar desde Producto (SQL elimina la tabla hija automaticamente por CASCADE)
 			String sqlDel = "DELETE FROM Producto WHERE Id_Producto = ?";
 			psDel = con.prepareStatement(sqlDel);
 			psDel.setInt(1, idSQL);
