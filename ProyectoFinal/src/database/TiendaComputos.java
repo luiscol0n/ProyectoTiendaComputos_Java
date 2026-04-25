@@ -37,49 +37,6 @@ public class TiendaComputos {
         return instance;
     }
 	
-	public void limpiarTablasTotal() {
-	    Connection con = null;
-	    Statement st = null;
-	    try {
-	        con = ConexionDB.getConexion();
-	        st = con.createStatement();
-	        
-	        // 1. Desactivar temporalmente las restricciones de llaves foráneas
-	        // Esto evita errores de "conflicto con FK" al borrar en desorden
-	        st.executeUpdate("EXEC sp_MSforeachtable 'ALTER TABLE ? NOCHECK CONSTRAINT ALL'");
-
-	        // 2. Borrar los datos de todas las tablas
-	        // El orden ideal es de hijas a padres
-	        st.executeUpdate("DELETE FROM DetalleFacturaVenta");
-	        st.executeUpdate("DELETE FROM DetalleFacturaCompra");
-	        st.executeUpdate("DELETE FROM FacturaVenta");
-	        st.executeUpdate("DELETE FROM FacturaCompra");
-	        st.executeUpdate("DELETE FROM Factura");
-	        st.executeUpdate("DELETE FROM Empleado");
-	        st.executeUpdate("DELETE FROM Cliente");
-	        st.executeUpdate("DELETE FROM Proveedor");
-	        st.executeUpdate("DELETE FROM Producto");
-	        st.executeUpdate("DELETE FROM Usuario");
-	        st.executeUpdate("DELETE FROM Persona");
-
-	        // 3. Reiniciar los contadores IDENTITY de las tablas principales
-	        st.executeUpdate("DBCC CHECKIDENT ('Persona', RESEED, 0)");
-	        st.executeUpdate("DBCC CHECKIDENT ('Usuario', RESEED, 0)");
-	        st.executeUpdate("DBCC CHECKIDENT ('Producto', RESEED, 0)");
-	        st.executeUpdate("DBCC CHECKIDENT ('Factura', RESEED, 0)");
-
-	        // 4. Reactivar las restricciones de llaves foráneas
-	        st.executeUpdate("EXEC sp_MSforeachtable 'ALTER TABLE ? WITH CHECK CHECK CONSTRAINT ALL'");
-
-	        System.out.println("Base de datos reseteada por completo: AML Tech está en blanco.");
-	        
-	    } catch (SQLException e) {
-	        System.err.println("Error al resetear la base de datos: " + e.getMessage());
-	    } finally {
-	        // Cerrar recursos
-	    }
-	}
-	
 	public int recuperarIdPersonaPorCodigo(String codigo, String tipo) {
 	    Connection con = null;
 	    PreparedStatement ps = null;
@@ -205,6 +162,8 @@ public class TiendaComputos {
 		}
 	}
 
+	
+	// MÉTODOS DE CLIENTE
 	public boolean insertarCliente(Cliente cliente) {
 		Connection con = null;
 		PreparedStatement psPersona = null;
@@ -217,7 +176,7 @@ public class TiendaComputos {
 
 		try {
 			con = ConexionDB.getConexion();
-			con.setAutoCommit(false); // Iniciamos transacciÃ³n
+			con.setAutoCommit(false); // Iniciamos transaccion
 
 			// 1. Insertar en Persona
 			psPersona = con.prepareStatement(sqlPersona, PreparedStatement.RETURN_GENERATED_KEYS);
@@ -310,6 +269,7 @@ public class TiendaComputos {
 	    return exito;
 	}
 
+	// MÉTODOS DE EMPLEADO
 	public boolean insertarEmpleado(Empleado emp) {
 		Connection con = null;
 		PreparedStatement psBusqueda = null;
@@ -447,6 +407,7 @@ public class TiendaComputos {
 	    return exito;
 	}
 
+	// MÉTODOS DE PROVEEDOR
 	public boolean insertarProveedor(Proveedor prov) {
 		Connection con = null;
 		PreparedStatement psPersona = null;
@@ -759,6 +720,7 @@ public class TiendaComputos {
 		return exito;
 	}
 	
+	// MÉTODOS DE FACTURA
 	public boolean insertarFacturaVenta(FacturaVenta factura) {
 	    Connection con = null;
 	    PreparedStatement psFactura = null;
@@ -963,6 +925,144 @@ public class TiendaComputos {
 	        }
 	    }
 	}
-	
+	public boolean eliminarFactura(String codFactura, String tipo) {
+	    Connection con = null;
+	    PreparedStatement ps = null;
+	    boolean exito = false;
 
+	    // Buscamos el ID técnico primero para poder borrar en la tabla padre
+	    String sql = "DELETE FROM Factura WHERE Id_Factura = (SELECT Id_Factura FROM " + 
+	                 (tipo.equalsIgnoreCase("Venta") ? "FacturaVenta WHERE CodVenta = ?" : "FacturaCompra WHERE CodCompra = ?") + ")";
+
+	    try {
+	        con = ConexionDB.getConexion();
+	        ps = con.prepareStatement(sql);
+	        ps.setString(1, codFactura);
+	        
+	        int filas = ps.executeUpdate();
+	        if (filas > 0) exito = true;
+	        
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        try { if (ps != null) ps.close(); if (con != null) con.close(); } catch (SQLException e) { e.printStackTrace(); }
+	    }
+	    return exito;
+	}
+	
+	private int obtenerIdFacturaPorCodigo(String codigo, String tipo) throws SQLException {
+	    int id = -1;
+	    String sql = tipo.equalsIgnoreCase("Venta") 
+	                 ? "SELECT Id_Factura FROM FacturaVenta WHERE CodVenta = ?" 
+	                 : "SELECT Id_Factura FROM FacturaCompra WHERE CodCompra = ?";
+	    
+	    try (Connection con = ConexionDB.getConexion(); 
+	         PreparedStatement ps = con.prepareStatement(sql)) {
+	        ps.setString(1, codigo);
+	        try (ResultSet rs = ps.executeQuery()) {
+	            if (rs.next()) id = rs.getInt(1);
+	        }
+	    }
+	    return id;
+	}
+	
+	public boolean actualizarFacturaVenta(FacturaVenta factura) {
+	    Connection con = null;
+	    PreparedStatement psFactura = null;
+	    PreparedStatement psVenta = null;
+	    PreparedStatement psDeleteDetalle = null;
+	    PreparedStatement psInsertDetalle = null;
+
+	    try {
+	        con = ConexionDB.getConexion();
+	        con.setAutoCommit(false);
+
+	        // 1. Obtener el ID real de la factura por su código
+	        int idFacturaSQL = obtenerIdFacturaPorCodigo(factura.getId(), "Venta");
+
+	        // 2. Actualizar tabla Factura (Monto y Fecha)
+	        String sqlFactura = "UPDATE Factura SET MontoTotal = ?, FechaFactura = ? WHERE Id_Factura = ?";
+	        psFactura = con.prepareStatement(sqlFactura);
+	        psFactura.setDouble(1, factura.getmontoTotal());
+	        psFactura.setDate(2, java.sql.Date.valueOf(factura.getFechaFactura()));
+	        psFactura.setInt(3, idFacturaSQL);
+	        psFactura.executeUpdate();
+
+	        // 3. Borrar detalles viejos para insertar los nuevos (Sincronización limpia)
+	        String sqlDelDet = "DELETE FROM DetalleFacturaVenta WHERE Id_F_Venta = ?";
+	        psDeleteDetalle = con.prepareStatement(sqlDelDet);
+	        psDeleteDetalle.setInt(1, idFacturaSQL);
+	        psDeleteDetalle.executeUpdate();
+
+	        // 4. Insertar los nuevos detalles del ArrayList
+	        String sqlInsDet = "INSERT INTO DetalleFacturaVenta (Id_Producto, Id_F_Venta, CantProducto, SubTotal, PrecioUnitario) VALUES (?, ?, ?, ?, ?)";
+	        psInsertDetalle = con.prepareStatement(sqlInsDet);
+	        for (DetalleFacturaVenta det : factura.getDetallesVenta()) {
+	            psInsertDetalle.setInt(1, obtenerIdProductoPorSerie(det.getProducto().getNumSerie()));
+	            psInsertDetalle.setInt(2, idFacturaSQL);
+	            psInsertDetalle.setInt(3, det.getCantidad());
+	            psInsertDetalle.setDouble(4, det.getSubtotal());
+	            psInsertDetalle.setDouble(5, det.getPrecioUnitario());
+	            psInsertDetalle.addBatch();
+	        }
+	        psInsertDetalle.executeBatch();
+
+	        con.commit();
+	        return true;
+	    } catch (SQLException e) {
+	        if (con != null) try { con.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+	        e.printStackTrace();
+	        return false;
+	    } finally {
+	        // Cerrar recursos
+	    }
+	}
+	
+	public boolean actualizarFacturaCompra(FacturaCompra factura) {
+	    Connection con = null;
+	    PreparedStatement psFactura = null;
+	    PreparedStatement psDeleteDetalle = null;
+	    PreparedStatement psInsertDetalle = null;
+
+	    try {
+	        con = ConexionDB.getConexion();
+	        con.setAutoCommit(false);
+
+	        int idFacturaSQL = obtenerIdFacturaPorCodigo(factura.getId(), "Compra");
+
+	        // Actualizar Cabezal
+	        String sqlFactura = "UPDATE Factura SET MontoTotal = ?, FechaFactura = ? WHERE Id_Factura = ?";
+	        psFactura = con.prepareStatement(sqlFactura);
+	        psFactura.setDouble(1, factura.getmontoTotal());
+	        psFactura.setDate(2, java.sql.Date.valueOf(factura.getFechaFactura()));
+	        psFactura.setInt(3, idFacturaSQL);
+	        psFactura.executeUpdate();
+
+	        // Borrar y re-insertar detalles
+	        psDeleteDetalle = con.prepareStatement("DELETE FROM DetalleFacturaCompra WHERE Id_F_Compra = ?");
+	        psDeleteDetalle.setInt(1, idFacturaSQL);
+	        psDeleteDetalle.executeUpdate();
+
+	        psInsertDetalle = con.prepareStatement("INSERT INTO DetalleFacturaCompra (Id_Producto, Id_F_Compra, CantProducto, SubTotal, PrecioUnitario) VALUES (?, ?, ?, ?, ?)");
+	        for (DetalleFacturaCompra det : factura.getDetallesCompra()) {
+	            psInsertDetalle.setInt(1, obtenerIdProductoPorSerie(det.getProducto().getNumSerie()));
+	            psInsertDetalle.setInt(2, idFacturaSQL);
+	            psInsertDetalle.setInt(3, det.getCantidad());
+	            psInsertDetalle.setDouble(4, det.getSubtotal());
+	            psInsertDetalle.setDouble(5, det.getPrecioUnitario());
+	            psInsertDetalle.addBatch();
+	        }
+	        psInsertDetalle.executeBatch();
+
+	        con.commit();
+	        return true;
+	    } catch (SQLException e) {
+	        if (con != null) try { con.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+
+	
+	
 }
