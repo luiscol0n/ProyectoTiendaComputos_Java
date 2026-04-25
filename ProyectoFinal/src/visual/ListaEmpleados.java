@@ -17,6 +17,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+
+import database.TiendaComputos;
 import logico.Empleado;
 import logico.Persona;
 import logico.Tienda;
@@ -187,6 +189,7 @@ public class ListaEmpleados extends JDialog {
 			int confirmacion = ventanita.getResultado();
             if (confirmacion == JOptionPane.YES_OPTION) {
                 Tienda.getInstance().eliminarPersona(idEmpleado);
+                TiendaComputos.getInstance().eliminarPorCodigo(idEmpleado, "Empleado");
                 tableModel.removeRow(selectedRow);
                 ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));
 				MensajeAlerta mensajito = new MensajeAlerta(iconito, "Empleado eliminado correctamente.");

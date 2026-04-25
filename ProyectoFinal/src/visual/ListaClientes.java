@@ -15,6 +15,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import database.TiendaComputos;
 import logico.Cliente;
 import logico.Persona;
 import logico.Tienda;
@@ -196,6 +197,7 @@ public class ListaClientes extends JDialog {
 			int confirmacion = ventanita.getResultado();
             if (confirmacion == JOptionPane.YES_OPTION) {
                 Tienda.getInstance().eliminarPersona(idCliente);
+                TiendaComputos.getInstance().eliminarPorCodigo(idCliente, "Cliente");
                 tableModel.removeRow(selectedRow);
                 ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));
 				MensajeAlerta mensajito = new MensajeAlerta(iconito, "Cliente eliminado correctamente.");

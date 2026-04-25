@@ -18,6 +18,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import database.TiendaComputos;
 import logico.Persona;
 import logico.Proveedor;
 import logico.Tienda;
@@ -195,6 +196,7 @@ public class ListaProveedores extends JDialog {
             
             if (confirmacion == JOptionPane.YES_OPTION) {
                 Tienda.getInstance().eliminarPersona(idProveedor);
+                TiendaComputos.getInstance().eliminarPorCodigo(idProveedor, "Proveedor");
                 tableModel.removeRow(selectedRow);
                 //JOptionPane.showMessageDialog(this, "Proveedor eliminado correctamente.");
                 ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));
