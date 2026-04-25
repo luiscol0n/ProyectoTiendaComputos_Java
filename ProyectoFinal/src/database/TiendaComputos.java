@@ -958,7 +958,7 @@ public class TiendaComputos {
 			int idProveedorSQL = obtenerIdPersonaPorCedula(factura.getProveedor().getCedula());
 
 			if (idProveedorSQL == -1) {
-				throw new SQLException("No se encontró el ID del proveedor con la cédula proporcionada.");
+				throw new SQLException("No se encontrï¿½ el ID del proveedor con la cï¿½dula proporcionada.");
 			}
 
 			psCompra.setInt(2, idProveedorSQL);
@@ -972,7 +972,7 @@ public class TiendaComputos {
 				int idProductoSQL = obtenerIdProductoPorSerie(det.getProducto().getNumSerie());
 
 				if (idProductoSQL == -1) {
-					throw new SQLException("No se encontró el producto con serie: " + det.getProducto().getNumSerie());
+					throw new SQLException("No se encontrï¿½ el producto con serie: " + det.getProducto().getNumSerie());
 				}
 
 				psDetalle.setInt(1, idProductoSQL);
@@ -984,7 +984,7 @@ public class TiendaComputos {
 			}
 			psDetalle.executeBatch();
 
-			con.commit(); // éxito total
+			con.commit(); // ï¿½xito total
 			return true;
 
 		} catch (SQLException e) {
@@ -1196,7 +1196,7 @@ public class TiendaComputos {
 				double monto = rs.getDouble("MontoTotal");
 				String codVenta = rs.getString("CodVenta");
 
-				// Aqui buscas tus objetos lógicos usando los IDs de SQL
+				// Aqui buscas tus objetos lï¿½gicos usando los IDs de SQL
 				Cliente cliente = Tienda.getInstance().buscarClientePorIdSQL(rs.getInt("Id_P_Cliente"));
 				Empleado vendedor = Tienda.getInstance().buscarEmpleadoPorIdSQL(rs.getInt("Id_P_Empleado"));
 
@@ -1320,7 +1320,7 @@ public class TiendaComputos {
 					rs.close();
 				if (ps != null)
 					ps.close();
-				// No cerramos la conexión aquí si se está usando una compartida,
+				// No cerramos la conexiï¿½n aquï¿½ si se estï¿½ usando una compartida,
 				// pero si es una nueva por cada llamada, se deberï¿½a cerrar.
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -1459,7 +1459,8 @@ public class TiendaComputos {
 			}
 			int idSQL = rs.getInt("Id_Producto");
 
-			// 2. Borrar desde Producto (SQL elimina la tabla hija automaticamente por CASCADE)
+			// 2. Borrar desde Producto (SQL elimina la tabla hija automaticamente por
+			// CASCADE)
 			String sqlDel = "DELETE FROM Producto WHERE Id_Producto = ?";
 			psDel = con.prepareStatement(sqlDel);
 			psDel.setInt(1, idSQL);
@@ -1485,5 +1486,60 @@ public class TiendaComputos {
 			}
 		}
 		return exito;
+	}
+
+	public boolean insertarProveedorProducto(String numSerieProducto, String codProveedor) {
+		String sqlIdProducto = "SELECT Id_Producto FROM Producto WHERE NumSerie = ?";
+		String sqlIdProveedor = "SELECT Id_Persona FROM Proveedor WHERE CodProveedor = ?";
+		String sqlInsert = "INSERT INTO ProveedorProducto (Id_Producto, Id_P_Proveedor) VALUES (?, ?)";
+
+		try (Connection con = ConexionDB.getConexion()) {
+
+			int idProducto = -1;
+			int idProveedor = -1;
+
+			try (PreparedStatement ps = con.prepareStatement(sqlIdProducto)) {
+				ps.setString(1, numSerieProducto);
+
+				try (ResultSet rs = ps.executeQuery()) {
+					if (rs.next()) {
+						idProducto = rs.getInt("Id_Producto");
+					}
+				}
+			}
+
+			if (idProducto == -1) {
+				JOptionPane.showMessageDialog(null,
+						"No se encontrÃ³ el producto con nÃºmero de serie: " + numSerieProducto);
+				return false;
+			}
+
+			try (PreparedStatement ps = con.prepareStatement(sqlIdProveedor)) {
+				ps.setString(1, codProveedor);
+
+				try (ResultSet rs = ps.executeQuery()) {
+					if (rs.next()) {
+						idProveedor = rs.getInt("Id_Persona");
+					}
+				}
+			}
+
+			if (idProveedor == -1) {
+				JOptionPane.showMessageDialog(null, "No se encontrÃ³ el proveedor con cÃ³digo: " + codProveedor);
+				return false;
+			}
+
+			try (PreparedStatement ps = con.prepareStatement(sqlInsert)) {
+				ps.setInt(1, idProducto);
+				ps.setInt(2, idProveedor);
+
+				return ps.executeUpdate() > 0;
+			}
+
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(null, "Error al insertar ProveedorProducto: " + e.getMessage());
+			e.printStackTrace();
+			return false;
+		}
 	}
 }
