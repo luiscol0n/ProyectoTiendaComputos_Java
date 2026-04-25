@@ -16,11 +16,16 @@ import logico.MotherBoard;
 import logico.DiscoDuro;
 import logico.MemoriaRam;
 import logico.Microprocesador; 
+import logico.FacturaVenta;
+import logico.FacturaCompra;
+import logico.DetalleFacturaCompra;
+import logico.DetalleFacturaVenta;
+
 public class TiendaComputos {
 
 	private ConexionDB conexion = new ConexionDB();
 
-	// MÃ‰TODOS DE USUARIO
+	// METODOS DE USUARIO
 	public boolean insertarUsuario(String tipo, String user, String pass) {
 		String sql = "INSERT INTO Usuario (Tipo, UserName, Contrasena) VALUES (?, ?, ?)";
 
@@ -477,4 +482,210 @@ public class TiendaComputos {
 		}
 		return exito;
 	}
+	
+	public boolean insertarFacturaVenta(FacturaVenta factura) {
+	    Connection con = null;
+	    PreparedStatement psFactura = null;
+	    PreparedStatement psVenta = null;
+	    PreparedStatement psDetalle = null;
+	    ResultSet rs = null;
+
+	    String sqlFactura = "INSERT INTO Factura (FechaFactura, MontoTotal, TipoFactura) VALUES (?, ?, 'Venta')";
+	    String sqlVenta = "INSERT INTO FacturaVenta (Id_Factura, Id_P_Empleado, Id_P_Cliente, PorcentajeGanancia, CodVenta) VALUES (?, ?, ?, ?, ?)";
+	    String sqlDetalle = "INSERT INTO DetalleFacturaVenta (Id_Producto, Id_F_Venta, CantProducto, SubTotal, PrecioUnitario) VALUES (?, ?, ?, ?, ?)";
+
+	    try {
+	        con = ConexionDB.getConexion();
+	        con.setAutoCommit(false); // Iniciamos transacción
+
+	        // 1. Insertar en la tabla Factura (Cabezal General)
+	        psFactura = con.prepareStatement(sqlFactura, Statement.RETURN_GENERATED_KEYS);
+	        // Convertimos LocalDate a java.sql.Date
+	        psFactura.setDate(1, java.sql.Date.valueOf(factura.getFechaFactura()));
+	        psFactura.setDouble(2, factura.getmontoTotal());
+	        psFactura.executeUpdate();
+
+	        rs = psFactura.getGeneratedKeys();
+	        int idFacturaSQL = 0;
+	        if (rs.next()) {
+	            idFacturaSQL = rs.getInt(1);
+	        }
+
+	        // 2. Insertar en FacturaVenta (Relacionando con Empleado y Cliente por Cédula)
+	        psVenta = con.prepareStatement(sqlVenta);
+	        psVenta.setInt(1, idFacturaSQL);
+	        
+	        // Buscamos los IDs de SQL usando los métodos auxiliares
+	        int idEmpleadoSQL = obtenerIdPersonaPorCedula(factura.getVendedor().getCedula());
+	        int idClienteSQL = obtenerIdPersonaPorCedula(factura.getCliente().getCedula());
+	        
+	        psVenta.setInt(2, idEmpleadoSQL);
+	        psVenta.setInt(3, idClienteSQL);
+	        psVenta.setDouble(4, 0.15); // Porcentaje de ganancia (puedes parametrizarlo)
+	        psVenta.setString(5, factura.getId()); // Tu código FVE-#
+	        psVenta.executeUpdate();
+
+	        // 3. Insertar Detalles de la Factura
+	        psDetalle = con.prepareStatement(sqlDetalle);
+	        for (DetalleFacturaVenta det : factura.getDetallesVenta()) {
+	            // Buscamos el ID del producto por su número de serie único
+	            int idProductoSQL = obtenerIdProductoPorSerie(det.getProducto().getNumSerie());
+	            
+	            psDetalle.setInt(1, idProductoSQL);
+	            psDetalle.setInt(2, idFacturaSQL);
+	            psDetalle.setInt(3, det.getCantidad());
+	            psDetalle.setDouble(4, det.getSubtotal());
+	            psDetalle.setDouble(5, det.getPrecioUnitario());
+	            psDetalle.addBatch(); // Añadimos al lote
+	        }
+	        psDetalle.executeBatch(); // Ejecutamos todos los detalles juntos
+
+	        con.commit(); // Si todo salió bien, guardamos cambios
+	        return true;
+
+	    } catch (SQLException e) {
+	        if (con != null) {
+	            try {
+	                con.rollback(); // Si algo falló, deshacemos todo
+	            } catch (SQLException ex) {
+	                ex.printStackTrace();
+	            }
+	        }
+	        e.printStackTrace();
+	        return false;
+	    } finally {
+	        // Cerrar recursos para liberar memoria
+	        try {
+	            if (rs != null) rs.close();
+	            if (psFactura != null) psFactura.close();
+	            if (psVenta != null) psVenta.close();
+	            if (psDetalle != null) psDetalle.close();
+	            if (con != null) con.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	}
+
+	// MÉTODOS AUXILIARES DE BÚSQUEDA 
+
+	private int obtenerIdPersonaPorCedula(String cedula) throws SQLException {
+	    int idEncontrado = -1;
+	    String sql = "SELECT Id_Persona FROM Persona WHERE Cedula = ?";
+	    // Usamos una conexión interna o la misma si prefieres pasarla por parámetro
+	    try (Connection con = ConexionDB.getConexion(); 
+	         PreparedStatement ps = con.prepareStatement(sql)) {
+	        ps.setString(1, cedula);
+	        try (ResultSet rs = ps.executeQuery()) {
+	            if (rs.next()) {
+	                idEncontrado = rs.getInt("Id_Persona");
+	            }
+	        }
+	    }
+	    return idEncontrado;
+	}
+
+	private int obtenerIdProductoPorSerie(String numSerie) throws SQLException {
+	    int idEncontrado = -1;
+	    String sql = "SELECT Id_Producto FROM Producto WHERE NumSerie = ?";
+	    try (Connection con = ConexionDB.getConexion(); 
+	         PreparedStatement ps = con.prepareStatement(sql)) {
+	        ps.setString(1, numSerie);
+	        try (ResultSet rs = ps.executeQuery()) {
+	            if (rs.next()) {
+	                idEncontrado = rs.getInt("Id_Producto");
+	            }
+	        }
+	    }
+	    return idEncontrado;
+	}
+	
+	public boolean insertarFacturaCompra(FacturaCompra factura) {
+	    Connection con = null;
+	    PreparedStatement psFactura = null;
+	    PreparedStatement psCompra = null;
+	    PreparedStatement psDetalle = null;
+	    ResultSet rs = null;
+
+	    String sqlFactura = "INSERT INTO Factura (FechaFactura, MontoTotal, TipoFactura) VALUES (?, ?, 'Compra')";
+	    String sqlCompra = "INSERT INTO FacturaCompra (Id_Factura, Id_P_Proveedor, CodCompra) VALUES (?, ?, ?)";
+	    String sqlDetalle = "INSERT INTO DetalleFacturaCompra (Id_Producto, Id_F_Compra, CantProducto, SubTotal, PrecioUnitario) VALUES (?, ?, ?, ?, ?)";
+
+	    try {
+	        con = ConexionDB.getConexion();
+	        con.setAutoCommit(false); // Iniciamos transacción
+
+	        // 1. Insertar en la tabla Factura (Cabezal General)
+	        psFactura = con.prepareStatement(sqlFactura, java.sql.Statement.RETURN_GENERATED_KEYS);
+	        psFactura.setDate(1, java.sql.Date.valueOf(factura.getFechaFactura()));
+	        psFactura.setDouble(2, factura.getmontoTotal());
+	        psFactura.executeUpdate();
+
+	        rs = psFactura.getGeneratedKeys();
+	        int idFacturaSQL = 0;
+	        if (rs.next()) {
+	            idFacturaSQL = rs.getInt(1);
+	        }
+
+	        // 2. Insertar en FacturaCompra (Relacionando con Proveedor por Cédula/RNC)
+	        psCompra = con.prepareStatement(sqlCompra);
+	        psCompra.setInt(1, idFacturaSQL);
+	        
+	        // Buscamos el ID técnico del proveedor usando su cédula
+	        int idProveedorSQL = obtenerIdPersonaPorCedula(factura.getProveedor().getCedula());
+	        
+	        if (idProveedorSQL == -1) {
+	            throw new SQLException("No se encontró el ID del proveedor con la cédula proporcionada.");
+	        }
+
+	        psCompra.setInt(2, idProveedorSQL);
+	        psCompra.setString(3, factura.getId()); // Tu código FCO-# de Java
+	        psCompra.executeUpdate();
+
+	        // 3. Insertar Detalles de la Factura de Compra
+	        psDetalle = con.prepareStatement(sqlDetalle);
+	        for (DetalleFacturaCompra det : factura.getDetallesCompra()) {
+	            // Buscamos el ID del producto por su número de serie único
+	            int idProductoSQL = obtenerIdProductoPorSerie(det.getProducto().getNumSerie());
+	            
+	            if (idProductoSQL == -1) {
+	                throw new SQLException("No se encontró el producto con serie: " + det.getProducto().getNumSerie());
+	            }
+
+	            psDetalle.setInt(1, idProductoSQL);
+	            psDetalle.setInt(2, idFacturaSQL);
+	            psDetalle.setInt(3, det.getCantidad());
+	            psDetalle.setDouble(4, det.getSubtotal());
+	            psDetalle.setDouble(5, det.getPrecioUnitario());
+	            psDetalle.addBatch();
+	        }
+	        psDetalle.executeBatch();
+
+	        con.commit(); // Éxito total
+	        return true;
+
+	    } catch (SQLException e) {
+	        if (con != null) {
+	            try {
+	                con.rollback(); // Error: deshacer todo
+	            } catch (SQLException ex) {
+	                ex.printStackTrace();
+	            }
+	        }
+	        e.printStackTrace();
+	        return false;
+	    } finally {
+	        // Cerrar recursos
+	        try {
+	            if (rs != null) rs.close();
+	            if (psFactura != null) psFactura.close();
+	            if (psCompra != null) psCompra.close();
+	            if (psDetalle != null) psDetalle.close();
+	            if (con != null) con.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	}
+	
 }
