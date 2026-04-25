@@ -14,6 +14,14 @@ public class Producto implements Serializable {
 	protected float precio;
 	protected boolean seleccionado;
 	protected int siemprePedir;
+	protected int idSQL; 
+
+	public int getIdSQL() { 
+		return idSQL; 
+	}
+	public void setIdSQL(int idSQL) { 
+		this.idSQL = idSQL; 
+	}
 	
 	public String getId() {
 		return id;

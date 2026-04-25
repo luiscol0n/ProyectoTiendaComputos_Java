@@ -10,6 +10,15 @@ public class Persona implements Serializable {
 	protected int edad;
 	protected String cedula;
 	protected String correo;
+	protected int idSQL; 
+
+	public int getIdSQL() { 
+		return idSQL; 
+	}
+	public void setIdSQL(int idSQL) { 
+		this.idSQL = idSQL; 
+	}
+	
 	public String getId() {
 		return id;
 	}
@@ -46,6 +55,3 @@ public class Persona implements Serializable {
 	}
 
 }
-
-
-//.

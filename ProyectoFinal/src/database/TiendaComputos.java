@@ -7,7 +7,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JOptionPane;
+import java.util.ArrayList;
+import java.time.LocalDate;
 
+import logico.Tienda;
+import logico.Persona;
 import logico.Cliente;
 import logico.Empleado;
 import logico.Proveedor;
@@ -20,6 +24,7 @@ import logico.FacturaVenta;
 import logico.FacturaCompra;
 import logico.DetalleFacturaCompra;
 import logico.DetalleFacturaVenta;
+
 
 public class TiendaComputos {
 
@@ -36,6 +41,7 @@ public class TiendaComputos {
         }
         return instance;
     }
+	
 	
 	public void limpiarTablasTotal() {
 	    Connection con = null;
@@ -544,9 +550,7 @@ public class TiendaComputos {
 	}
 	
 	
-	// ─────────────────────────────────────────
-	// MÉTODOS DE PRODUCTO
-	// ─────────────────────────────────────────
+	// M�TODOS DE PRODUCTO
 
 	public boolean insertarProducto(Producto p) {
 	    String sql = "INSERT INTO Producto (Id_Producto, NumSerie, Marca, CantDisponible, Precio) " +
@@ -793,7 +797,7 @@ public class TiendaComputos {
 		return exito;
 	}
 	
-	// M�TODOS DE FACTURA
+	// M�TODOS DE FACTURA
 	public boolean insertarFacturaVenta(FacturaVenta factura) {
 	    Connection con = null;
 	    PreparedStatement psFactura = null;
@@ -878,8 +882,7 @@ public class TiendaComputos {
 	    }
 	}
 
-	// M�TODOS AUXILIARES DE B�SQUEDA 
-
+	// M�TODOS AUXILIARES DE B�SQUEDA 
 	private int obtenerIdPersonaPorCedula(String cedula) throws SQLException {
 	    int idEncontrado = -1;
 	    String sql = "SELECT Id_Persona FROM Persona WHERE Cedula = ?";
@@ -1137,5 +1140,160 @@ public class TiendaComputos {
 	}
 
 	
+	
+	public ArrayList<FacturaVenta> leerFacturasVenta() {
+	    ArrayList<FacturaVenta> lista = new ArrayList<>();
+	    Connection con = null;
+	    PreparedStatement ps = null;
+	    ResultSet rs = null;
+
+	    // Unimos Factura con FacturaVenta
+	    String sql = "SELECT F.Id_Factura, F.FechaFactura, F.MontoTotal, FV.CodVenta, FV.Id_P_Cliente, FV.Id_P_Empleado, FV.PorcentajeGanancia " +
+	                 "FROM Factura F INNER JOIN FacturaVenta FV ON F.Id_Factura = FV.Id_Factura";
+	    
+
+	    try {
+	        con = ConexionDB.getConexion();
+	        ps = con.prepareStatement(sql);
+	        rs = ps.executeQuery();
+
+	        
+	        while (rs.next()) {
+	        	
+	            int idSQL = rs.getInt("IdFactura");
+	            LocalDate fecha = rs.getDate("FechaFactura").toLocalDate();
+	            double monto = rs.getDouble("MontoTotal");
+	            String codVenta = rs.getString("CodVenta");
+	            
+	            // Aqu� buscas tus objetos l�gicos usando los IDs de SQL
+	            Cliente cliente = Tienda.getInstance().buscarClientePorIdSQL(rs.getInt("Id_P_Cliente"));
+	            Empleado vendedor = Tienda.getInstance().buscarEmpleadoPorIdSQL(rs.getInt("Id_P_Empleado"));
+
+	            // Creamos el objeto (usando el constructor que definiste)
+	            FacturaVenta fv = new FacturaVenta(codVenta, fecha, new ArrayList<>(), cliente, 0, monto);
+	            fv.setVendedor(vendedor);
+	            
+	            // Cargamos sus detalles (M�todo que haremos a continuaci�n)
+	            fv.setDetallesVenta(leerDetallesVenta(idSQL, codVenta));
+	            
+	            lista.add(fv);
+	        }
+	        
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return lista;
+	}
+	
+	private ArrayList<DetalleFacturaVenta> leerDetallesVenta(int idFacturaSQL, String codFactura) {
+	    ArrayList<DetalleFacturaVenta> detalles = new ArrayList<>();
+	    Connection con = null;
+	    PreparedStatement ps = null;
+	    ResultSet rs = null;
+
+	    String sql = "SELECT Id_Producto, CantProducto, PrecioUnitario FROM DetalleFacturaVenta WHERE Id_F_Venta = ?";
+
+	    try {
+	        con = ConexionDB.getConexion();
+	        ps = con.prepareStatement(sql);
+	        ps.setInt(1, idFacturaSQL);
+	        rs = ps.executeQuery();
+
+	        int linea = 1;
+	        while (rs.next()) {
+	            Producto prod = Tienda.getInstance().buscarProductoPorIdSQL(rs.getInt("Id_Producto"));
+	            int cant = rs.getInt("CantProducto");
+	            double precio = rs.getDouble("PrecioUnitario");
+
+	            DetalleFacturaVenta det = new DetalleFacturaVenta(codFactura, linea, prod, cant, precio);
+	            detalles.add(det);
+	            linea++;
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return detalles;
+	}
+	
+	
+	public ArrayList<FacturaCompra> leerFacturasCompra() {
+	    ArrayList<FacturaCompra> lista = new ArrayList<>();
+	    Connection con = null;
+	    PreparedStatement ps = null;
+	    ResultSet rs = null;
+
+	    String sql = "SELECT F.Id_Factura, F.FechaFactura, F.MontoTotal, FC.CodCompra, FC.Id_P_Proveedor " +
+	                 "FROM Factura F INNER JOIN FacturaCompra FC ON F.Id_Factura = FC.Id_Factura";
+
+	    try {
+	        con = ConexionDB.getConexion();
+	        ps = con.prepareStatement(sql);
+	        rs = ps.executeQuery();
+
+	        while (rs.next()) {
+	            int idSQL = rs.getInt("Id_Factura");
+	            LocalDate fecha = rs.getDate("FechaFactura").toLocalDate();
+	            double monto = rs.getDouble("MontoTotal");
+	            String codCompra = rs.getString("CodCompra");
+	            
+	            Proveedor prov = Tienda.getInstance().buscarProveedorPorIdSQL(rs.getInt("Id_P_Proveedor"));
+
+	            FacturaCompra fc = new FacturaCompra(codCompra, fecha, new ArrayList<>(), prov, 0, monto);
+	            
+	            // Cargamos sus detalles
+	            fc.setDetallesCompra(leerDetallesCompra(idSQL, codCompra));
+	            
+	            lista.add(fc);
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return lista;
+	}
+	private ArrayList<DetalleFacturaCompra> leerDetallesCompra(int idFacturaSQL, String codFactura) {
+	    ArrayList<DetalleFacturaCompra> detalles = new ArrayList<>();
+	    Connection con = null;
+	    PreparedStatement ps = null;
+	    ResultSet rs = null;
+
+	    // Consulta a la tabla de detalles de compra
+	    String sql = "SELECT Id_Producto, CantProducto, PrecioUnitario FROM DetalleFacturaCompra WHERE Id_F_Compra = ?";
+
+	    try {
+	        con = ConexionDB.getConexion();
+	        ps = con.prepareStatement(sql);
+	        ps.setInt(1, idFacturaSQL);
+	        rs = ps.executeQuery();
+
+	        int linea = 1;
+	        while (rs.next()) {
+	            // Buscamos el producto en la memoria usando el ID de SQL
+	            int idProdSQL = rs.getInt("Id_Producto");
+	            Producto prod = Tienda.getInstance().buscarProductoPorIdSQL(idProdSQL);
+	            
+	            int cant = rs.getInt("CantProducto");
+	            double precio = rs.getDouble("PrecioUnitario");
+
+	            // Creamos el detalle
+	            // Nota: numeroLinea se usa para generar el idDetalle (FVE-1-1, FVE-1-2...)
+	            DetalleFacturaCompra det = new DetalleFacturaCompra(codFactura, linea, prod, cant, precio);
+	            detalles.add(det);
+	            linea++;
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        // Es buena pr�ctica cerrar los recursos locales
+	        try {
+	            if (rs != null) rs.close();
+	            if (ps != null) ps.close();
+	            // No cerramos la conexi�n aqu� si se est� usando una compartida, 
+	            // pero si es una nueva por cada llamada, se deber�a cerrar.
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	    return detalles;
+	}
 	
 }

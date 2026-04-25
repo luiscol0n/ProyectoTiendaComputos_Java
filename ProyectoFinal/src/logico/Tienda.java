@@ -672,8 +672,44 @@ public class Tienda implements Serializable {
 	    
 	    return disponibles;
 	}
-	
+	// AGREGAR ESTO EN Tienda.java (paquete logico)
+
+	public Cliente buscarClientePorIdSQL(int idSQL) {
+	    for (Persona p : listaPersonas) {
+	        if (p instanceof Cliente && p.getIdSQL() == idSQL) {
+	            return (Cliente) p;
+	        }
+	    }
+	    return null;
+	}
+
+	public Empleado buscarEmpleadoPorIdSQL(int idSQL) {
+	    for (Persona p : listaPersonas) {
+	        if (p instanceof Empleado && p.getIdSQL() == idSQL) {
+	            return (Empleado) p;
+	        }
+	    }
+	    return null;
+	}
+
+	public Proveedor buscarProveedorPorIdSQL(int idSQL) {
+	    for (Persona p : listaPersonas) {
+	        if (p instanceof Proveedor && p.getIdSQL() == idSQL) {
+	            return (Proveedor) p;
+	        }
+	    }
+	    return null;
+	}
+
+	public Producto buscarProductoPorIdSQL(int idSQL) {
+	    for (Producto p : listaProductos) {
+	        if (p.getIdSQL() == idSQL) {
+	            return p;
+	        }
+	    }
+	    return null;
+	}
 	
 }
 
-//.
+
