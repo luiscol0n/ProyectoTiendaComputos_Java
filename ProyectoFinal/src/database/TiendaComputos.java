@@ -23,13 +23,99 @@ import logico.DetalleFacturaVenta;
 
 public class TiendaComputos {
 
-	private ConexionDB conexion = new ConexionDB();
+	private static TiendaComputos instance = null;
+	private Connection con;
+	
+	private TiendaComputos() {
+		this.con = ConexionDB.getConexion();
+	}
+	
+	public static TiendaComputos getInstance() {
+        if (instance == null) {
+            instance = new TiendaComputos();
+        }
+        return instance;
+    }
+	
+	public int recuperarIdPersonaPorCodigo(String codigo, String tipo) {
+	    Connection con = null;
+	    PreparedStatement ps = null;
+	    ResultSet rs = null;
+	    int idEncontrado = -1;
 
+	    // Usamos el código de la tabla hija para encontrar el ID en la tabla padre
+	    String sql = "";
+	    if (tipo.equalsIgnoreCase("Empleado")) {
+	        sql = "SELECT Id_Persona FROM Empleado WHERE CodEmpleado = ?";
+	    } else if (tipo.equalsIgnoreCase("Cliente")) {
+	        sql = "SELECT Id_Persona FROM Cliente WHERE CodCliente = ?";
+	    } else if (tipo.equalsIgnoreCase("Proveedor")) {
+	        sql = "SELECT Id_Persona FROM Proveedor WHERE CodProveedor = ?";
+	    }
+
+	    try {
+	        con = ConexionDB.getConexion();
+	        ps = con.prepareStatement(sql);
+	        ps.setString(1, codigo);
+	        rs = ps.executeQuery();
+
+	        if (rs.next()) {
+	            idEncontrado = rs.getInt("Id_Persona");
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        // Cerrar recursos
+	    }
+	    return idEncontrado;
+	}
+	
+	public boolean eliminarPorCodigo(String codigo, String tipo) {
+	    Connection con = null;
+	    PreparedStatement psId = null;
+	    PreparedStatement psDel = null;
+	    ResultSet rs = null;
+	    boolean exito = false;
+
+	    // Determinamos en qué tabla buscar el ID técnico primero
+	    String tabla = tipo.equalsIgnoreCase("Empleado") ? "Empleado" : 
+	                   tipo.equalsIgnoreCase("Cliente") ? "Cliente" : "Proveedor";
+	    String columnaCod = tipo.equalsIgnoreCase("Empleado") ? "CodEmpleado" : 
+	                        tipo.equalsIgnoreCase("Cliente") ? "CodCliente" : "CodProveedor";
+
+	    try {
+	        con = ConexionDB.getConexion();
+	        
+	        // 1. Buscamos el ID técnico (int)
+	        String sqlId = "SELECT Id_Persona FROM " + tabla + " WHERE " + columnaCod + " = ?";
+	        psId = con.prepareStatement(sqlId);
+	        psId.setString(1, codigo);
+	        rs = psId.executeQuery();
+
+	        if (rs.next()) {
+	            int idSQL = rs.getInt("Id_Persona");
+
+	            // 2. Borramos de la tabla Persona (SQL borrará automáticamente en las hijas por el CASCADE)
+	            String sqlDel = "DELETE FROM Persona WHERE Id_Persona = ?";
+	            psDel = con.prepareStatement(sqlDel);
+	            psDel.setInt(1, idSQL);
+	            
+	            if (psDel.executeUpdate() > 0) {
+	                exito = true;
+	            }
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return exito;
+	}
+	
+	
 	// METODOS DE USUARIO
 	public boolean insertarUsuario(String tipo, String user, String pass) {
 		String sql = "INSERT INTO Usuario (Tipo, UserName, Contrasena) VALUES (?, ?, ?)";
 
-		try (Connection con = conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
+		try (Connection con = ConexionDB.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
 
 			ps.setString(1, tipo);
 			ps.setString(2, user);
@@ -46,7 +132,7 @@ public class TiendaComputos {
 	public boolean actualizarUsuario(String tipo, String oldUser, String user, String pass) {
 		String sql = "UPDATE Usuario SET Tipo = ?, UserName = ?, Contrasena = ? WHERE UserName = ?";
 
-		try (Connection con = conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
+		try (Connection con = ConexionDB.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
 
 			ps.setString(1, tipo);
 			ps.setString(2, user);
@@ -64,7 +150,7 @@ public class TiendaComputos {
 	public boolean eliminarUsuario(String user) {
 		String sql = "DELETE FROM Usuario WHERE UserName = ?";
 
-		try (Connection con = conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
+		try (Connection con = ConexionDB.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
 
 			ps.setString(1, user);
 
@@ -128,6 +214,57 @@ public class TiendaComputos {
 			// Cerrar recursos aquÃ­
 		}
 		return exito;
+	}
+	
+	public boolean modificarCliente(Cliente cliente) {
+	    Connection con = null;
+	    PreparedStatement psPersona = null;
+	    PreparedStatement psCliente = null;
+	    PreparedStatement psId = null;
+	    ResultSet rs = null;
+	    boolean exito = false;
+
+	    try {
+	        con = ConexionDB.getConexion();
+	        con.setAutoCommit(false);
+
+	        // 1. Buscamos el ID técnico (int) usando el código String (CLI-#)
+	        String sqlId = "SELECT Id_Persona FROM Cliente WHERE CodCliente = ?";
+	        psId = con.prepareStatement(sqlId);
+	        psId.setString(1, cliente.getId());
+	        rs = psId.executeQuery();
+
+	        if (rs.next()) {
+	            int idSQL = rs.getInt("Id_Persona");
+
+	            // 2. Actualizamos la tabla Persona
+	            String sqlP = "UPDATE Persona SET Nombre = ?, Correo = ?, Edad = ?, Cedula = ? WHERE Id_Persona = ?";
+	            psPersona = con.prepareStatement(sqlP);
+	            psPersona.setString(1, cliente.getNombre());
+	            psPersona.setString(2, cliente.getCorreo());
+	            psPersona.setInt(3, cliente.getEdad());
+	            psPersona.setString(4, cliente.getCedula());
+	            psPersona.setInt(5, idSQL);
+	            psPersona.executeUpdate();
+
+	            // 3. Actualizamos la tabla Cliente
+	            String sqlC = "UPDATE Cliente SET Clasificacion = ?, CantVentas = ? WHERE Id_Persona = ?";
+	            psCliente = con.prepareStatement(sqlC);
+	            psCliente.setString(1, String.valueOf(cliente.getClasificacion()));
+	            psCliente.setInt(2, cliente.getCantVentas());
+	            psCliente.setInt(3, idSQL);
+	            psCliente.executeUpdate();
+
+	            con.commit();
+	            exito = true;
+	        }
+	    } catch (SQLException e) {
+	        try { if (con != null) con.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+	        e.printStackTrace();
+	    } finally {
+	        // Cerrar recursos (psId, psPersona, psCliente, rs, con)
+	    }
+	    return exito;
 	}
 
 	public boolean insertarEmpleado(Empleado emp) {
@@ -217,6 +354,55 @@ public class TiendaComputos {
 		}
 		return exito;
 	}
+	
+	public boolean modificarEmpleado(Empleado emp) {
+	    Connection con = null;
+	    PreparedStatement psP = null;
+	    PreparedStatement psE = null;
+	    PreparedStatement psId = null;
+	    ResultSet rs = null;
+	    boolean exito = false;
+
+	    try {
+	        con = ConexionDB.getConexion();
+	        con.setAutoCommit(false);
+
+	        String sqlId = "SELECT Id_Persona FROM Empleado WHERE CodEmpleado = ?";
+	        psId = con.prepareStatement(sqlId);
+	        psId.setString(1, emp.getId());
+	        rs = psId.executeQuery();
+
+	        if (rs.next()) {
+	            int idSQL = rs.getInt("Id_Persona");
+
+	            // Update Persona
+	            String sqlP = "UPDATE Persona SET Nombre = ?, Correo = ?, Edad = ?, Cedula = ? WHERE Id_Persona = ?";
+	            psP = con.prepareStatement(sqlP);
+	            psP.setString(1, emp.getNombre());
+	            psP.setString(2, emp.getCorreo());
+	            psP.setInt(3, emp.getEdad());
+	            psP.setString(4, emp.getCedula());
+	            psP.setInt(5, idSQL);
+	            psP.executeUpdate();
+
+	            // Update Empleado
+	            String sqlE = "UPDATE Empleado SET ComisionVentas = ?, EmpleadoMes = ?, CantVentas = ? WHERE Id_Persona = ?";
+	            psE = con.prepareStatement(sqlE);
+	            psE.setFloat(1, emp.getComisionVentas());
+	            psE.setBoolean(2, emp.isEmpleadoMes());
+	            psE.setInt(3, emp.getCantVentas());
+	            psE.setInt(4, idSQL);
+	            psE.executeUpdate();
+
+	            con.commit();
+	            exito = true;
+	        }
+	    } catch (SQLException e) {
+	        try { if (con != null) con.rollback(); } catch (SQLException ex) {}
+	        e.printStackTrace();
+	    }
+	    return exito;
+	}
 
 	public boolean insertarProveedor(Proveedor prov) {
 		Connection con = null;
@@ -263,7 +449,54 @@ public class TiendaComputos {
 		}
 		return exito;
 	}
+	
+	
+	public boolean modificarProveedor(Proveedor prov) {
+	    Connection con = null;
+	    PreparedStatement psP = null;
+	    PreparedStatement psPr = null;
+	    PreparedStatement psId = null;
+	    ResultSet rs = null;
+	    boolean exito = false;
 
+	    try {
+	        con = ConexionDB.getConexion();
+	        con.setAutoCommit(false);
+
+	        String sqlId = "SELECT Id_Persona FROM Proveedor WHERE CodProveedor = ?";
+	        psId = con.prepareStatement(sqlId);
+	        psId.setString(1, prov.getId());
+	        rs = psId.executeQuery();
+
+	        if (rs.next()) {
+	            int idSQL = rs.getInt("Id_Persona");
+
+	            String sqlP = "UPDATE Persona SET Nombre = ?, Correo = ?, Edad = ?, Cedula = ? WHERE Id_Persona = ?";
+	            psP = con.prepareStatement(sqlP);
+	            psP.setString(1, prov.getNombre());
+	            psP.setString(2, prov.getCorreo());
+	            psP.setInt(3, prov.getEdad());
+	            psP.setString(4, prov.getCedula());
+	            psP.setInt(5, idSQL);
+	            psP.executeUpdate();
+
+	            String sqlPr = "UPDATE Proveedor SET Empresa = ? WHERE Id_Persona = ?";
+	            psPr = con.prepareStatement(sqlPr);
+	            psPr.setString(1, prov.getEmpresa());
+	            psPr.setInt(2, idSQL);
+	            psPr.executeUpdate();
+
+	            con.commit();
+	            exito = true;
+	        }
+	    } catch (SQLException e) {
+	        try { if (con != null) con.rollback(); } catch (SQLException ex) {}
+	        e.printStackTrace();
+	    }
+	    return exito;
+	}
+	
+	
 	public boolean insertarMotherBoard(MotherBoard mb) {
 		Connection con = null;
 		boolean exito = false;
@@ -688,4 +921,5 @@ public class TiendaComputos {
 	    }
 	}
 	
+
 }

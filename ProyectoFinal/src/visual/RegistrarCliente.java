@@ -207,9 +207,8 @@ public class RegistrarCliente extends JDialog {
 
 						if (cliente ==  null) {
 							Cliente newCliente = new Cliente(nombreApellido, edad, cedula, correo);
-							//------- para SQL ---------
-							TiendaComputos db = new TiendaComputos();
-							boolean exito = db.insertarCliente(newCliente);							
+							//------- para SQL --------
+							boolean exito = TiendaComputos.getInstance().insertarCliente(newCliente);
 							//-----------------------------
 							if (exito) {
 								Tienda.getInstance().registrarPersona(newCliente);
@@ -235,6 +234,7 @@ public class RegistrarCliente extends JDialog {
 
 							if(option == JOptionPane.YES_OPTION){
 								Tienda.getInstance().updatePersona(cliente);
+								boolean exito = TiendaComputos.getInstance().modificarCliente(cliente);
 								ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));
 				                MensajeAlerta mensajito = new MensajeAlerta(iconito, "Operación satisfactoria.\nCliente modificado!");
 				                mensajito.setModal(true);

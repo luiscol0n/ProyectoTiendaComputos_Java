@@ -653,17 +653,16 @@ public class RegistrarProducto extends JDialog {
 											cantAlm, tipoConex);
 								}
 							}
-							TiendaComputos db = new TiendaComputos();
 							boolean exito = false;
 
 							if (nuevoProd instanceof MotherBoard) {
-								exito = db.insertarMotherBoard((MotherBoard) nuevoProd);
+								exito = TiendaComputos.getInstance().insertarMotherBoard((MotherBoard) nuevoProd);
 							} else if (nuevoProd instanceof MemoriaRam) {
-								exito = db.insertarMemoriaRam((MemoriaRam) nuevoProd);
+								exito = TiendaComputos.getInstance().insertarMemoriaRam((MemoriaRam) nuevoProd);
 							} else if (nuevoProd instanceof Microprocesador) {
-								exito = db.insertarMicroprocesador((Microprocesador) nuevoProd);
+								exito = TiendaComputos.getInstance().insertarMicroprocesador((Microprocesador) nuevoProd);
 							} else if (nuevoProd instanceof DiscoDuro) {
-								exito = db.insertarDiscoDuro((DiscoDuro) nuevoProd);
+								exito = TiendaComputos.getInstance().insertarDiscoDuro((DiscoDuro) nuevoProd);
 							}
 
 							if (exito) {

@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
+import database.TiendaComputos;
 import logico.Tienda;
 import logico.User;
 
@@ -60,6 +61,7 @@ public class Login extends JFrame {
 						empresa2 = new  FileOutputStream("tienda.dat");
 						empresaWrite = new ObjectOutputStream(empresa2);
 						User aux = new User("Administrador", "Admin", "Admin");
+						TiendaComputos.getInstance().insertarUsuario("Administrador", "Admin", "Admin");
 						Tienda.getInstance().RegistrarUser(aux);
 						empresaWrite.writeObject(Tienda.getInstance());
 						empresa2.close();

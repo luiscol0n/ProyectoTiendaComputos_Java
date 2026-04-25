@@ -199,8 +199,7 @@ public class RegistrarProveedor extends JDialog {
                     if (proveedor == null) {
                         Proveedor newProveedor = new Proveedor(nombreApellido, edad, cedula, correo, empresa);
         				//------- para SQL ---------
-						TiendaComputos db = new TiendaComputos();
-						boolean exito = db.insertarProveedor(newProveedor);							
+						boolean exito = TiendaComputos.getInstance().insertarProveedor(newProveedor);							
 						//-----------------------------
 						if (exito) {
 	                        Tienda.getInstance().registrarPersona(newProveedor);
@@ -228,6 +227,7 @@ public class RegistrarProveedor extends JDialog {
 						
 						if (option == JOptionPane.YES_OPTION) {
 	                        Tienda.getInstance().updatePersona(proveedor);
+	                        TiendaComputos.getInstance().modificarProveedor(proveedor);
 	                        ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));
 							MensajeAlerta mensajito = new MensajeAlerta(iconito, "Operación satisfactoria.\nProveedor modificado!");
 							mensajito.setModal(true);

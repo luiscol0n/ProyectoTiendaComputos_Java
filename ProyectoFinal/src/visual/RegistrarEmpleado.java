@@ -241,8 +241,7 @@ public class RegistrarEmpleado extends JDialog {
 						if (empleado ==  null) {
 							Empleado newEmpleado = new Empleado(nombreApellido, edad, cedula, correo, (float) (comision / 100.0), usuario);
 							//------- para SQL ---------
-							TiendaComputos db = new TiendaComputos();
-							boolean exito = db.insertarEmpleado(newEmpleado);							
+							boolean exito = TiendaComputos.getInstance().insertarEmpleado(newEmpleado);							
 							//-----------------------------
 							if (exito) {
 								Tienda.getInstance().registrarPersona(newEmpleado);
@@ -268,6 +267,7 @@ public class RegistrarEmpleado extends JDialog {
 
 							if(option == JOptionPane.YES_OPTION){
 								Tienda.getInstance().updatePersona(empleado);
+								TiendaComputos.getInstance().modificarEmpleado(empleado);
 								ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));
 								MensajeAlerta mensajito = new MensajeAlerta(iconito, "Operación satisfactoria.\nEmpleado modificado!");
 								mensajito.setModal(true);

@@ -161,8 +161,7 @@ public class RegUser extends JDialog {
 								if (usuario == null) {
 									User user = new User(comboBox.getSelectedItem().toString(),textField.getText(),textField_1.getText());
 									// Lo q agregué--------------------
-									TiendaComputos db = new TiendaComputos();
-									boolean exito = db.insertarUsuario(comboBox.getSelectedItem().toString(), textField.getText(), textField_1.getText());
+									boolean exito = TiendaComputos.getInstance().insertarUsuario(comboBox.getSelectedItem().toString(), textField.getText(), textField_1.getText());
 									if (exito) {
 										JOptionPane.showMessageDialog(null, "!Usuario registrado en SQL Server!");
 									}	
@@ -178,8 +177,7 @@ public class RegUser extends JDialog {
 									usuario.setPass(textField_1.getText());
 									usuario.setTipo(comboBox.getSelectedItem().toString());
 									//------ lo q agregue pa modificar
-									TiendaComputos db = new TiendaComputos();
-									boolean exito = db.actualizarUsuario(comboBox.getSelectedItem().toString(), codigo, textField.getText(), textField_1.getText());
+									boolean exito = TiendaComputos.getInstance().actualizarUsuario(comboBox.getSelectedItem().toString(), codigo, textField.getText(), textField_1.getText());
 									if (exito) {
 										JOptionPane.showMessageDialog(null, "!Usuario modificado en SQL Server!");
 									}									
