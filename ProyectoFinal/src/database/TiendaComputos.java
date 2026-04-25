@@ -37,6 +37,49 @@ public class TiendaComputos {
         return instance;
     }
 	
+	public void limpiarTablasTotal() {
+	    Connection con = null;
+	    Statement st = null;
+	    try {
+	        con = ConexionDB.getConexion();
+	        st = con.createStatement();
+	        
+	        // 1. Desactivar temporalmente las restricciones de llaves foráneas
+	        // Esto evita errores de "conflicto con FK" al borrar en desorden
+	        st.executeUpdate("EXEC sp_MSforeachtable 'ALTER TABLE ? NOCHECK CONSTRAINT ALL'");
+
+	        // 2. Borrar los datos de todas las tablas
+	        // El orden ideal es de hijas a padres
+	        st.executeUpdate("DELETE FROM DetalleFacturaVenta");
+	        st.executeUpdate("DELETE FROM DetalleFacturaCompra");
+	        st.executeUpdate("DELETE FROM FacturaVenta");
+	        st.executeUpdate("DELETE FROM FacturaCompra");
+	        st.executeUpdate("DELETE FROM Factura");
+	        st.executeUpdate("DELETE FROM Empleado");
+	        st.executeUpdate("DELETE FROM Cliente");
+	        st.executeUpdate("DELETE FROM Proveedor");
+	        st.executeUpdate("DELETE FROM Producto");
+	        st.executeUpdate("DELETE FROM Usuario");
+	        st.executeUpdate("DELETE FROM Persona");
+
+	        // 3. Reiniciar los contadores IDENTITY de las tablas principales
+	        st.executeUpdate("DBCC CHECKIDENT ('Persona', RESEED, 0)");
+	        st.executeUpdate("DBCC CHECKIDENT ('Usuario', RESEED, 0)");
+	        st.executeUpdate("DBCC CHECKIDENT ('Producto', RESEED, 0)");
+	        st.executeUpdate("DBCC CHECKIDENT ('Factura', RESEED, 0)");
+
+	        // 4. Reactivar las restricciones de llaves foráneas
+	        st.executeUpdate("EXEC sp_MSforeachtable 'ALTER TABLE ? WITH CHECK CHECK CONSTRAINT ALL'");
+
+	        System.out.println("Base de datos reseteada por completo: AML Tech está en blanco.");
+	        
+	    } catch (SQLException e) {
+	        System.err.println("Error al resetear la base de datos: " + e.getMessage());
+	    } finally {
+	        // Cerrar recursos
+	    }
+	}
+	
 	public int recuperarIdPersonaPorCodigo(String codigo, String tipo) {
 	    Connection con = null;
 	    PreparedStatement ps = null;
