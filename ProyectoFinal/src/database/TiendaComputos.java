@@ -44,7 +44,7 @@ public class TiendaComputos {
 	        con = ConexionDB.getConexion();
 	        st = con.createStatement();
 	        
-	        // 1. Desactivar temporalmente las restricciones de llaves foráneas
+	        // 1. Desactivar temporalmente las restricciones de llaves forï¿½neas
 	        // Esto evita errores de "conflicto con FK" al borrar en desorden
 	        st.executeUpdate("EXEC sp_MSforeachtable 'ALTER TABLE ? NOCHECK CONSTRAINT ALL'");
 
@@ -68,10 +68,10 @@ public class TiendaComputos {
 	        st.executeUpdate("DBCC CHECKIDENT ('Producto', RESEED, 0)");
 	        st.executeUpdate("DBCC CHECKIDENT ('Factura', RESEED, 0)");
 
-	        // 4. Reactivar las restricciones de llaves foráneas
+	        // 4. Reactivar las restricciones de llaves forï¿½neas
 	        st.executeUpdate("EXEC sp_MSforeachtable 'ALTER TABLE ? WITH CHECK CHECK CONSTRAINT ALL'");
 
-	        System.out.println("Base de datos reseteada por completo: AML Tech está en blanco.");
+	        System.out.println("Base de datos reseteada por completo: AML Tech estï¿½ en blanco.");
 	        
 	    } catch (SQLException e) {
 	        System.err.println("Error al resetear la base de datos: " + e.getMessage());
@@ -86,7 +86,7 @@ public class TiendaComputos {
 	    ResultSet rs = null;
 	    int idEncontrado = -1;
 
-	    // Usamos el código de la tabla hija para encontrar el ID en la tabla padre
+	    // Usamos el cï¿½digo de la tabla hija para encontrar el ID en la tabla padre
 	    String sql = "";
 	    if (tipo.equalsIgnoreCase("Empleado")) {
 	        sql = "SELECT Id_Persona FROM Empleado WHERE CodEmpleado = ?";
@@ -120,7 +120,7 @@ public class TiendaComputos {
 	    ResultSet rs = null;
 	    boolean exito = false;
 
-	    // Determinamos en qué tabla buscar el ID técnico primero
+	    // Determinamos en quï¿½ tabla buscar el ID tï¿½cnico primero
 	    String tabla = tipo.equalsIgnoreCase("Empleado") ? "Empleado" : 
 	                   tipo.equalsIgnoreCase("Cliente") ? "Cliente" : "Proveedor";
 	    String columnaCod = tipo.equalsIgnoreCase("Empleado") ? "CodEmpleado" : 
@@ -129,7 +129,7 @@ public class TiendaComputos {
 	    try {
 	        con = ConexionDB.getConexion();
 	        
-	        // 1. Buscamos el ID técnico (int)
+	        // 1. Buscamos el ID tï¿½cnico (int)
 	        String sqlId = "SELECT Id_Persona FROM " + tabla + " WHERE " + columnaCod + " = ?";
 	        psId = con.prepareStatement(sqlId);
 	        psId.setString(1, codigo);
@@ -138,7 +138,7 @@ public class TiendaComputos {
 	        if (rs.next()) {
 	            int idSQL = rs.getInt("Id_Persona");
 
-	            // 2. Borramos de la tabla Persona (SQL borrará automáticamente en las hijas por el CASCADE)
+	            // 2. Borramos de la tabla Persona (SQL borrarï¿½ automï¿½ticamente en las hijas por el CASCADE)
 	            String sqlDel = "DELETE FROM Persona WHERE Id_Persona = ?";
 	            psDel = con.prepareStatement(sqlDel);
 	            psDel.setInt(1, idSQL);
@@ -206,7 +206,7 @@ public class TiendaComputos {
 	}
 
 	
-	// MÉTODOS DE CLIENTE
+	// Mï¿½TODOS DE CLIENTE
 	public boolean insertarCliente(Cliente cliente) {
 		Connection con = null;
 		PreparedStatement psPersona = null;
@@ -273,7 +273,7 @@ public class TiendaComputos {
 	        con = ConexionDB.getConexion();
 	        con.setAutoCommit(false);
 
-	        // 1. Buscamos el ID técnico (int) usando el código String (CLI-#)
+	        // 1. Buscamos el ID tï¿½cnico (int) usando el cï¿½digo String (CLI-#)
 	        String sqlId = "SELECT Id_Persona FROM Cliente WHERE CodCliente = ?";
 	        psId = con.prepareStatement(sqlId);
 	        psId.setString(1, cliente.getId());
@@ -312,7 +312,7 @@ public class TiendaComputos {
 	    return exito;
 	}
 
-	// MÉTODOS DE EMPLEADO
+	// Mï¿½TODOS DE EMPLEADO
 	public boolean insertarEmpleado(Empleado emp) {
 		Connection con = null;
 		PreparedStatement psBusqueda = null;
@@ -450,7 +450,7 @@ public class TiendaComputos {
 	    return exito;
 	}
 
-	// MÉTODOS DE PROVEEDOR
+	// Mï¿½TODOS DE PROVEEDOR
 	public boolean insertarProveedor(Proveedor prov) {
 		Connection con = null;
 		PreparedStatement psPersona = null;
@@ -544,11 +544,37 @@ public class TiendaComputos {
 	}
 	
 	
+	// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+	// MÃ‰TODOS DE PRODUCTO
+	// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+	public boolean insertarProducto(Producto p) {
+	    String sql = "INSERT INTO Producto (Id_Producto, NumSerie, Marca, CantDisponible, Precio) " +
+	                 "VALUES (?, ?, ?, ?, ?)";
+
+	    try (Connection con = ConexionDB.getConexion();
+	         PreparedStatement ps = con.prepareStatement(sql)) {
+
+	        ps.setString(1, p.getId());
+	        ps.setString(2, p.getNumSerie());
+	        ps.setString(3, p.getMarca());
+	        ps.setInt   (4, p.getCantDisponible());
+	        ps.setFloat (5, p.getPrecio());
+
+	        return ps.executeUpdate() > 0;
+
+	    } catch (SQLException e) {
+	        JOptionPane.showMessageDialog(null, "Error al insertar producto: " + e.getMessage());
+	        return false;
+	    }
+	}
+	
+	
 	public boolean insertarMotherBoard(MotherBoard mb) {
 		Connection con = null;
 		boolean exito = false;
 
-		String sqlProd = "INSERT INTO Producto (NumSerie, Marca, CantDisponible, Precio) VALUES (?, ?, ?, ?)";
+		String sqlProd = "INSERT INTO Producto (NumSerie, Marca, CantDisponible, Precio, TipoProducto) VALUES (?, ?, ?, ?, ?)";
 		String sqlMB = "INSERT INTO Motherboard (Id_Producto, Modelo, TipoSocket, TipoRam, TipoDiscoDuro) VALUES (?, ?, ?, ?, ?)";
 
 		try {
@@ -562,6 +588,7 @@ public class TiendaComputos {
 				ps.setString(2, mb.getMarca());
 				ps.setInt(3, mb.getCantDisponible());
 				ps.setFloat(4, mb.getPrecio());
+				ps.setString(5, "MotherBoard");
 				ps.executeUpdate();
 
 				ResultSet rs = ps.getGeneratedKeys();
@@ -606,7 +633,7 @@ public class TiendaComputos {
 		Connection con = null;
 		boolean exito = false;
 
-		String sqlProd = "INSERT INTO Producto (NumSerie, Marca, CantDisponible, Precio) VALUES (?, ?, ?, ?)";
+		String sqlProd = "INSERT INTO Producto (NumSerie, Marca, CantDisponible, Precio, TipoProducto) VALUES (?, ?, ?, ?, ?)";
 		String sqlDD = "INSERT INTO Discoduro (Id_Producto, Modelo, Capacidad, TipoConexion) VALUES (?, ?, ?, ?)";
 
 		try {
@@ -619,6 +646,7 @@ public class TiendaComputos {
 				ps.setString(2, dd.getMarca());
 				ps.setInt(3, dd.getCantDisponible());
 				ps.setFloat(4, dd.getPrecio());
+				ps.setString(5, "DiscoDuro"); 
 				ps.executeUpdate();
 
 				ResultSet rs = ps.getGeneratedKeys();
@@ -660,7 +688,7 @@ public class TiendaComputos {
 		Connection con = null;
 		boolean exito = false;
 
-		String sqlProd = "INSERT INTO Producto (NumSerie, Marca, CantDisponible, Precio) VALUES (?, ?, ?, ?)";
+		String sqlProd = "INSERT INTO Producto (NumSerie, Marca, CantDisponible, Precio, TipoProducto) VALUES (?, ?, ?, ?, ?)";
 		String sqlMR = "INSERT INTO MemoriaRAM (Id_Producto, CantMemoria, TipoMemoria) VALUES (?, ?, ?)";
 
 		try {
@@ -673,6 +701,7 @@ public class TiendaComputos {
 				ps.setString(2, mr.getMarca());
 				ps.setInt(3, mr.getCantDisponible());
 				ps.setFloat(4, mr.getPrecio());
+				ps.setString(5, "MemoriaRAM"); 
 				ps.executeUpdate();
 
 				ResultSet rs = ps.getGeneratedKeys();
@@ -713,7 +742,7 @@ public class TiendaComputos {
 		Connection con = null;
 		boolean exito = false;
 
-		String sqlProd = "INSERT INTO Producto (NumSerie, Marca, CantDisponible, Precio) VALUES (?, ?, ?, ?)";
+		String sqlProd = "INSERT INTO Producto (NumSerie, Marca, CantDisponible, Precio, TipoProducto) VALUES (?, ?, ?, ?, ?)";
 		String sqlMP = "INSERT INTO Microprocesador (Id_Producto, Modelo, TipoSocket, VelocidadProcesamiento) VALUES (?, ?, ?, ?)";
 
 		try {
@@ -726,6 +755,7 @@ public class TiendaComputos {
 				ps.setString(2, mp.getMarca());
 				ps.setInt(3, mp.getCantDisponible());
 				ps.setFloat(4, mp.getPrecio());
+				ps.setString(5, "Microprocesador"); 
 				ps.executeUpdate();
 
 				ResultSet rs = ps.getGeneratedKeys();
@@ -763,7 +793,7 @@ public class TiendaComputos {
 		return exito;
 	}
 	
-	// MÉTODOS DE FACTURA
+	// Mï¿½TODOS DE FACTURA
 	public boolean insertarFacturaVenta(FacturaVenta factura) {
 	    Connection con = null;
 	    PreparedStatement psFactura = null;
@@ -777,7 +807,7 @@ public class TiendaComputos {
 
 	    try {
 	        con = ConexionDB.getConexion();
-	        con.setAutoCommit(false); // Iniciamos transacción
+	        con.setAutoCommit(false); // Iniciamos transacciï¿½n
 
 	        // 1. Insertar en la tabla Factura (Cabezal General)
 	        psFactura = con.prepareStatement(sqlFactura, Statement.RETURN_GENERATED_KEYS);
@@ -792,24 +822,24 @@ public class TiendaComputos {
 	            idFacturaSQL = rs.getInt(1);
 	        }
 
-	        // 2. Insertar en FacturaVenta (Relacionando con Empleado y Cliente por Cédula)
+	        // 2. Insertar en FacturaVenta (Relacionando con Empleado y Cliente por Cï¿½dula)
 	        psVenta = con.prepareStatement(sqlVenta);
 	        psVenta.setInt(1, idFacturaSQL);
 	        
-	        // Buscamos los IDs de SQL usando los métodos auxiliares
+	        // Buscamos los IDs de SQL usando los mï¿½todos auxiliares
 	        int idEmpleadoSQL = obtenerIdPersonaPorCedula(factura.getVendedor().getCedula());
 	        int idClienteSQL = obtenerIdPersonaPorCedula(factura.getCliente().getCedula());
 	        
 	        psVenta.setInt(2, idEmpleadoSQL);
 	        psVenta.setInt(3, idClienteSQL);
 	        psVenta.setDouble(4, 0.15); // Porcentaje de ganancia (puedes parametrizarlo)
-	        psVenta.setString(5, factura.getId()); // Tu código FVE-#
+	        psVenta.setString(5, factura.getId()); // Tu cï¿½digo FVE-#
 	        psVenta.executeUpdate();
 
 	        // 3. Insertar Detalles de la Factura
 	        psDetalle = con.prepareStatement(sqlDetalle);
 	        for (DetalleFacturaVenta det : factura.getDetallesVenta()) {
-	            // Buscamos el ID del producto por su número de serie único
+	            // Buscamos el ID del producto por su nï¿½mero de serie ï¿½nico
 	            int idProductoSQL = obtenerIdProductoPorSerie(det.getProducto().getNumSerie());
 	            
 	            psDetalle.setInt(1, idProductoSQL);
@@ -817,17 +847,17 @@ public class TiendaComputos {
 	            psDetalle.setInt(3, det.getCantidad());
 	            psDetalle.setDouble(4, det.getSubtotal());
 	            psDetalle.setDouble(5, det.getPrecioUnitario());
-	            psDetalle.addBatch(); // Añadimos al lote
+	            psDetalle.addBatch(); // Aï¿½adimos al lote
 	        }
 	        psDetalle.executeBatch(); // Ejecutamos todos los detalles juntos
 
-	        con.commit(); // Si todo salió bien, guardamos cambios
+	        con.commit(); // Si todo saliï¿½ bien, guardamos cambios
 	        return true;
 
 	    } catch (SQLException e) {
 	        if (con != null) {
 	            try {
-	                con.rollback(); // Si algo falló, deshacemos todo
+	                con.rollback(); // Si algo fallï¿½, deshacemos todo
 	            } catch (SQLException ex) {
 	                ex.printStackTrace();
 	            }
@@ -848,12 +878,12 @@ public class TiendaComputos {
 	    }
 	}
 
-	// MÉTODOS AUXILIARES DE BÚSQUEDA 
+	// Mï¿½TODOS AUXILIARES DE Bï¿½SQUEDA 
 
 	private int obtenerIdPersonaPorCedula(String cedula) throws SQLException {
 	    int idEncontrado = -1;
 	    String sql = "SELECT Id_Persona FROM Persona WHERE Cedula = ?";
-	    // Usamos una conexión interna o la misma si prefieres pasarla por parámetro
+	    // Usamos una conexiï¿½n interna o la misma si prefieres pasarla por parï¿½metro
 	    try (Connection con = ConexionDB.getConexion(); 
 	         PreparedStatement ps = con.prepareStatement(sql)) {
 	        ps.setString(1, cedula);
@@ -894,7 +924,7 @@ public class TiendaComputos {
 
 	    try {
 	        con = ConexionDB.getConexion();
-	        con.setAutoCommit(false); // Iniciamos transacción
+	        con.setAutoCommit(false); // Iniciamos transacciï¿½n
 
 	        // 1. Insertar en la tabla Factura (Cabezal General)
 	        psFactura = con.prepareStatement(sqlFactura, java.sql.Statement.RETURN_GENERATED_KEYS);
@@ -908,29 +938,29 @@ public class TiendaComputos {
 	            idFacturaSQL = rs.getInt(1);
 	        }
 
-	        // 2. Insertar en FacturaCompra (Relacionando con Proveedor por Cédula/RNC)
+	        // 2. Insertar en FacturaCompra (Relacionando con Proveedor por Cï¿½dula/RNC)
 	        psCompra = con.prepareStatement(sqlCompra);
 	        psCompra.setInt(1, idFacturaSQL);
 	        
-	        // Buscamos el ID técnico del proveedor usando su cédula
+	        // Buscamos el ID tï¿½cnico del proveedor usando su cï¿½dula
 	        int idProveedorSQL = obtenerIdPersonaPorCedula(factura.getProveedor().getCedula());
 	        
 	        if (idProveedorSQL == -1) {
-	            throw new SQLException("No se encontró el ID del proveedor con la cédula proporcionada.");
+	            throw new SQLException("No se encontrï¿½ el ID del proveedor con la cï¿½dula proporcionada.");
 	        }
 
 	        psCompra.setInt(2, idProveedorSQL);
-	        psCompra.setString(3, factura.getId()); // Tu código FCO-# de Java
+	        psCompra.setString(3, factura.getId()); // Tu cï¿½digo FCO-# de Java
 	        psCompra.executeUpdate();
 
 	        // 3. Insertar Detalles de la Factura de Compra
 	        psDetalle = con.prepareStatement(sqlDetalle);
 	        for (DetalleFacturaCompra det : factura.getDetallesCompra()) {
-	            // Buscamos el ID del producto por su número de serie único
+	            // Buscamos el ID del producto por su nï¿½mero de serie ï¿½nico
 	            int idProductoSQL = obtenerIdProductoPorSerie(det.getProducto().getNumSerie());
 	            
 	            if (idProductoSQL == -1) {
-	                throw new SQLException("No se encontró el producto con serie: " + det.getProducto().getNumSerie());
+	                throw new SQLException("No se encontrï¿½ el producto con serie: " + det.getProducto().getNumSerie());
 	            }
 
 	            psDetalle.setInt(1, idProductoSQL);
@@ -942,7 +972,7 @@ public class TiendaComputos {
 	        }
 	        psDetalle.executeBatch();
 
-	        con.commit(); // Éxito total
+	        con.commit(); // ï¿½xito total
 	        return true;
 
 	    } catch (SQLException e) {
@@ -973,7 +1003,7 @@ public class TiendaComputos {
 	    PreparedStatement ps = null;
 	    boolean exito = false;
 
-	    // Buscamos el ID técnico primero para poder borrar en la tabla padre
+	    // Buscamos el ID tï¿½cnico primero para poder borrar en la tabla padre
 	    String sql = "DELETE FROM Factura WHERE Id_Factura = (SELECT Id_Factura FROM " + 
 	                 (tipo.equalsIgnoreCase("Venta") ? "FacturaVenta WHERE CodVenta = ?" : "FacturaCompra WHERE CodCompra = ?") + ")";
 
@@ -1020,7 +1050,7 @@ public class TiendaComputos {
 	        con = ConexionDB.getConexion();
 	        con.setAutoCommit(false);
 
-	        // 1. Obtener el ID real de la factura por su código
+	        // 1. Obtener el ID real de la factura por su cï¿½digo
 	        int idFacturaSQL = obtenerIdFacturaPorCodigo(factura.getId(), "Venta");
 
 	        // 2. Actualizar tabla Factura (Monto y Fecha)
@@ -1031,7 +1061,7 @@ public class TiendaComputos {
 	        psFactura.setInt(3, idFacturaSQL);
 	        psFactura.executeUpdate();
 
-	        // 3. Borrar detalles viejos para insertar los nuevos (Sincronización limpia)
+	        // 3. Borrar detalles viejos para insertar los nuevos (Sincronizaciï¿½n limpia)
 	        String sqlDelDet = "DELETE FROM DetalleFacturaVenta WHERE Id_F_Venta = ?";
 	        psDeleteDetalle = con.prepareStatement(sqlDelDet);
 	        psDeleteDetalle.setInt(1, idFacturaSQL);
