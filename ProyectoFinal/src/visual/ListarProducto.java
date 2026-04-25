@@ -230,8 +230,10 @@ public class ListarProducto extends JDialog {
 
 						} else {
 							ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/cancel.png"));
-							MensajeAlerta mensajito = new MensajeAlerta(iconito,
-									"No se pudo eliminar el producto de la base de datos.");
+							MensajeAlerta mensajito = new MensajeAlerta(
+							        iconito,
+							        TiendaComputos.getInstance().getUltimoErrorProducto()
+							);
 							mensajito.setModal(true);
 							mensajito.setVisible(true);
 						}

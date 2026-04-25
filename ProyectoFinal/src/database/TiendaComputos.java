@@ -41,6 +41,12 @@ public class TiendaComputos {
 		return instance;
 	}
 
+	private String ultimoErrorProducto = "";
+
+	public String getUltimoErrorProducto() {
+		return ultimoErrorProducto;
+	}
+
 	public void limpiarTablasTotal() {
 		Connection con = null;
 		Statement st = null;
@@ -1469,8 +1475,18 @@ public class TiendaComputos {
 				exito = true;
 
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "Error al eliminar producto: " + e.getMessage());
-			e.printStackTrace();
+
+			if (e.getMessage().contains("FK_DetalleFacturaCompra_Producto")
+					|| e.getMessage().contains("FK_DetalleFacturaVenta_Producto")) {
+
+				ultimoErrorProducto = "No se puede eliminar este producto porque ya esta asociado a una factura.\n";
+
+			} else {
+				e.printStackTrace();
+				ultimoErrorProducto = "Error al eliminar producto:\n" + e.getMessage();
+			}
+
+			return false;
 		} finally {
 			try {
 				if (rs != null)
