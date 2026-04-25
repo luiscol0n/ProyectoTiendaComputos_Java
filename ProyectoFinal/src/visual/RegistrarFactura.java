@@ -1,4 +1,3 @@
-//.
 package visual;
 
 import java.awt.BorderLayout;
@@ -34,10 +33,12 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import database.TiendaComputos;
+
 import logico.Cliente;
 import logico.DiscoDuro;
 import logico.DetalleFacturaCompra;
 import logico.DetalleFacturaVenta;
+import logico.Empleado;
 import logico.FacturaCompra;
 import logico.FacturaVenta;
 import logico.MemoriaRam;
@@ -268,6 +269,7 @@ public class RegistrarFactura extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 Cliente client = (Cliente) Tienda.getInstance()
                         .buscarPersonaId(txtIdCliente.getText().trim());
+
                 if (client == null) {
                     btnBuscarCliente.setEnabled(false);
                     RegistrarCliente reg = new RegistrarCliente(null);
@@ -353,7 +355,9 @@ public class RegistrarFactura extends JDialog {
 
         modeloComDisp.setColumnIdentifiers(headersDisp);
         tableComDisponible = new JTable(modeloComDisp) {
-            public boolean isCellEditable(int r, int c) { return false; }
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
         };
         tableComDisponible.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         tableComDisponible.setBackground(cyanClaro);
@@ -387,7 +391,9 @@ public class RegistrarFactura extends JDialog {
 
         modeloProDisp.setColumnIdentifiers(headersDisp);
         tableProDisponible = new JTable(modeloProDisp) {
-            public boolean isCellEditable(int r, int c) { return false; }
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
         };
         tableProDisponible.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         tableProDisponible.setBackground(cyanClaro);
@@ -396,6 +402,7 @@ public class RegistrarFactura extends JDialog {
             public void mouseClicked(MouseEvent e) {
                 indexProDisponible = tableProDisponible.getSelectedRow();
                 btnAgregarPro.setEnabled(indexProDisponible >= 0);
+
                 if (indexProDisponible >= 0) {
                     ArrayList<Producto> lista = obtenerProductosDisponibles(false);
                     if (indexProDisponible < lista.size()) {
@@ -442,7 +449,9 @@ public class RegistrarFactura extends JDialog {
 
         modeloComCarri.setColumnIdentifiers(headersCarri);
         tableComCarrito = new JTable(modeloComCarri) {
-            public boolean isCellEditable(int r, int c) { return false; }
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
         };
         tableComCarrito.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         tableComCarrito.setBackground(cyanClaro);
@@ -463,7 +472,9 @@ public class RegistrarFactura extends JDialog {
 
         modeloProCarri.setColumnIdentifiers(headersCarri);
         tableProCarrito = new JTable(modeloProCarri) {
-            public boolean isCellEditable(int r, int c) { return false; }
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
         };
         tableProCarrito.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         tableProCarrito.setBackground(cyanClaro);
@@ -583,7 +594,10 @@ public class RegistrarFactura extends JDialog {
 
         int idx = esCV ? indexComDisponible : indexProDisponible;
         ArrayList<Producto> disponibles = obtenerProductosDisponibles(esCV);
-        if (idx < 0 || idx >= disponibles.size()) return;
+
+        if (idx < 0 || idx >= disponibles.size()) {
+            return;
+        }
 
         Producto producto = disponibles.get(idx);
         int cantPedida = (int) spnCantidad.getValue();
@@ -593,10 +607,14 @@ public class RegistrarFactura extends JDialog {
                 mostrarAlerta("cancel", "Este producto no tiene stock disponible.");
                 return;
             }
+
             int yaEnCarrito = cantidadesCarrito.containsKey(producto.getId())
-                    ? cantidadesCarrito.get(producto.getId()) : 0;
+                    ? cantidadesCarrito.get(producto.getId())
+                    : 0;
+
             if ((yaEnCarrito + cantPedida) > producto.getCantDisponible()) {
-                mostrarAlerta("cancel", "La cantidad solicitada supera el stock disponible (" + producto.getCantDisponible() + ").");
+                mostrarAlerta("cancel", "La cantidad solicitada supera el stock disponible ("
+                        + producto.getCantDisponible() + ").");
                 return;
             }
         }
@@ -617,7 +635,10 @@ public class RegistrarFactura extends JDialog {
     private void quitarDelCarrito() {
         int idx = esCV ? indexComCarrito : indexProCarrito;
         ArrayList<Producto> enCarrito = Tienda.getInstance().getProductosSeleccionados();
-        if (idx < 0 || idx >= enCarrito.size()) return;
+
+        if (idx < 0 || idx >= enCarrito.size()) {
+            return;
+        }
 
         Producto producto = enCarrito.get(idx);
         producto.setSeleccionado(false);
@@ -626,12 +647,14 @@ public class RegistrarFactura extends JDialog {
         productoSeleccionadoVista = null;
         productoEnCarritoSeleccionado = null;
         btnProducto.setEnabled(false);
+
         cargaCarrito();
         cargaProductoDisponible();
     }
 
     private void seleccionarProductoCarrito(int idx) {
         ArrayList<Producto> carrito = Tienda.getInstance().getProductosSeleccionados();
+
         if (idx >= 0 && idx < carrito.size()) {
             productoEnCarritoSeleccionado = carrito.get(idx);
             productoSeleccionadoVista = productoEnCarritoSeleccionado;
@@ -641,6 +664,7 @@ public class RegistrarFactura extends JDialog {
             productoSeleccionadoVista = null;
             btnProducto.setEnabled(false);
         }
+
         actualizarTotales();
     }
 
@@ -653,9 +677,12 @@ public class RegistrarFactura extends JDialog {
         }
 
         LocalDate hoy = LocalDate.now();
+        TiendaComputos db = TiendaComputos.getInstance();
 
         if (esCV) {
-            Proveedor proveedor = (Proveedor) Tienda.getInstance().buscarPersonaId(txtProveedor.getText().trim());
+            Proveedor proveedor = (Proveedor) Tienda.getInstance()
+                    .buscarPersonaId(txtProveedor.getText().trim());
+
             if (proveedor == null) {
                 mostrarAlerta("alert", "Debe seleccionar un proveedor válido.");
                 return;
@@ -663,93 +690,152 @@ public class RegistrarFactura extends JDialog {
 
             int cantTotal = 0;
             ArrayList<Producto> copia = new ArrayList<Producto>(carrito);
-            for (Producto pro : copia) {
-                int cant = cantidadesCarrito.containsKey(pro.getId()) ? cantidadesCarrito.get(pro.getId()) : 1;
-                pro.setCantDisponible(pro.getCantDisponible() + cant);
-                cantTotal += cant;
-                pro.setSeleccionado(false);
-            }
-
-            FacturaCompra compra = new FacturaCompra(txtID.getText(), hoy, copia, proveedor, cantTotal, precioTotal);
-
             ArrayList<DetalleFacturaCompra> detallesCompra = new ArrayList<DetalleFacturaCompra>();
+
             int numeroLinea = 1;
 
             for (Producto pro : copia) {
-                int cant = cantidadesCarrito.containsKey(pro.getId()) ? cantidadesCarrito.get(pro.getId()) : 1;
-                double precioUnitario = pro.getPrecio();
+                int cant = cantidadesCarrito.containsKey(pro.getId())
+                        ? cantidadesCarrito.get(pro.getId())
+                        : 1;
+
+                cantTotal += cant;
 
                 DetalleFacturaCompra detalle = new DetalleFacturaCompra(
-                        compra.getId(),
+                        txtID.getText(),
                         numeroLinea,
                         pro,
                         cant,
-                        precioUnitario
+                        pro.getPrecio()
                 );
 
                 detallesCompra.add(detalle);
                 numeroLinea++;
             }
 
+            FacturaCompra compra = new FacturaCompra(
+                    txtID.getText(),
+                    hoy,
+                    copia,
+                    proveedor,
+                    cantTotal,
+                    precioTotal
+            );
+
             compra.setDetallesCompra(detallesCompra);
 
-            Tienda.getInstance().registrarFactura(compra);
-            mostrarAlerta("check", "Factura de compra registrada correctamente.");
+            boolean insertadoSQL = db.insertarFacturaCompra(compra);
 
-        } else {
-            if (txtIdCliente.getText().trim().isEmpty()) {
-                mostrarAlerta("alert", "Todos los campos deben estar llenos.");
+            if (insertadoSQL) {
+                for (Producto pro : copia) {
+                    int cant = cantidadesCarrito.containsKey(pro.getId())
+                            ? cantidadesCarrito.get(pro.getId())
+                            : 1;
+
+                    pro.setCantDisponible(pro.getCantDisponible() + cant);
+                    pro.setSeleccionado(false);
+
+                    /*
+                     * Si tienes un método para actualizar producto en SQL,
+                     * debes llamarlo aquí para que también suba el stock en la BD.
+                     *
+                     * Ejemplo:
+                     * db.actualizarProducto(pro);
+                     */
+                }
+
+                Tienda.getInstance().registrarFactura(compra);
+                mostrarAlerta("check", "Factura de COMPRA registrada exitosamente.");
+            } else {
+                mostrarAlerta("cancel", "Error al guardar la factura de compra en SQL Server.");
                 return;
             }
 
-            Cliente cliente = (Cliente) Tienda.getInstance().buscarPersonaId(txtIdCliente.getText().trim());
+        } else {
+            Cliente cliente = (Cliente) Tienda.getInstance()
+                    .buscarPersonaId(txtIdCliente.getText().trim());
+
             if (cliente == null) {
                 mostrarAlerta("alert", "Debe seleccionar un cliente válido.");
                 return;
             }
 
-            for (Producto pro : carrito) {
-                int cant = cantidadesCarrito.containsKey(pro.getId()) ? cantidadesCarrito.get(pro.getId()) : 1;
-                if (pro.getCantDisponible() < cant) {
-                    mostrarAlerta("alert", "El producto " + pro.getId() + " no tiene stock suficiente (" + pro.getCantDisponible() + ").");
-                    return;
-                }
+            Empleado vendedor = Tienda.getInstance()
+                    .buscarEmpleadoPorUsuario(Tienda.getInstance().getLoginUser());
+
+            if (vendedor == null) {
+                mostrarAlerta("cancel", "No se encontró el empleado asociado al usuario logueado.");
+                return;
             }
 
             int cantTotal = 0;
             ArrayList<Producto> copia = new ArrayList<Producto>(carrito);
-            for (Producto pro : copia) {
-                int cant = cantidadesCarrito.containsKey(pro.getId()) ? cantidadesCarrito.get(pro.getId()) : 1;
-                pro.setCantDisponible(pro.getCantDisponible() - cant);
-                cantTotal += cant;
-                pro.setSeleccionado(false);
-            }
-
-            FacturaVenta venta = new FacturaVenta(txtID.getText(), hoy, copia, cliente, cantTotal, precioTotal);
-
             ArrayList<DetalleFacturaVenta> detallesVenta = new ArrayList<DetalleFacturaVenta>();
+
             int numeroLinea = 1;
 
             for (Producto pro : copia) {
-                int cant = cantidadesCarrito.containsKey(pro.getId()) ? cantidadesCarrito.get(pro.getId()) : 1;
-                double precioUnitario = getPrecioAplicado(pro);
+                int cant = cantidadesCarrito.containsKey(pro.getId())
+                        ? cantidadesCarrito.get(pro.getId())
+                        : 1;
+
+                if (cant > pro.getCantDisponible()) {
+                    mostrarAlerta("cancel", "No hay suficiente stock para el producto: " + pro.getId());
+                    return;
+                }
+
+                cantTotal += cant;
 
                 DetalleFacturaVenta detalle = new DetalleFacturaVenta(
-                        venta.getId(),
+                        txtID.getText(),
                         numeroLinea,
                         pro,
                         cant,
-                        precioUnitario
+                        getPrecioAplicado(pro)
                 );
 
                 detallesVenta.add(detalle);
                 numeroLinea++;
             }
 
+            FacturaVenta venta = new FacturaVenta(
+                    txtID.getText(),
+                    hoy,
+                    copia,
+                    cliente,
+                    cantTotal,
+                    precioTotal
+            );
+
+            venta.setVendedor(vendedor);
             venta.setDetallesVenta(detallesVenta);
 
-            Tienda.getInstance().registrarFactura(venta);
-            mostrarAlerta("check", "Factura de venta registrada correctamente.");
+            boolean insertadoSQL = db.insertarFacturaVenta(venta);
+
+            if (insertadoSQL) {
+                for (Producto pro : copia) {
+                    int cant = cantidadesCarrito.containsKey(pro.getId())
+                            ? cantidadesCarrito.get(pro.getId())
+                            : 1;
+
+                    pro.setCantDisponible(pro.getCantDisponible() - cant);
+                    pro.setSeleccionado(false);
+
+                    /*
+                     * Si tienes un método para actualizar producto en SQL,
+                     * debes llamarlo aquí para que también baje el stock en la BD.
+                     *
+                     * Ejemplo:
+                     * db.actualizarProducto(pro);
+                     */
+                }
+
+                Tienda.getInstance().registrarFactura(venta);
+                mostrarAlerta("check", "Factura de VENTA registrada exitosamente.");
+            } else {
+                mostrarAlerta("cancel", "Error al guardar la factura de venta en SQL Server.");
+                return;
+            }
         }
 
         cantidadesCarrito.clear();
@@ -762,6 +848,7 @@ public class RegistrarFactura extends JDialog {
         modeloProDisp.setRowCount(0);
 
         Proveedor filtroProveedor = null;
+
         if (esCV) {
             Object selProv = txtProveedor != null ? txtProveedor.getText().trim() : "";
             filtroProveedor = (Proveedor) Tienda.getInstance().buscarPersonaId((String) selProv);
@@ -773,8 +860,13 @@ public class RegistrarFactura extends JDialog {
         }
 
         for (Producto pro : Tienda.getInstance().getProductoNoSeleccionados()) {
-            if (!pro.isEstado()) continue;
-            if (!esCV && pro.getCantDisponible() <= 0) continue;
+            if (!pro.isEstado()) {
+                continue;
+            }
+
+            if (!esCV && pro.getCantDisponible() <= 0) {
+                continue;
+            }
 
             if (esCV) {
                 if (pro.getProveedor() == null || !pro.getProveedor().getId().equals(filtroProveedor.getId())) {
@@ -783,11 +875,11 @@ public class RegistrarFactura extends JDialog {
             }
 
             Object[] fila = {
-                pro.getId(),
-                pro.getNumSerie(),
-                getTipo(pro),
-                String.format("%.2f", pro.getPrecio()),
-                pro.getCantDisponible()
+                    pro.getId(),
+                    pro.getNumSerie(),
+                    getTipo(pro),
+                    String.format("%.2f", pro.getPrecio()),
+                    pro.getCantDisponible()
             };
 
             if (esCV) {
@@ -803,23 +895,26 @@ public class RegistrarFactura extends JDialog {
         modeloProCarri.setRowCount(0);
 
         for (Producto pro : Tienda.getInstance().getProductosSeleccionados()) {
-            int cant = cantidadesCarrito.containsKey(pro.getId()) ? cantidadesCarrito.get(pro.getId()) : 1;
+            int cant = cantidadesCarrito.containsKey(pro.getId())
+                    ? cantidadesCarrito.get(pro.getId())
+                    : 1;
 
             double precioMostrado = getPrecioAplicado(pro);
             double subtotal = getSubtotalAplicado(pro, cant);
 
             Object[] fila = {
-                pro.getId(),
-                pro.getNumSerie(),
-                getTipo(pro),
-                String.format("%.2f", precioMostrado),
-                cant,
-                String.format("%.2f", subtotal)
+                    pro.getId(),
+                    pro.getNumSerie(),
+                    getTipo(pro),
+                    String.format("%.2f", precioMostrado),
+                    cant,
+                    String.format("%.2f", subtotal)
             };
 
             modeloComCarri.addRow(fila);
             modeloProCarri.addRow(fila);
         }
+
         actualizarTotales();
     }
 
@@ -827,12 +922,16 @@ public class RegistrarFactura extends JDialog {
         precioTotal = 0;
 
         for (Producto pro : Tienda.getInstance().getProductosSeleccionados()) {
-            int cant = cantidadesCarrito.containsKey(pro.getId()) ? cantidadesCarrito.get(pro.getId()) : 1;
+            int cant = cantidadesCarrito.containsKey(pro.getId())
+                    ? cantidadesCarrito.get(pro.getId())
+                    : 1;
+
             double sub = getSubtotalAplicado(pro, cant);
             precioTotal += sub;
         }
 
         double subtotalSel = 0;
+
         if (productoSeleccionadoVista != null) {
             int cantidadSeleccionada = Integer.parseInt(spnCantidad.getValue().toString());
             subtotalSel = getSubtotalAplicado(productoSeleccionadoVista, cantidadSeleccionada);
@@ -850,26 +949,50 @@ public class RegistrarFactura extends JDialog {
     private ArrayList<Producto> obtenerProductosDisponibles(boolean compra) {
         ArrayList<Producto> resultado = new ArrayList<Producto>();
         Proveedor filtroProveedor = null;
+
         if (compra && txtProveedor != null) {
-            filtroProveedor = (Proveedor) Tienda.getInstance().buscarPersonaId(txtProveedor.getText().trim());
+            filtroProveedor = (Proveedor) Tienda.getInstance()
+                    .buscarPersonaId(txtProveedor.getText().trim());
         }
 
         for (Producto pro : Tienda.getInstance().getProductoNoSeleccionados()) {
-            if (!pro.isEstado()) continue;
-            if (!compra && pro.getCantDisponible() <= 0) continue;
-            if (compra && filtroProveedor != null) {
-                if (pro.getProveedor() == null || !pro.getProveedor().getId().equals(filtroProveedor.getId())) continue;
+            if (!pro.isEstado()) {
+                continue;
             }
+
+            if (!compra && pro.getCantDisponible() <= 0) {
+                continue;
+            }
+
+            if (compra && filtroProveedor != null) {
+                if (pro.getProveedor() == null || !pro.getProveedor().getId().equals(filtroProveedor.getId())) {
+                    continue;
+                }
+            }
+
             resultado.add(pro);
         }
+
         return resultado;
     }
 
     private String getTipo(Producto pro) {
-        if (pro instanceof MotherBoard) return "MotherBoard";
-        if (pro instanceof Microprocesador) return "Microprocesador";
-        if (pro instanceof DiscoDuro) return "Disco Duro";
-        if (pro instanceof MemoriaRam) return "Memoria RAM";
+        if (pro instanceof MotherBoard) {
+            return "MotherBoard";
+        }
+
+        if (pro instanceof Microprocesador) {
+            return "Microprocesador";
+        }
+
+        if (pro instanceof DiscoDuro) {
+            return "Disco Duro";
+        }
+
+        if (pro instanceof MemoriaRam) {
+            return "Memoria RAM";
+        }
+
         return "Desconocido";
     }
 
@@ -878,6 +1001,7 @@ public class RegistrarFactura extends JDialog {
             tableComDisponible.clearSelection();
             tableComDisponible.setEnabled(false);
         }
+
         if (tableComCarrito != null) {
             tableComCarrito.clearSelection();
             tableComCarrito.setEnabled(false);
@@ -898,6 +1022,7 @@ public class RegistrarFactura extends JDialog {
             tableComDisponible.setEnabled(true);
             tableComDisponible.clearSelection();
         }
+
         if (tableComCarrito != null) {
             tableComCarrito.setEnabled(true);
             tableComCarrito.clearSelection();
@@ -916,6 +1041,7 @@ public class RegistrarFactura extends JDialog {
     private void mostrarAlerta(String icono, String msg) {
         ImageIcon ico = new ImageIcon(
                 MensajeAlerta.class.getResource("/Imagenes/" + icono + ".png"));
+
         MensajeAlerta m = new MensajeAlerta(ico, msg);
         m.setModal(true);
         m.setVisible(true);
@@ -925,6 +1051,7 @@ public class RegistrarFactura extends JDialog {
         DefaultTableCellRenderer r = new DefaultTableCellRenderer() {
             public Component getTableCellRendererComponent(JTable t, Object v,
                     boolean sel, boolean foc, int row, int col) {
+
                 super.getTableCellRendererComponent(t, v, sel, foc, row, col);
                 setBackground(bg);
                 setForeground(Color.WHITE);
@@ -932,6 +1059,7 @@ public class RegistrarFactura extends JDialog {
                 return this;
             }
         };
+
         for (int i = 0; i < tabla.getColumnModel().getColumnCount(); i++) {
             tabla.getColumnModel().getColumn(i).setHeaderRenderer(r);
         }
@@ -1004,6 +1132,7 @@ public class RegistrarFactura extends JDialog {
                 tableProDisponible.setEnabled(true);
                 tableProDisponible.clearSelection();
             }
+
             if (tableProCarrito != null) {
                 tableProCarrito.setEnabled(true);
                 tableProCarrito.clearSelection();
