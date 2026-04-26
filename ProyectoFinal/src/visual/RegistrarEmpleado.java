@@ -10,9 +10,11 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
+import javax.swing.text.MaskFormatter;
 
 import database.TiendaComputos;
 import logico.Empleado;
@@ -22,6 +24,7 @@ import logico.Tienda;
 import logico.User;
 
 import java.awt.event.ActionListener;
+import java.text.ParseException;
 import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -145,14 +148,30 @@ public class RegistrarEmpleado extends JDialog {
 		nombreField.setBorder(bottomBorder);
 		nombreField.setBackground(CyanClaro);
 		contentPanel.add(nombreField);
+		
 		{
-			cedulaField = new JTextField();
+			try {
+			    MaskFormatter mascara = new MaskFormatter("###-#######-#");
+			    mascara.setPlaceholderCharacter(' '); // Para que se vean los espacios vacíos
+			    cedulaField = new JFormattedTextField(mascara);
+			} catch (ParseException e) {
+			    cedulaField = new JFormattedTextField(); // Fallback por si falla la máscara
+			}
+
 			cedulaField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
 			cedulaField.setColumns(10);
 			cedulaField.setBounds(121, 145, 247, 20);
 			cedulaField.setBackground(CyanClaro);
 			cedulaField.setBorder(bottomBorder);
 			contentPanel.add(cedulaField);
+			
+			/*cedulaField = new JTextField();
+			cedulaField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+			cedulaField.setColumns(10);
+			cedulaField.setBounds(121, 145, 247, 20);
+			cedulaField.setBackground(CyanClaro);
+			cedulaField.setBorder(bottomBorder);
+			contentPanel.add(cedulaField);*/
 		}
 		{
 			correoField = new JTextField();
@@ -223,7 +242,7 @@ public class RegistrarEmpleado extends JDialog {
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 
-						if (nombreField.getText().isEmpty() || cedulaField.getText().isEmpty() || correoField.getText().isEmpty()) {
+						if (nombreField.getText().isEmpty() || cedulaField.getText().equalsIgnoreCase("   -       - ") || correoField.getText().isEmpty()) {
 							ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/cancel.png"));
 							MensajeAlerta mensajito = new MensajeAlerta(iconito, "Operación errónea.\nTodos los campos deben de estar llenos!");
 							mensajito.setModal(true);

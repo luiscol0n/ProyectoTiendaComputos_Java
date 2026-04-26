@@ -137,9 +137,17 @@ public class Principal extends JFrame {
 		menubuttonRegistrarEmpleado.setIcon(new ImageIcon(Principal.class.getResource("/Imagenes/EmpleadoRegistrar.png")));
 		menubuttonRegistrarEmpleado.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				RegistrarEmpleado ventanita = new RegistrarEmpleado(null);
-				ventanita.setModal(true);
-				ventanita.setVisible(true);
+				if (Tienda.getInstance().usuariosSinEmpleado().size() == 0) {
+					ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/alert.png"));
+					MensajeAlerta mensajito = new MensajeAlerta(iconito, "Operación errónea.\nAsegúrese de tener al menos 1 usuario registrado!");
+					mensajito.setModal(true);
+					mensajito.setVisible(true);
+					return;
+				} else {
+					RegistrarEmpleado ventanita = new RegistrarEmpleado(null);
+					ventanita.setModal(true);
+					ventanita.setVisible(true);					
+				}
 			}
 		});
 		menubuttonRegistrarEmpleado.setFont(new Font("Segoe UI", Font.PLAIN, 16));
