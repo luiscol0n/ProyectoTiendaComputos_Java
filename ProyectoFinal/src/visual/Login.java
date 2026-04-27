@@ -1,4 +1,3 @@
-//.
 package visual;
 
 import java.awt.BorderLayout;
@@ -31,6 +30,7 @@ import java.awt.Image;
 import javax.swing.ImageIcon;
 import java.awt.Toolkit;
 import javax.swing.JPasswordField;
+import java.awt.SystemColor;
 
 public class Login extends JFrame {
 
@@ -93,53 +93,56 @@ public class Login extends JFrame {
 	 * Create the frame.
 	 */
 	public Login() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(Login.class.getResource("/Imagenes/bienvenido-de-nuevo.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(Login.class.getResource("/Imagenes/login.png")));
 		Color CyanOscuro = new Color(70, 133, 133);
 		Color CyanMid = new Color(80, 180, 152);
 		Color CyanClaro =  new Color (222, 249, 196);
 		Color Rojito = new Color (250, 128, 114);
 		MatteBorder bottomBorder = new MatteBorder(0, 0, 2, 0, CyanOscuro);
 		
-		setTitle("Bienvenido");
+		setTitle("Bienvenido a TLM Tech");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 420, 253);
+		setBounds(100, 100, 434, 283);
 		setLocationRelativeTo(null);
 		contentPane = new JPanel();
-		contentPane.setBackground(new Color(32, 178, 170));
+		contentPane.setBackground(SystemColor.textHighlight);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		
 		setContentPane(contentPane);
 		
 		JPanel panel = new JPanel();
-		panel.setBackground(new Color(240, 255, 240));
+		panel.setToolTipText("hhh");
+		panel.setBackground(SystemColor.inactiveCaptionBorder);
 		contentPane.add(panel, BorderLayout.CENTER);
 		panel.setLayout(null);
 		
-		JLabel lblUsuario = new JLabel("Usuario:");
+		JLabel lblUsuario = new JLabel("    Usuario:");
+		lblUsuario.setIcon(new ImageIcon(Login.class.getResource("/Imagenes/usuarioo.png")));
 		lblUsuario.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-		lblUsuario.setBounds(37, 28, 72, 14);
+		lblUsuario.setBounds(22, 92, 105, 34);
 		panel.add(lblUsuario);
 		
 		JLabel lblContrasea = new JLabel("Contrase\u00F1a:");
+		lblContrasea.setIcon(new ImageIcon(Login.class.getResource("/Imagenes/password.png")));
 		lblContrasea.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-		lblContrasea.setBounds(37, 87, 105, 14);
+		lblContrasea.setBounds(22, 139, 105, 24);
 		panel.add(lblContrasea);
 		
 		textField = new JTextField();
 		textField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		textField.setBounds(37, 53, 191, 20);
+		textField.setBounds(139, 102, 196, 20);
 		panel.add(textField);
 		textField.setColumns(10);
 		textField.setBorder(bottomBorder);
-		textField.setBackground(CyanClaro);
+		textField.setBackground(SystemColor.control);
 		
-		JButton btnLogin = new JButton("Login");
-		btnLogin.setForeground(new Color(255, 255, 255));
+		JButton btnLogin = new JButton("Iniciar sesi\u00F3n");
+		btnLogin.setForeground(SystemColor.desktop);
 		btnLogin.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 		btnLogin.setActionCommand("OK");
-		btnLogin.setBackground(CyanMid);
+		btnLogin.setBackground(SystemColor.text);
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(Tienda.getInstance().confirmLogin(textField.getText(),new String (passwordField.getPassword()))){
@@ -158,35 +161,33 @@ public class Login extends JFrame {
 				
 			}
 		});
-		btnLogin.setBounds(94, 158, 89, 34);
+		btnLogin.setBounds(80, 192, 133, 24);
 		panel.add(btnLogin);
 		
-		JLabel iconoP = new JLabel(new ImageIcon(
-			    new ImageIcon(getClass().getResource("/Imagenes/loginprincipal.png")).getImage()
-			    .getScaledInstance(90, 90, Image.SCALE_SMOOTH))
+		JLabel iconoP = new JLabel(new ImageIcon(Login.class.getResource("/Imagenes/Login TLM (2).png"))
 			);
-		iconoP.setBounds(252, 44, 119, 103);
+		iconoP.setBounds(101, 15, 216, 74);
 		panel.add(iconoP);
 		
-		JButton cancelbutton = new JButton("Cancelar");
+		JButton cancelbutton = new JButton("Salir");
 		cancelbutton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				dispose();
 			}
 		});
-		cancelbutton.setForeground(new Color(255, 255, 255));
+		cancelbutton.setForeground(SystemColor.desktop);
 		cancelbutton.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 		cancelbutton.setActionCommand("OK");
-		cancelbutton.setBackground(Rojito);
-		cancelbutton.setBounds(220, 158, 98, 34);
+		cancelbutton.setBackground(SystemColor.text);
+		cancelbutton.setBounds(247, 192, 105, 24);
 		
 		panel.add(cancelbutton);
 		
 		passwordField = new JPasswordField();
-		passwordField.setBackground(CyanClaro);
+		passwordField.setBackground(SystemColor.control);
 		passwordField.setBorder(bottomBorder);
 		
-		passwordField.setBounds(37, 113, 191, 20);
+		passwordField.setBounds(139, 141, 196, 20);
 		panel.add(passwordField);
 		this.getRootPane().setDefaultButton(btnLogin);
 	}
