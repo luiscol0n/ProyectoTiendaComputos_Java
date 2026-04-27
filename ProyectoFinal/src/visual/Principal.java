@@ -64,7 +64,7 @@ public class Principal extends JFrame {
 		
 		Color CyanOscuro = new Color(70, 133, 133);
 		Color CyanClaro =  new Color (222, 249, 196);
-		setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/Imagenes/Logotipo.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/Imagenes/logotype.png")));
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent arg0) {

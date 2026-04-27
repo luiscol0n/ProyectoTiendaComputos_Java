@@ -75,7 +75,7 @@ public class VentanaOpcion extends JDialog {
 
         JPanel panel = new JPanel();
         panel.setBackground(SystemColor.inactiveCaptionBorder);
-        panel.setBorder(new LineBorder(new Color(255, 0, 0), 3, true));
+        panel.setBorder(new LineBorder(new Color(0, 0, 139), 3, true));
         panel.setBounds(0, 0, 331, 228);
         getContentPane().add(panel);
         panel.setLayout(null);
