@@ -96,9 +96,9 @@ public class Disponibilidad extends JDialog {
 				iconlabel.setIcon(icono);
 			}
 		});
-		button.setForeground(SystemColor.desktop);
+		button.setForeground(SystemColor.text);
 		button.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-		button.setBackground(SystemColor.text);
+		button.setBackground(new Color(0, 0, 139));
 		button.setBounds(129, 71, 95, 30);
 		panel.add(button);
 

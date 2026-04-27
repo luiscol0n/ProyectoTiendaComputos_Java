@@ -11,7 +11,7 @@ import java.sql.*;
 import java.text.ParseException;
 
 /**
- * Informes.java — TLM Tech
+ * Informes.java TLM Tech
  * JDialog con JTabbedPane. Una pestana por reporte.
  * Invocar desde el panel principal:
  *     new Informes(frameParent).setVisible(true);
@@ -44,6 +44,8 @@ public class PanelReportes extends JDialog {
 
     public PanelReportes(Frame parent) {
         super(parent, "TLM Tech - Panel de Reportes", true);
+        setIconImage(Toolkit.getDefaultToolkit().getImage(PanelReportes.class.getResource("/Imagenes/reportes.png")));
+        setTitle("Panel de Reportes");
         setSize(780, 540);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);

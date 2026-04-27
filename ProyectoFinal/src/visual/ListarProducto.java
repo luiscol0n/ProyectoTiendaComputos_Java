@@ -1,4 +1,3 @@
-//.
 package visual;
 
 import java.awt.BorderLayout;
@@ -61,7 +60,7 @@ public class ListarProducto extends JDialog {
 	public ListarProducto() {
 
 		setIconImage(
-				Toolkit.getDefaultToolkit().getImage(ListarProducto.class.getResource("/Imagenes/to-do-list.png")));
+				Toolkit.getDefaultToolkit().getImage(ListarProducto.class.getResource("/Imagenes/listaClientes.png")));
 		setTitle("Lista de Productos");
 		setBounds(100, 100, 1050, 505);
 		setLocationRelativeTo(null);
@@ -147,7 +146,6 @@ public class ListarProducto extends JDialog {
 		});
 
 		btnVerMas = new JButton("Mas Información");
-		btnVerMas.setIcon(new ImageIcon(ListarProducto.class.getResource("/Imagenes/listaClientes.png")));
 		btnVerMas.setForeground(SystemColor.desktop);
 		btnVerMas.setBackground(SystemColor.text);
 		btnVerMas.addActionListener(new ActionListener() {
