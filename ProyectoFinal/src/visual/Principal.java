@@ -492,6 +492,9 @@ public class Principal extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		if (!Tienda.getLoginUser().getTipo().equalsIgnoreCase("Administrador")) {
+			mntmNewMenuItem_12.setVisible(false);
+		}
 		
 		JLabel fondo = new JLabel("");
 		fondo.setIcon(new ImageIcon(Principal.class.getResource("/Imagenes/Background  Tienda Computos.png")));
