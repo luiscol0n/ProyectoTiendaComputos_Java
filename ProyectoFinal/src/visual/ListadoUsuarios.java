@@ -162,9 +162,7 @@ public class ListadoUsuarios extends JDialog {
 									Tienda.getInstance().eliminarUsuario(codigo);
 									//------ lo q agregue pa modificar
 									boolean exito = TiendaComputos.getInstance().eliminarUsuario(codigo);
-									if (exito) {
-										JOptionPane.showMessageDialog(null, "!Usuario eliminado en SQL Server!");
-									}
+							
 									//------------------------------------------------
 									deleteBtn.setEnabled(false);
 									updateBtn.setEnabled(false);
