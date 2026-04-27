@@ -476,6 +476,17 @@ public class Principal extends JFrame {
 		});
 		mntmNewMenuItem_11.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 		menuAdministracion.add(mntmNewMenuItem_11);
+		
+		JMenuItem mntmNewMenuItem_12 = new JMenuItem("TLM Tech - Panel de Reportes");
+		mntmNewMenuItem_12.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				PanelReportes panelReportes = new PanelReportes(null);
+				panelReportes.setVisible(true);
+			}
+		});
+		mntmNewMenuItem_12.setBackground(Color.WHITE);
+		mntmNewMenuItem_12.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+		menuAdministracion.add(mntmNewMenuItem_12);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
