@@ -220,7 +220,7 @@ public class Principal extends JFrame {
 					if (persona instanceof Proveedor) {
 						cantProveedores++;
 					}
-				}	
+				}
 				if (cantProveedores == 0) {
 					ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/alert.png"));
 					MensajeAlerta mensajito = new MensajeAlerta(iconito, "Operación errónea.\nDebe haber por lo menos un proveedor registrado!");
@@ -229,7 +229,7 @@ public class Principal extends JFrame {
 					return;
 				} else {
 					RegistrarProducto registrarProducto = new RegistrarProducto(null);
-					registrarProducto.setVisible(true);	
+					registrarProducto.setVisible(true);
 				}
 
 			}

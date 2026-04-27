@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JTextField;
 import javax.swing.JSpinner;
 import javax.swing.JComboBox;
@@ -33,9 +34,11 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.JRadioButton;
 import java.awt.Font;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Toolkit;
 
 import database.TiendaComputos;
@@ -195,6 +198,24 @@ public class RegistrarProducto extends JDialog {
             cbxProveedor.setBorder(new MatteBorder(0, 0, 2, 0, (Color) SystemColor.activeCaption));
             cbxProveedor.setBounds(325, 56, 197, 22);
 
+            cbxProveedor.setRenderer(new DefaultListCellRenderer() {
+                @Override
+                public Component getListCellRendererComponent(JList<?> list, Object value, int index,
+                                                              boolean isSelected, boolean cellHasFocus) {
+                    // Llamamos al padre para mantener el comportamiento visual (colores al seleccionar)
+                    super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                    
+                    // Verificamos que el valor sea un Proveedor
+                    if (value instanceof Proveedor) {
+                        Proveedor p = (Proveedor) value;
+                        // Configuramos el texto exactamente como lo pediste
+                        setText(p.getId() + " | " + p.getEmpresa());
+                    }
+                    
+                    return this;
+                }
+            });
+            
             for (Persona persona : Tienda.getInstance().getListaPersonas()) {
                 if (persona instanceof Proveedor) {
                     proveedoresRegistrados.addElement((Proveedor) persona);
