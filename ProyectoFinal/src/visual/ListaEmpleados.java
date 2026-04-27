@@ -27,6 +27,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.awt.Toolkit;
+import java.awt.SystemColor;
 
 public class ListaEmpleados extends JDialog {
 
@@ -53,11 +54,11 @@ public class ListaEmpleados extends JDialog {
      * Create the dialog.
      */
     public ListaEmpleados() {
-    	setIconImage(Toolkit.getDefaultToolkit().getImage(ListaEmpleados.class.getResource("/Imagenes/to-do-list.png")));
+    	setIconImage(Toolkit.getDefaultToolkit().getImage(ListaEmpleados.class.getResource("/Imagenes/listaClientes.png")));
         setTitle("Lista de Empleados");
         setBounds(100, 100, 919, 505);
         getContentPane().setLayout(new BorderLayout());
-        contentPanel.setBackground(new Color(240, 255, 240));
+        contentPanel.setBackground(SystemColor.inactiveCaptionBorder);
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
         contentPanel.setLayout(new BorderLayout(0, 0));
@@ -67,7 +68,7 @@ public class ListaEmpleados extends JDialog {
 		Color CyanMid = new Color(80, 180, 152);
 		Color Rojito = new Color(250, 128, 114);
 
-        String[] columnas = {"ID", "Nombre", "Cedula", "Correo", "Comision por Ventas", "Empleado del Mes"};
+        String[] columnas = {"ID", "Nombre", "Cédula", "Correo", "Comisión por Ventas", "Empleado del Mes"};
         tableModel = new DefaultTableModel(columnas, 0);
         table = new JTable(tableModel);
         table.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
@@ -76,7 +77,7 @@ public class ListaEmpleados extends JDialog {
         for (int i = 0; i < table.getColumnModel().getColumnCount(); i++) {
             table.getColumnModel().getColumn(i).setHeaderRenderer(headerRenderer);
         }
-        table.setBackground(new Color(240, 255, 240));
+        table.setBackground(SystemColor.inactiveCaptionBorder);
         table.setPreferredScrollableViewportSize(table.getPreferredSize());
         table.setFillsViewportHeight(true);
 
@@ -100,14 +101,14 @@ public class ListaEmpleados extends JDialog {
 
         {
             JPanel buttonPane = new JPanel();
-            buttonPane.setBackground(new Color(240, 255, 240));
+            buttonPane.setBackground(Color.LIGHT_GRAY);
             buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
             getContentPane().add(buttonPane, BorderLayout.SOUTH);
             {
                 botonActualizar = new JButton("Actualizar");
-                botonActualizar.setForeground(new Color(255, 255, 255));
+                botonActualizar.setForeground(SystemColor.desktop);
                 botonActualizar.setEnabled(false);
-                botonActualizar.setBackground(CyanMid);
+                botonActualizar.setBackground(SystemColor.text);
                 botonActualizar.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         int selectedRow = table.getSelectedRow();
@@ -136,17 +137,17 @@ public class ListaEmpleados extends JDialog {
                 		dispose();
                 	}
                 });
-                cancelButton.setForeground(new Color(255, 255, 255));
+                cancelButton.setForeground(SystemColor.desktop);
                 cancelButton.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
                 cancelButton.setActionCommand("Cancel");
-                cancelButton.setBackground(CyanMid);
+                cancelButton.setBackground(SystemColor.text);
                 
                 {
                     btnEliminar = new JButton("Eliminar");
-                    btnEliminar.setForeground(new Color(255, 255, 255));
+                    btnEliminar.setForeground(SystemColor.desktop);
                     btnEliminar.setEnabled(false);
                     btnEliminar.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-                    btnEliminar.setBackground(Rojito);
+                    btnEliminar.setBackground(SystemColor.text);
                     btnEliminar.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
                             eliminarEmpleadoSeleccionado();

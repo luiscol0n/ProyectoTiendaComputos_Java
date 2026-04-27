@@ -20,6 +20,7 @@ import logico.Producto;
 import logico.Tienda;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.SystemColor;
 
 public class CantidadProducto extends JDialog {
 
@@ -45,7 +46,7 @@ public class CantidadProducto extends JDialog {
 	 */
 	public CantidadProducto() {
 		setTitle("Cantidad Disponible");
-		setIconImage(Toolkit.getDefaultToolkit().getImage(CantidadProducto.class.getResource("/Imagenes/boxes.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(CantidadProducto.class.getResource("/Imagenes/cantidad.png")));
 		Color CyanOscuro = new Color(70, 133, 133);
 		Color CyanMid = new Color(80, 180, 152);
 		Color CyanClaro =  new Color (222, 249, 196);
@@ -57,7 +58,7 @@ public class CantidadProducto extends JDialog {
 		setResizable(false);
 		setBounds(100, 100, 370, 236);
 		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setBackground(new Color(240, 255, 240));
+		contentPanel.setBackground(SystemColor.inactiveCaptionBorder);
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		setLocationRelativeTo(null);
@@ -73,8 +74,8 @@ public class CantidadProducto extends JDialog {
 		productoField.setText("Producto - ");
 		productoField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 		productoField.setBounds(204, 24, 126, 20);
-		productoField.setBorder(bottomBorder);
-		productoField.setBackground(CyanClaro);
+		productoField.setBorder(new MatteBorder(0, 0, 2, 0, (Color) SystemColor.activeCaption));
+		productoField.setBackground(SystemColor.text);
 		contentPanel.add(productoField);
 		productoField.setColumns(10);
 		
@@ -98,10 +99,10 @@ public class CantidadProducto extends JDialog {
 		});
 		
 		
-		okButton.setForeground(new Color(255, 255, 255));
+		okButton.setForeground(SystemColor.text);
 		okButton.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 		okButton.setBounds(129, 71, 95, 30);
-		okButton.setBackground(CyanMid);
+		okButton.setBackground(new Color(0, 0, 139));
 		contentPanel.add(okButton);
 		
 		JLabel cantTxt = new JLabel("Quedan: ");
@@ -113,8 +114,8 @@ public class CantidadProducto extends JDialog {
 		cantField.setEditable(false);
 		cantField.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 		cantField.setBounds(159, 157, 126, 20);
-		cantField.setBorder(bottomBorder);
-		cantField.setBackground(CyanClaro);
+		cantField.setBorder(new MatteBorder(0, 0, 2, 0, (Color) SystemColor.activeCaption));
+		cantField.setBackground(SystemColor.text);
 		contentPanel.add(cantField);
 		cantField.setColumns(10);
 		

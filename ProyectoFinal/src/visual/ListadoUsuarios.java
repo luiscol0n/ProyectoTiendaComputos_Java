@@ -1,4 +1,3 @@
-//.
 package visual;
 
 import java.awt.BorderLayout;
@@ -27,6 +26,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
 import java.awt.Toolkit;
+import java.awt.SystemColor;
 
 public class ListadoUsuarios extends JDialog {
 
@@ -59,14 +59,14 @@ public class ListadoUsuarios extends JDialog {
 		Color CyanMid = new Color(80, 180, 152);
 		
 		setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-		setIconImage(Toolkit.getDefaultToolkit().getImage(ListadoUsuarios.class.getResource("/Imagenes/clienteregistrar.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(ListadoUsuarios.class.getResource("/Imagenes/listaClientes.png")));
 		setTitle("Listado de Usuarios");
 		setBounds(100, 100, 525, 300);
 		setLocationRelativeTo(null);
 		setResizable(false);
 		setModal(true);
 		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setBackground(new Color(240, 255, 240));
+		contentPanel.setBackground(SystemColor.inactiveCaptionBorder);
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new BorderLayout(0, 0));
@@ -86,7 +86,7 @@ public class ListadoUsuarios extends JDialog {
 			table.setShowVerticalLines(false);
 			table.setShowHorizontalLines(false);
 			table.setShowGrid(false);
-			table.setBackground(new Color(240, 255, 240));
+			table.setBackground(SystemColor.inactiveCaptionBorder);
 			table.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 			table.getTableHeader().setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 			DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer();
@@ -111,14 +111,14 @@ public class ListadoUsuarios extends JDialog {
 		}
 		{
 			JPanel buttonPane = new JPanel();
-			buttonPane.setBackground(new Color(240, 255, 240));
+			buttonPane.setBackground(Color.LIGHT_GRAY);
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
 				updateBtn = new JButton("Actualizar");
-				updateBtn.setForeground(Color.WHITE);
+				updateBtn.setForeground(SystemColor.desktop);
 				updateBtn.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-				updateBtn.setBackground(CyanMid);
+				updateBtn.setBackground(SystemColor.text);
 				updateBtn.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						if(!codigo.equalsIgnoreCase("")){
@@ -139,9 +139,9 @@ public class ListadoUsuarios extends JDialog {
 			}
 			{
 				deleteBtn = new JButton("Eliminar");
-				deleteBtn.setForeground(Color.WHITE);
+				deleteBtn.setForeground(SystemColor.desktop);
 				deleteBtn.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-				deleteBtn.setBackground(new Color(250, 128, 114));
+				deleteBtn.setBackground(SystemColor.text);
 				deleteBtn.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						if(codigo != ""){
@@ -190,9 +190,9 @@ public class ListadoUsuarios extends JDialog {
 			}
 			{
 				JButton cancelButton = new JButton("Cancelar");
-				cancelButton.setForeground(Color.WHITE);
+				cancelButton.setForeground(SystemColor.desktop);
 				cancelButton.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-				cancelButton.setBackground(CyanMid);
+				cancelButton.setBackground(SystemColor.text);
 				cancelButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						dispose();

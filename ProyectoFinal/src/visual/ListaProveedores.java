@@ -1,4 +1,3 @@
-//.
 package visual;
 
 import java.awt.BorderLayout;
@@ -27,6 +26,8 @@ import java.util.ArrayList;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Font;
+import java.awt.SystemColor;
+import java.awt.Toolkit;
 
 public class ListaProveedores extends JDialog {
 
@@ -53,23 +54,24 @@ public class ListaProveedores extends JDialog {
      * Create the dialog.
      */
     public ListaProveedores() {
+    	setIconImage(Toolkit.getDefaultToolkit().getImage(ListaProveedores.class.getResource("/Imagenes/listaClientes.png")));
         setFont(new Font("Bahnschrift", Font.PLAIN, 13));
         setTitle("Lista de Proveedores");
         setBounds(100, 100, 600, 400);
         getContentPane().setLayout(new BorderLayout());
-        contentPanel.setBackground(new Color(240, 255, 240));
+        contentPanel.setBackground(SystemColor.inactiveCaptionBorder);
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
         contentPanel.setLayout(new BorderLayout(0, 0));
-        setLocationRelativeTo(null); /*Poner en el centro*/
+        setLocationRelativeTo(null);
         setResizable(false);
         
 		Color CyanMid = new Color(80, 180, 152);
 
-        String[] columnas = {"ID", "Nombre", "Cedula", "Correo", "Empresa"};
+        String[] columnas = {"ID", "Nombre", "Cédula", "Correo", "Empresa"};
         tableModel = new DefaultTableModel(columnas, 0);
         table = new JTable(tableModel);
-        table.setBackground(new Color(240, 255, 240));
+        table.setBackground(SystemColor.inactiveCaptionBorder);
         table.setBorder(null);
         DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer();
         headerRenderer.setFont(new Font("Bahnschrift", Font.BOLD, 14));
@@ -100,15 +102,15 @@ public class ListaProveedores extends JDialog {
 
         {
             JPanel buttonPane = new JPanel();
-            buttonPane.setBackground(new Color(240, 255, 240));
+            buttonPane.setBackground(Color.LIGHT_GRAY);
             buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
             getContentPane().add(buttonPane, BorderLayout.SOUTH);
             {
                 eliminarbotton = new JButton("Eliminar");
-                eliminarbotton.setForeground(new Color(255, 255, 255));
+                eliminarbotton.setForeground(SystemColor.desktop);
                 eliminarbotton.setEnabled(false);
                 eliminarbotton.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-                eliminarbotton.setBackground(new Color(250, 128, 114));
+                eliminarbotton.setBackground(SystemColor.text);
                 eliminarbotton.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         int selectedRow = table.getSelectedRow();
@@ -119,10 +121,10 @@ public class ListaProveedores extends JDialog {
                     }
                 });
                 bottonActualizar = new JButton("Actualizar");
-                bottonActualizar.setForeground(new Color(255, 255, 255));
+                bottonActualizar.setForeground(SystemColor.desktop);
                 bottonActualizar.setEnabled(false);
                 bottonActualizar.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-                bottonActualizar.setBackground(CyanMid);
+                bottonActualizar.setBackground(SystemColor.text);
                 bottonActualizar.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         int selectedRow = table.getSelectedRow();
@@ -151,9 +153,9 @@ public class ListaProveedores extends JDialog {
                 		dispose();
                 	}
                 });
-                cancelButton.setForeground(new Color(255, 255, 255));
+                cancelButton.setForeground(SystemColor.desktop);
                 cancelButton.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-                cancelButton.setBackground(CyanMid);
+                cancelButton.setBackground(SystemColor.text);
                 cancelButton.setActionCommand("Cancel");
                 buttonPane.add(cancelButton);
             }

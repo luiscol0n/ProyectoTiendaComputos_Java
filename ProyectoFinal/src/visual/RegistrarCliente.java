@@ -1,4 +1,3 @@
-//.
 package visual;
 
 import java.awt.BorderLayout;
@@ -32,6 +31,8 @@ import javax.swing.text.MaskFormatter;
 import database.TiendaComputos;
 
 import java.awt.Toolkit;
+import java.awt.SystemColor;
+import javax.swing.border.LineBorder;
 
 public class RegistrarCliente extends JDialog {
 
@@ -61,9 +62,10 @@ public class RegistrarCliente extends JDialog {
 	 * Create the dialog.
 	 */
 	public RegistrarCliente(Cliente cliente) {
+		setTitle("Registrar Cliente");
 		setResizable(false);
 		setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-		setIconImage(Toolkit.getDefaultToolkit().getImage(RegistrarCliente.class.getResource("/Imagenes/clienteregistrar.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(RegistrarCliente.class.getResource("/Imagenes/ClienteRegistrar1.png")));
 		this.cliente = cliente; 
 
 		Color CyanOscuro = new Color(70, 133, 133);
@@ -84,13 +86,13 @@ public class RegistrarCliente extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
 		setLocationRelativeTo(null); /*Poner en el centro*/
-		contentPanel.setBackground(FondoClarito);
+		contentPanel.setBackground(new Color(245, 245, 245));
 
 		{
 			JLabel lblNewLabel = new JLabel("Ingrese los datos:");
 			lblNewLabel.setForeground(new Color(0, 0, 0));
 			lblNewLabel.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
-			lblNewLabel.setBounds(132, 11, 182, 25);
+			lblNewLabel.setBounds(156, 13, 144, 25);
 			contentPanel.add(lblNewLabel);
 		}
 		{
@@ -125,7 +127,7 @@ public class RegistrarCliente extends JDialog {
 			JLabel edadTxt = new JLabel("Edad:");
 			edadTxt.setForeground(new Color(0, 0, 0));
 			edadTxt.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-			edadTxt.setBounds(216, 51, 46, 14);
+			edadTxt.setBounds(287, 51, 46, 14);
 			contentPanel.add(edadTxt);
 		}
 
@@ -135,15 +137,15 @@ public class RegistrarCliente extends JDialog {
 		idField.setBounds(78, 47, 86, 20);
 		contentPanel.add(idField);
 		idField.setColumns(10);
-		idField.setBorder(bottomBorder);
-		idField.setBackground(CyanClaro);
+		idField.setBorder(new MatteBorder(0, 0, 2, 0, (Color) SystemColor.activeCaption));
+		idField.setBackground(Color.WHITE);
 
 		nombreField = new JTextField();
 		nombreField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
 		nombreField.setColumns(10);
 		nombreField.setBounds(127, 83, 247, 20);
-		nombreField.setBorder(bottomBorder);
-		nombreField.setBackground(CyanClaro);
+		nombreField.setBorder(new MatteBorder(0, 0, 2, 0, (Color) SystemColor.activeCaption));
+		nombreField.setBackground(Color.WHITE);
 		contentPanel.add(nombreField);
 		
 		{
@@ -158,8 +160,8 @@ public class RegistrarCliente extends JDialog {
 			cedulaField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
 			cedulaField.setColumns(10);
 			cedulaField.setBounds(127, 114, 247, 20);
-			cedulaField.setBackground(CyanClaro);
-			cedulaField.setBorder(bottomBorder);
+			cedulaField.setBackground(Color.WHITE);
+			cedulaField.setBorder(new MatteBorder(0, 0, 2, 0, (Color) SystemColor.activeCaption));
 			contentPanel.add(cedulaField);
 			/*cedulaField = new JTextField();
 			cedulaField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
@@ -174,36 +176,42 @@ public class RegistrarCliente extends JDialog {
 			correoField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
 			correoField.setColumns(10);
 			correoField.setBounds(127, 143, 247, 20);
-			correoField.setBackground(CyanClaro);
-			correoField.setBorder(bottomBorder);
+			correoField.setBackground(Color.WHITE);
+			correoField.setBorder(new MatteBorder(0, 0, 2, 0, (Color) SystemColor.activeCaption));
 			contentPanel.add(correoField);
 
 		}
 
-		edadSpinner = new JSpinner(new SpinnerNumberModel(10, 10, 100, 1)); 
+		edadSpinner = new JSpinner(new SpinnerNumberModel(16, 16, 100, 1)); 
+		edadSpinner.setForeground(Color.BLACK);
+		edadSpinner.setBackground(Color.WHITE);
 		edadSpinner.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-		edadSpinner.setBounds(272, 47, 86, 20);
-		edadSpinner.setBorder(bottomBorder);
-		/*Nota: esta parte de aqui es para cambiar el Background del spinner*/
+		edadSpinner.setBounds(328, 46, 86, 20);
+		edadSpinner.setBorder(new MatteBorder(0, 0, 2, 0, (Color) SystemColor.activeCaption));
+
 		JComponent editor = edadSpinner.getEditor();
 		if (editor instanceof JSpinner.DefaultEditor) {
-			JSpinner.DefaultEditor spinnerEditor = (JSpinner.DefaultEditor) editor;
-			spinnerEditor.getTextField().setBackground(CyanClaro);}
+		    JSpinner.DefaultEditor spinnerEditor = (JSpinner.DefaultEditor) editor;
+		    spinnerEditor.getTextField().setBackground(SystemColor.WHITE); 
+		    spinnerEditor.getTextField().setEditable(true);
+		}
+		
 		contentPanel.add(edadSpinner);
-
+		
 		{
 			JPanel buttonPane = new JPanel();
+			buttonPane.setBorder(new LineBorder(SystemColor.activeCaption));
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-			buttonPane.setBackground(new Color(240, 255, 240));
+			buttonPane.setBackground(Color.LIGHT_GRAY);
 			{
 				JButton okButton = new JButton("Registrar");
 				if (cliente != null) {
 					okButton.setText("Actualizar");
 				}
-				okButton.setForeground(new Color(255, 255, 255));
+				okButton.setForeground(SystemColor.desktop);
 				okButton.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-				okButton.setBackground(CyanMid);
+				okButton.setBackground(SystemColor.text);
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 
@@ -267,8 +275,8 @@ public class RegistrarCliente extends JDialog {
 			}
 			{
 				JButton cancelButton = new JButton("Cancelar");
-				cancelButton.setBackground(new Color(250, 128, 114));
-				cancelButton.setForeground(new Color(255, 255, 255));
+				cancelButton.setBackground(SystemColor.text);
+				cancelButton.setForeground(SystemColor.desktop);
 				cancelButton.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 				cancelButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {

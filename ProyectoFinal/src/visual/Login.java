@@ -113,8 +113,7 @@ public class Login extends JFrame {
 		setContentPane(contentPane);
 		
 		JPanel panel = new JPanel();
-		panel.setToolTipText("hhh");
-		panel.setBackground(SystemColor.inactiveCaptionBorder);
+		panel.setBackground(new Color(245, 245, 245));
 		contentPane.add(panel, BorderLayout.CENTER);
 		panel.setLayout(null);
 		
@@ -135,8 +134,8 @@ public class Login extends JFrame {
 		textField.setBounds(139, 102, 196, 20);
 		panel.add(textField);
 		textField.setColumns(10);
-		textField.setBorder(bottomBorder);
-		textField.setBackground(SystemColor.control);
+		textField.setBorder(new MatteBorder(0, 0, 2, 0, (Color) SystemColor.activeCaption));
+		textField.setBackground(Color.WHITE);
 		
 		JButton btnLogin = new JButton("Iniciar sesi\u00F3n");
 		btnLogin.setForeground(SystemColor.desktop);
@@ -184,8 +183,8 @@ public class Login extends JFrame {
 		panel.add(cancelbutton);
 		
 		passwordField = new JPasswordField();
-		passwordField.setBackground(SystemColor.control);
-		passwordField.setBorder(bottomBorder);
+		passwordField.setBackground(Color.WHITE);
+		passwordField.setBorder(new MatteBorder(0, 0, 2, 0, (Color) SystemColor.activeCaption));
 		
 		passwordField.setBounds(139, 141, 196, 20);
 		panel.add(passwordField);

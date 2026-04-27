@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 import database.TiendaComputos;
+import java.awt.SystemColor;
 
 public class TipoFactura extends JDialog {
 
@@ -44,13 +45,13 @@ public class TipoFactura extends JDialog {
 		setBounds(100, 100, 282, 141);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPanel.setBackground(CyanOscuro);
+		contentPanel.setBackground(new Color(0, 0, 139));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
 		setLocationRelativeTo(null);
 		
 		JPanel panel = new JPanel();
-		panel.setBackground(new Color(240, 255, 240));
+		panel.setBackground(SystemColor.control);
 		panel.setBounds(10, 11, 262, 119);
 		contentPanel.add(panel);
 		panel.setLayout(null);
@@ -63,7 +64,7 @@ public class TipoFactura extends JDialog {
 		btnCompra = new JButton("Compra");
 		btnCompra.setBounds(32, 66, 89, 23);
 		panel.add(btnCompra);
-		btnCompra.setForeground(Color.WHITE);
+		btnCompra.setForeground(SystemColor.desktop);
 		btnCompra.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				RegistrarFactura reg= new RegistrarFactura(true);
@@ -75,12 +76,12 @@ public class TipoFactura extends JDialog {
 		btnCompra.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 		
 		
-		btnCompra.setBackground(new Color(250, 128, 114));
+		btnCompra.setBackground(SystemColor.text);
 		
 		btnVenta = new JButton("Venta");
 		btnVenta.setBounds(131, 66, 89, 23);
 		panel.add(btnVenta);
-		btnVenta.setForeground(Color.WHITE);
+		btnVenta.setForeground(SystemColor.desktop);
 		btnVenta.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				RegistrarFactura reg= new RegistrarFactura(false);
@@ -90,7 +91,7 @@ public class TipoFactura extends JDialog {
 			}
 		});
 		btnVenta.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-		btnVenta.setBackground(CyanMid);
+		btnVenta.setBackground(SystemColor.text);
 		
 		JButton btnCancel = new JButton("X");
 		btnCancel.setBackground(Color.RED);

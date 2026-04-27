@@ -30,6 +30,7 @@ import logico.MotherBoard;
 import logico.Producto;
 import logico.Tienda;
 import database.TiendaComputos;
+import java.awt.SystemColor;
 
 public class ListarProducto extends JDialog {
 
@@ -58,8 +59,6 @@ public class ListarProducto extends JDialog {
 	 * Create the dialog.
 	 */
 	public ListarProducto() {
-		Color CyanMid = new Color(80, 180, 152);
-		Color Rojito = new Color(250, 128, 114);
 
 		setIconImage(
 				Toolkit.getDefaultToolkit().getImage(ListarProducto.class.getResource("/Imagenes/to-do-list.png")));
@@ -70,7 +69,7 @@ public class ListarProducto extends JDialog {
 		setModal(true);
 		getContentPane().setLayout(new BorderLayout());
 
-		contentPanel.setBackground(new Color(240, 255, 240));
+		contentPanel.setBackground(SystemColor.inactiveCaptionBorder);
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new BorderLayout(0, 0));
@@ -86,7 +85,7 @@ public class ListarProducto extends JDialog {
 		};
 
 		table = new JTable(tableModel);
-		table.setBackground(new Color(240, 255, 240));
+		table.setBackground(SystemColor.inactiveCaptionBorder);
 		table.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 		table.getTableHeader().setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 
@@ -115,13 +114,13 @@ public class ListarProducto extends JDialog {
 		contentPanel.add(scrollPane, BorderLayout.CENTER);
 
 		JPanel buttonPane = new JPanel();
-		buttonPane.setBackground(new Color(240, 255, 240));
+		buttonPane.setBackground(Color.LIGHT_GRAY);
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
 		botonActualizar = new JButton("Actualizar");
-		botonActualizar.setForeground(new Color(255, 255, 255));
-		botonActualizar.setBackground(CyanMid);
+		botonActualizar.setForeground(SystemColor.desktop);
+		botonActualizar.setBackground(SystemColor.text);
 		botonActualizar.setEnabled(false);
 		botonActualizar.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 		botonActualizar.addActionListener(new ActionListener() {
@@ -147,9 +146,10 @@ public class ListarProducto extends JDialog {
 			}
 		});
 
-		btnVerMas = new JButton("Mas Informacion");
-		btnVerMas.setForeground(new Color(255, 255, 255));
-		btnVerMas.setBackground(CyanMid);
+		btnVerMas = new JButton("Mas Información");
+		btnVerMas.setIcon(new ImageIcon(ListarProducto.class.getResource("/Imagenes/listaClientes.png")));
+		btnVerMas.setForeground(SystemColor.desktop);
+		btnVerMas.setBackground(SystemColor.text);
 		btnVerMas.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int selectedRow = table.getSelectedRow();
@@ -173,15 +173,15 @@ public class ListarProducto extends JDialog {
 		getRootPane().setDefaultButton(botonActualizar);
 
 		JButton cancelButton = new JButton("Cancelar");
-		cancelButton.setForeground(new Color(255, 255, 255));
-		cancelButton.setBackground(CyanMid);
+		cancelButton.setForeground(SystemColor.desktop);
+		cancelButton.setBackground(SystemColor.text);
 		cancelButton.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 		cancelButton.setActionCommand("Cancel");
 		cancelButton.addActionListener(e -> dispose());
 
 		botonEliminar = new JButton("Eliminar");
-		botonEliminar.setForeground(new Color(255, 255, 255));
-		botonEliminar.setBackground(Rojito);
+		botonEliminar.setForeground(SystemColor.desktop);
+		botonEliminar.setBackground(SystemColor.text);
 		botonEliminar.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 		botonEliminar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {

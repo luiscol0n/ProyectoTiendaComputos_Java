@@ -1,4 +1,3 @@
-//.
 package visual;
 
 import java.awt.Color;
@@ -20,6 +19,7 @@ import javax.swing.border.MatteBorder;
 
 import logico.Empleado;
 import logico.Tienda;
+import java.awt.SystemColor;
 
 public class PagoSueldo extends JDialog {
 
@@ -46,7 +46,8 @@ public class PagoSueldo extends JDialog {
 	 * Create the dialog.
 	 */
 	public PagoSueldo() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(Disponibilidad.class.getResource("/Imagenes/convenience.png")));
+		setTitle("Sueldo Empleado");
+		setIconImage(Toolkit.getDefaultToolkit().getImage(PagoSueldo.class.getResource("/Imagenes/wallet.png")));
 		setBounds(100, 100, 379, 255);
 		getContentPane().setLayout(null);
 
@@ -59,7 +60,7 @@ public class PagoSueldo extends JDialog {
 		JPanel panel = new JPanel();
 		panel.setLayout(null);
 		panel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		panel.setBackground(FondoClarito);
+		panel.setBackground(SystemColor.inactiveCaptionBorder);
 		panel.setBounds(0, 0, 363, 216);
 		getContentPane().add(panel);
 		setLocationRelativeTo(null);
@@ -73,9 +74,9 @@ public class PagoSueldo extends JDialog {
 		textField.setText("Empleado - ");
 		textField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 		textField.setColumns(10);
-		textField.setBackground(CyanClaro);
+		textField.setBackground(SystemColor.text);
 		textField.setBounds(204, 24, 126, 20);
-		textField.setBorder(bottomBorder);
+		textField.setBorder(new MatteBorder(0, 0, 2, 0, (Color) SystemColor.activeCaption));
 		panel.add(textField);
 
 		JButton button = new JButton("Buscar...");
@@ -101,9 +102,9 @@ public class PagoSueldo extends JDialog {
 				iconlabel.setIcon(icono);
 			}
 		});
-		button.setForeground(Color.WHITE);
+		button.setForeground(SystemColor.text);
 		button.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-		button.setBackground(CyanMid);
+		button.setBackground(new Color(0, 0, 139));
 		button.setBounds(129, 71, 95, 30);
 		panel.add(button);
 
@@ -112,9 +113,9 @@ public class PagoSueldo extends JDialog {
 		textField_1.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 		textField_1.setEditable(false);
 		textField_1.setColumns(10);
-		textField_1.setBackground(CyanClaro);
+		textField_1.setBackground(SystemColor.text);
 		textField_1.setBounds(22, 164, 172, 20);
-		textField_1.setBorder(bottomBorder);
+		textField_1.setBorder(new MatteBorder(0, 0, 2, 0, (Color) SystemColor.activeCaption));
 		panel.add(textField_1);
 
 		JSeparator separator = new JSeparator();

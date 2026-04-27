@@ -29,6 +29,7 @@ import javax.swing.SwingConstants;
 import javax.swing.JTextPane;
 import javax.swing.Icon;
 import javax.swing.border.LineBorder;
+import java.awt.SystemColor;
 
 public class Favoritos extends JDialog {
 
@@ -81,11 +82,11 @@ public class Favoritos extends JDialog {
 		
 		
 		setTitle("Producto Favorito");
-		setIconImage(Toolkit.getDefaultToolkit().getImage(Favoritos.class.getResource("/Imagenes/favoritos.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(Favoritos.class.getResource("/Imagenes/favorito.png")));
 		setBounds(100, 100, 404, 256);
 		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setBackground(new Color(240, 255, 240));
-		contentPanel.setBorder(new LineBorder(CyanOscuro, 4, true));
+		contentPanel.setBackground(SystemColor.inactiveCaptionBorder);
+		contentPanel.setBorder(new LineBorder(new Color(0, 0, 139), 4, true));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
 		
@@ -104,8 +105,8 @@ public class Favoritos extends JDialog {
 		JLabel productoInfo = new JLabel("<html>" + texto.replace("\n", "<br>") + "</html>");
 		productoInfo.setHorizontalAlignment(SwingConstants.CENTER);
 		productoInfo.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-		productoInfo.setBackground(CyanClaro);
-		productoInfo.setBorder(bottomBorder);
+		productoInfo.setBackground(SystemColor.inactiveCaptionBorder);
+		productoInfo.setBorder(new MatteBorder(0, 0, 2, 0, (Color) SystemColor.activeCaption));
 		productoInfo.setBounds(176, 80, 168, 84);
 		contentPanel.add(productoInfo);
 		setLocationRelativeTo(null);

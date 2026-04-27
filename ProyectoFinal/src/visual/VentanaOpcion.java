@@ -1,4 +1,3 @@
-//.
 package visual;
 
 import java.awt.Color;
@@ -15,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
+import java.awt.SystemColor;
 
 public class VentanaOpcion extends JDialog {
     private int resultado = -1; 
@@ -35,8 +35,8 @@ public class VentanaOpcion extends JDialog {
         getContentPane().setLayout(null);
 
         JButton yesButton = new JButton("Confirmar");
-        yesButton.setForeground(new Color(255, 255, 255));
-        yesButton.setBackground(CyanMid);
+        yesButton.setForeground(SystemColor.desktop);
+        yesButton.setBackground(SystemColor.text);
         yesButton.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
         yesButton.setBounds(58, 176, 111, 23);
         getContentPane().add(yesButton);
@@ -50,9 +50,9 @@ public class VentanaOpcion extends JDialog {
         getRootPane().setDefaultButton(yesButton);
 
         JButton noButton = new JButton("No");
-        noButton.setForeground(new Color(255, 255, 255));
+        noButton.setForeground(SystemColor.desktop);
         noButton.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-        noButton.setBackground(Rojito);
+        noButton.setBackground(SystemColor.text);
         noButton.setBounds(203, 176, 80, 23);
         getContentPane().add(noButton);
         noButton.setActionCommand("No");
@@ -66,7 +66,7 @@ public class VentanaOpcion extends JDialog {
         /*Nota: lo del <html> es para que se formatee como uno y me deje usar textos con saltos de línea y "<br>" es salto de línea en HTML*/
         JLabel txtTxt = new JLabel("<html>" + texto.replace("\n", "<br>") + "</html>");
         txtTxt.setHorizontalAlignment(SwingConstants.CENTER);
-        txtTxt.setBorder(bottomBorder);
+        txtTxt.setBorder(new MatteBorder(0, 0, 2, 0, (Color) SystemColor.activeCaption));
         txtTxt.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
         txtTxt.setBounds(20, 40, 188, 94);
         getContentPane().add(txtTxt);
@@ -74,7 +74,7 @@ public class VentanaOpcion extends JDialog {
         /*Nota: esto es para cambiar el tamaño de la imagen*/
 
         JPanel panel = new JPanel();
-        panel.setBackground(new Color(240, 255, 240));
+        panel.setBackground(SystemColor.inactiveCaptionBorder);
         panel.setBorder(new LineBorder(new Color(255, 0, 0), 3, true));
         panel.setBounds(0, 0, 331, 228);
         getContentPane().add(panel);

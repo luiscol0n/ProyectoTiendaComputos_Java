@@ -28,6 +28,7 @@ import logico.FacturaVenta;
 import logico.Tienda;
 
 import database.TiendaComputos;
+import java.awt.SystemColor;
 
 
 public class ListadoFacturas extends JDialog {
@@ -51,7 +52,7 @@ public class ListadoFacturas extends JDialog {
     }
 
     public ListadoFacturas() {
-        setIconImage(Toolkit.getDefaultToolkit().getImage(ListadoFacturas.class.getResource("/Imagenes/to-do-list.png")));
+        setIconImage(Toolkit.getDefaultToolkit().getImage(ListadoFacturas.class.getResource("/Imagenes/listaClientes.png")));
         setTitle("Lista de Facturas");
         setBounds(100, 100, 1050, 505);
         setLocationRelativeTo(null);
@@ -60,12 +61,12 @@ public class ListadoFacturas extends JDialog {
         getContentPane().setLayout(new BorderLayout());
 
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        contentPanel.setBackground(new Color(240, 255, 240));
+        contentPanel.setBackground(SystemColor.inactiveCaptionBorder);
         getContentPane().add(contentPanel, BorderLayout.CENTER);
         contentPanel.setLayout(new BorderLayout(0, 0));
 
         JPanel panelFiltro = new JPanel();
-        panelFiltro.setBackground(new Color(240, 255, 240));
+        panelFiltro.setBackground(SystemColor.controlHighlight);
         panelFiltro.setBorder(new EmptyBorder(5, 10, 5, 5));
         panelFiltro.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 5));
 
@@ -104,7 +105,7 @@ public class ListadoFacturas extends JDialog {
             }
         });
 
-        table.setBackground(new Color(240, 255, 240));
+        table.setBackground(SystemColor.inactiveCaptionBorder);
         table.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         table.getTableHeader().setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 
@@ -121,6 +122,7 @@ public class ListadoFacturas extends JDialog {
         contentPanel.add(scrollPane, BorderLayout.CENTER);
 
         JPanel buttonPane = new JPanel();
+        buttonPane.setBackground(Color.LIGHT_GRAY);
         buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
         getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
@@ -138,10 +140,10 @@ public class ListadoFacturas extends JDialog {
             }
         });
 
-        btnVerDetalleFactura.setForeground(Color.WHITE);
+        btnVerDetalleFactura.setForeground(SystemColor.desktop);
         btnVerDetalleFactura.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
         btnVerDetalleFactura.setEnabled(false);
-        btnVerDetalleFactura.setBackground(new Color(80, 180, 152));
+        btnVerDetalleFactura.setBackground(SystemColor.text);
         buttonPane.add(btnVerDetalleFactura);
 
         JButton btnSalir = new JButton("Salir");
@@ -150,9 +152,9 @@ public class ListadoFacturas extends JDialog {
                 dispose();
             }
         });
-        btnSalir.setForeground(Color.WHITE);
+        btnSalir.setForeground(SystemColor.desktop);
         btnSalir.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-        btnSalir.setBackground(new Color(250, 128, 114));
+        btnSalir.setBackground(SystemColor.text);
         buttonPane.add(btnSalir);
 
         loadFacturas();

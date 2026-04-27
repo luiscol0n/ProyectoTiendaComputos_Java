@@ -1,4 +1,3 @@
-//.
 package visual;
 
 import java.awt.BorderLayout;
@@ -18,6 +17,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import logico.Tienda;
+import java.awt.SystemColor;
 
 public class InventarioGeneral extends JDialog {
 
@@ -44,11 +44,11 @@ public class InventarioGeneral extends JDialog {
      */
     public InventarioGeneral() {
         setTitle("Inventario General");
-        setIconImage(Toolkit.getDefaultToolkit().getImage(InventarioGeneral.class.getResource("/Imagenes/InventarioGeneralp.png")));
+        setIconImage(Toolkit.getDefaultToolkit().getImage(InventarioGeneral.class.getResource("/Imagenes/inventario.png")));
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setBounds(100, 100, 367, 394);
+        setBounds(100, 100, 387, 462);
         contentPane = new JPanel();
-        contentPane.setBackground(new Color(240, 255, 240));
+        contentPane.setBackground(SystemColor.inactiveCaptionBorder);
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(contentPane);
         contentPane.setLayout(null);

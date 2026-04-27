@@ -1,4 +1,3 @@
-//.
 package visual;
 
 
@@ -14,6 +13,7 @@ import logico.MemoriaRam;
 import logico.Microprocesador;
 import logico.MotherBoard;
 import logico.Producto;
+import java.awt.Toolkit;
 
 public class VisualizacionProducto extends JDialog {
 
@@ -36,6 +36,7 @@ public class VisualizacionProducto extends JDialog {
 	 * Create the dialog.
 	 */
 	public VisualizacionProducto(Producto producto) {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(VisualizacionProducto.class.getResource("/Imagenes/producto.png")));
 		setTitle(producto.getId());
 		setBounds(100, 100, 607, 439);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));

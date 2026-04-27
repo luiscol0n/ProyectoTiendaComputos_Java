@@ -49,6 +49,7 @@ import logico.Producto;
 import logico.Proveedor;
 import logico.Tienda;
 import logico.User;
+import java.awt.SystemColor;
 
 public class RegistrarFactura extends JDialog {
 
@@ -119,8 +120,7 @@ public class RegistrarFactura extends JDialog {
     public RegistrarFactura(boolean esCV) {
         this.esCV = esCV;
 
-        setIconImage(Toolkit.getDefaultToolkit().getImage(
-                RegistrarFactura.class.getResource("/Imagenes/invoice.png")));
+        setIconImage(Toolkit.getDefaultToolkit().getImage(RegistrarFactura.class.getResource("/Imagenes/factura.png")));
 
         Color cyanOscuro = new Color(70, 133, 133);
         Color cyanMid = new Color(80, 180, 152);
@@ -135,14 +135,15 @@ public class RegistrarFactura extends JDialog {
         getContentPane().add(contentPanel, BorderLayout.CENTER);
         contentPanel.setLayout(null);
         setLocationRelativeTo(null);
-        contentPanel.setBackground(fondoClarito);
+        contentPanel.setBackground(SystemColor.inactiveCaptionBorder);
         setModal(true);
 
         JPanel panel = new JPanel();
+        panel.setForeground(SystemColor.desktop);
         panel.setBounds(10, 11, 744, 460);
         contentPanel.add(panel);
         panel.setLayout(null);
-        panel.setBackground(fondoClarito);
+        panel.setBackground(SystemColor.text);
 
         JLabel lblID = new JLabel("ID:");
         lblID.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
@@ -150,11 +151,12 @@ public class RegistrarFactura extends JDialog {
         panel.add(lblID);
 
         txtID = new JTextField();
+        txtID.setForeground(SystemColor.desktop);
         txtID.setText("FAC-" + Tienda.getInstance().numFactura);
         txtID.setEditable(false);
         txtID.setBounds(50, 10, 133, 20);
-        txtID.setBorder(bottomBorder);
-        txtID.setBackground(cyanClaro);
+        txtID.setBorder(new MatteBorder(0, 0, 2, 0, (Color) SystemColor.activeCaption));
+        txtID.setBackground(SystemColor.text);
         panel.add(txtID);
 
         JLabel lblFecha = new JLabel("Fecha:");
@@ -163,11 +165,12 @@ public class RegistrarFactura extends JDialog {
         panel.add(lblFecha);
 
         txtFecha = new JTextField();
+        txtFecha.setForeground(SystemColor.desktop);
         txtFecha.setEditable(false);
         txtFecha.setBounds(258, 10, 120, 20);
         txtFecha.setText(LocalDate.now().toString());
-        txtFecha.setBorder(bottomBorder);
-        txtFecha.setBackground(cyanClaro);
+        txtFecha.setBorder(new MatteBorder(0, 0, 2, 0, (Color) SystemColor.activeCaption));
+        txtFecha.setBackground(SystemColor.text);
         panel.add(txtFecha);
 
         JLabel lblHora = new JLabel("Hora:");
@@ -176,18 +179,19 @@ public class RegistrarFactura extends JDialog {
         panel.add(lblHora);
 
         txtHora = new JTextField();
+        txtHora.setForeground(SystemColor.desktop);
         txtHora.setEditable(false);
         txtHora.setText(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
         txtHora.setBounds(442, 10, 100, 20);
-        txtHora.setBackground(cyanClaro);
-        txtHora.setBorder(bottomBorder);
+        txtHora.setBackground(SystemColor.text);
+        txtHora.setBorder(new MatteBorder(0, 0, 2, 0, (Color) SystemColor.activeCaption));
         panel.add(txtHora);
 
         pnlCompra = new JPanel();
         pnlCompra.setBounds(10, 40, 744, 35);
         panel.add(pnlCompra);
         pnlCompra.setLayout(null);
-        pnlCompra.setBackground(fondoClarito);
+        pnlCompra.setBackground(SystemColor.inactiveCaptionBorder);
 
         JLabel lblProveedor = new JLabel("Proveedor:");
         lblProveedor.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
@@ -195,15 +199,17 @@ public class RegistrarFactura extends JDialog {
         pnlCompra.add(lblProveedor);
 
         txtProveedor = new JTextField();
+        txtProveedor.setForeground(SystemColor.desktop);
         txtProveedor.setBounds(88, 7, 160, 20);
         txtProveedor.setText("PVD-");
-        txtProveedor.setBackground(cyanClaro);
-        txtProveedor.setBorder(bottomBorder);
+        txtProveedor.setBackground(SystemColor.text);
+        txtProveedor.setBorder(new MatteBorder(0, 0, 2, 0, (Color) SystemColor.activeCaption));
         pnlCompra.add(txtProveedor);
 
         btnBuscarProveedor = new JButton("Buscar");
-        btnBuscarProveedor.setBackground(cyanMid);
-        btnBuscarProveedor.setForeground(Color.WHITE);
+        btnBuscarProveedor.setBorder(new MatteBorder(0, 0, 2, 0, (Color) SystemColor.activeCaption));
+        btnBuscarProveedor.setBackground(SystemColor.inactiveCaption);
+        btnBuscarProveedor.setForeground(new Color(0, 0, 128));
         btnBuscarProveedor.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
         btnBuscarProveedor.setBounds(258, 6, 80, 22);
         btnBuscarProveedor.addActionListener(new ActionListener() {
@@ -304,10 +310,8 @@ public class RegistrarFactura extends JDialog {
 
         if(esCV == false && p instanceof Empleado) {
             Empleado vendedor = (Empleado) p;
-            // Ahora es seguro usar vendedor.getId()
             txtEmpleado.setText(vendedor.getId() + " | " + vendedor.getNombre());
         } else {
-            // Si es Venta al Contado (esCV == true) o si el usuario es Admin (no es Empleado)
             String user = (Tienda.getInstance().getLoginUser() != null) ? 
                            Tienda.getInstance().getLoginUser().getUserName() : "Desconocido";
             txtEmpleado.setText("N/A | " + user);
@@ -327,14 +331,14 @@ public class RegistrarFactura extends JDialog {
         spnCantidad.setModel(new SpinnerNumberModel(1, 1, null, 1));
         spnCantidad.setBounds(84, 83, 70, 22);
         spnCantidad.setBackground(cyanClaro);
-        spnCantidad.setBorder(bottomBorder);
+        spnCantidad.setBorder(new MatteBorder(0, 0, 2, 0, (Color) SystemColor.activeCaption));
         panel.add(spnCantidad);
 
         btnProducto = new JButton("Ver Producto");
         btnProducto.setEnabled(false);
-        btnProducto.setForeground(Color.WHITE);
+        btnProducto.setForeground(new Color(0, 0, 128));
         btnProducto.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
-        btnProducto.setBackground(cyanMid);
+        btnProducto.setBackground(SystemColor.inactiveCaption);
         btnProducto.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (productoSeleccionadoVista != null) {
@@ -349,13 +353,13 @@ public class RegistrarFactura extends JDialog {
 
         JLabel lblDisponibles = new JLabel("Disponibles");
         lblDisponibles.setFont(new Font("Bahnschrift", Font.BOLD, 13));
-        lblDisponibles.setForeground(cyanOscuro);
+        lblDisponibles.setForeground(new Color(0, 0, 128));
         lblDisponibles.setBounds(118, 118, 88, 16);
         panel.add(lblDisponibles);
 
         JLabel lblCarrito = new JLabel("Carrito de Compra");
         lblCarrito.setFont(new Font("Bahnschrift", Font.BOLD, 13));
-        lblCarrito.setForeground(cyanOscuro);
+        lblCarrito.setForeground(new Color(0, 0, 128));
         lblCarrito.setBounds(515, 118, 133, 16);
         panel.add(lblCarrito);
 
@@ -428,9 +432,9 @@ public class RegistrarFactura extends JDialog {
         pnlProDisponible.add(new JScrollPane(tableProDisponible), BorderLayout.CENTER);
 
         btnAgregarPro = new JButton("Agregar ");
-        btnAgregarPro.setForeground(Color.WHITE);
+        btnAgregarPro.setForeground(SystemColor.desktop);
         btnAgregarPro.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
-        btnAgregarPro.setBackground(cyanMid);
+        btnAgregarPro.setBackground(SystemColor.text);
         btnAgregarPro.setEnabled(false);
         btnAgregarPro.setBounds(313, 198, 110, 25);
         btnAgregarPro.addActionListener(new ActionListener() {
@@ -443,8 +447,8 @@ public class RegistrarFactura extends JDialog {
         btnQuitarPro = new JButton("Quitar");
         btnQuitarPro.setBounds(313, 238, 110, 25);
         btnQuitarPro.setEnabled(false);
-        btnQuitarPro.setBackground(new Color(250, 128, 114));
-        btnQuitarPro.setForeground(Color.WHITE);
+        btnQuitarPro.setBackground(SystemColor.text);
+        btnQuitarPro.setForeground(SystemColor.desktop);
         btnQuitarPro.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
         btnQuitarPro.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -507,11 +511,12 @@ public class RegistrarFactura extends JDialog {
         panel.add(lblSubtotal);
 
         txtSubtotal = new JTextField();
+        txtSubtotal.setForeground(SystemColor.desktop);
         txtSubtotal.setEditable(false);
         txtSubtotal.setText("0.00");
         txtSubtotal.setBounds(542, 364, 100, 20);
-        txtSubtotal.setBackground(cyanClaro);
-        txtSubtotal.setBorder(bottomBorder);
+        txtSubtotal.setBackground(SystemColor.text);
+        txtSubtotal.setBorder(new MatteBorder(0, 0, 2, 0, (Color) SystemColor.activeCaption));
         panel.add(txtSubtotal);
 
         JLabel lblTotal = new JLabel("Total factura:");
@@ -520,20 +525,22 @@ public class RegistrarFactura extends JDialog {
         panel.add(lblTotal);
 
         txtTotal = new JTextField();
+        txtTotal.setForeground(SystemColor.desktop);
         txtTotal.setEditable(false);
         txtTotal.setText("0.00");
         txtTotal.setBounds(542, 392, 100, 20);
-        txtTotal.setBackground(cyanClaro);
-        txtTotal.setBorder(bottomBorder);
+        txtTotal.setBackground(SystemColor.text);
+        txtTotal.setBorder(new MatteBorder(0, 0, 2, 0, (Color) SystemColor.activeCaption));
         panel.add(txtTotal);
 
         JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPane.setBackground(Color.LIGHT_GRAY);
         getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
         JButton btnRegistrarFactura = new JButton("Registrar Factura");
-        btnRegistrarFactura.setForeground(Color.WHITE);
+        btnRegistrarFactura.setForeground(SystemColor.desktop);
         btnRegistrarFactura.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-        btnRegistrarFactura.setBackground(cyanMid);
+        btnRegistrarFactura.setBackground(SystemColor.text);
         btnRegistrarFactura.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 registrarFactura();
@@ -543,8 +550,8 @@ public class RegistrarFactura extends JDialog {
         getRootPane().setDefaultButton(btnRegistrarFactura);
 
         JButton btnCancelar = new JButton("Cancelar");
-        btnCancelar.setBackground(new Color(250, 128, 114));
-        btnCancelar.setForeground(Color.WHITE);
+        btnCancelar.setBackground(SystemColor.text);
+        btnCancelar.setForeground(SystemColor.desktop);
         btnCancelar.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
         btnCancelar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {

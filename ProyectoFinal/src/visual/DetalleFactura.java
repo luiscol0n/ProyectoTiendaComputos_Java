@@ -24,6 +24,7 @@ import logico.FacturaVenta;
 import logico.Producto;
 
 import database.TiendaComputos;
+import java.awt.SystemColor;
 
 
 public class DetalleFactura extends JDialog {
@@ -38,7 +39,7 @@ public class DetalleFactura extends JDialog {
     private JTextField txtMontoTotal;
 
     public DetalleFactura(Factura factura) {
-        setIconImage(Toolkit.getDefaultToolkit().getImage(DetalleFactura.class.getResource("/Imagenes/to-do-list.png")));
+        setIconImage(Toolkit.getDefaultToolkit().getImage(DetalleFactura.class.getResource("/Imagenes/factura.png")));
         setTitle("Detalle de la Factura");
         setBounds(100, 100, 800, 500);
         setLocationRelativeTo(null);
@@ -47,7 +48,7 @@ public class DetalleFactura extends JDialog {
         getContentPane().setLayout(new BorderLayout());
 
         contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        contentPanel.setBackground(new Color(240, 255, 240));
+        contentPanel.setBackground(SystemColor.inactiveCaptionBorder);
         getContentPane().add(contentPanel, BorderLayout.CENTER);
         contentPanel.setLayout(null);
 
@@ -57,6 +58,7 @@ public class DetalleFactura extends JDialog {
         contentPanel.add(lblFactura);
 
         txtFactura = new JTextField();
+        txtFactura.setBackground(SystemColor.text);
         txtFactura.setEditable(false);
         txtFactura.setBounds(80, 11, 150, 20);
         contentPanel.add(txtFactura);
@@ -67,6 +69,7 @@ public class DetalleFactura extends JDialog {
         contentPanel.add(lblFecha);
 
         txtFecha = new JTextField();
+        txtFecha.setBackground(SystemColor.text);
         txtFecha.setEditable(false);
         txtFecha.setBounds(310, 11, 120, 20);
         contentPanel.add(txtFecha);
@@ -77,6 +80,7 @@ public class DetalleFactura extends JDialog {
         contentPanel.add(lblTipo);
 
         txtTipo = new JTextField();
+        txtTipo.setBackground(SystemColor.text);
         txtTipo.setEditable(false);
         txtTipo.setBounds(500, 11, 120, 20);
         contentPanel.add(txtTipo);
@@ -87,6 +91,7 @@ public class DetalleFactura extends JDialog {
         contentPanel.add(lblPersona);
 
         txtPersona = new JTextField();
+        txtPersona.setBackground(SystemColor.text);
         txtPersona.setEditable(false);
         txtPersona.setBounds(140, 45, 250, 20);
         contentPanel.add(txtPersona);
@@ -97,6 +102,7 @@ public class DetalleFactura extends JDialog {
         contentPanel.add(lblMonto);
 
         txtMontoTotal = new JTextField();
+        txtMontoTotal.setBackground(SystemColor.text);
         txtMontoTotal.setEditable(false);
         txtMontoTotal.setBounds(510, 45, 120, 20);
         contentPanel.add(txtMontoTotal);
@@ -106,16 +112,16 @@ public class DetalleFactura extends JDialog {
         table = new JTable(model);
 
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBounds(10, 90, 764, 320);
+        scrollPane.setBounds(10, 90, 772, 320);
         contentPanel.add(scrollPane);
 
         JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPane.setBackground(new Color(240, 255, 240));
+        buttonPane.setBackground(Color.LIGHT_GRAY);
         getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
         JButton btnCerrar = new JButton("Cerrar");
-        btnCerrar.setBackground(new Color(250, 128, 114));
-        btnCerrar.setForeground(Color.WHITE);
+        btnCerrar.setBackground(SystemColor.text);
+        btnCerrar.setForeground(SystemColor.desktop);
         btnCerrar.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
         btnCerrar.addActionListener(e -> dispose());
         buttonPane.add(btnCerrar);

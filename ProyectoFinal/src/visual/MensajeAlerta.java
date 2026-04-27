@@ -15,6 +15,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.SystemColor;
 
 public class MensajeAlerta extends JDialog {
 
@@ -42,10 +43,10 @@ public class MensajeAlerta extends JDialog {
         contentPanel.setBorder(new LineBorder(new Color(255, 0, 0), 3, true));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
         contentPanel.setLayout(null);
-        contentPanel.setBackground(FondoClarito);
+        contentPanel.setBackground(SystemColor.inactiveCaptionBorder);
         
         JButton okbutton = new JButton("OK");
-        okbutton.setForeground(new Color(255, 255, 255));
+        okbutton.setForeground(SystemColor.desktop);
         okbutton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 dispose();
@@ -53,7 +54,7 @@ public class MensajeAlerta extends JDialog {
         });
         okbutton.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
         okbutton.setBounds(115, 143, 73, 33);
-        okbutton.setBackground(CyanMid);
+        okbutton.setBackground(SystemColor.text);
         contentPanel.add(okbutton);
 		getRootPane().setDefaultButton(okbutton);
 
@@ -63,7 +64,7 @@ public class MensajeAlerta extends JDialog {
         txtTxt.setHorizontalAlignment(SwingConstants.CENTER);
         txtTxt.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
         txtTxt.setBounds(34, 36, 154, 74);
-        txtTxt.setBorder(bottomBorder);
+        txtTxt.setBorder(new MatteBorder(0, 0, 2, 0, (Color) SystemColor.activeCaption));
         txtTxt.setBackground(FondoClarito);
         contentPanel.add(txtTxt);
         
