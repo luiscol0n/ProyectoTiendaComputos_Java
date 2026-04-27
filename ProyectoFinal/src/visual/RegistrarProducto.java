@@ -498,7 +498,7 @@ public class RegistrarProducto extends JDialog {
             cbxDDTipoConexion.setBackground(CyanClaro);
             cbxDDTipoConexion.setBorder(bottomBorder);
             cbxDDTipoConexion.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-            cbxDDTipoConexion.setModel(new DefaultComboBoxModel(new String[]{"<Seleccione uno>", "IDE", "SCSI", "SAS", "PCI-e"}));
+            cbxDDTipoConexion.setModel(new DefaultComboBoxModel(new String[]{"<Seleccionar>", "IDE", "SCSI", "SAS", "PCI-e"}));
             cbxDDTipoConexion.setBounds(383, 25, 139, 22);
             pnlDiscoDuro.add(cbxDDTipoConexion);
         }
@@ -579,7 +579,7 @@ public class RegistrarProducto extends JDialog {
                                 if ((int) spnMRCantidad.getValue() == 0
                                         || "<Seleccione uno>".equalsIgnoreCase(cbxMRTipo.getSelectedItem().toString())) {
                                     ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/cancel.png"));
-                                    MensajeAlerta mensajito = new MensajeAlerta(iconito, "OperaciÃ³n errÃ³nea.\nTodos los campos deben de estar llenos!");
+                                    MensajeAlerta mensajito = new MensajeAlerta(iconito, "Operación errónea.\nTodos los campos deben de estar llenos!");
                                     mensajito.setModal(true);
                                     mensajito.setVisible(true);
                                     return;

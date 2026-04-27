@@ -216,7 +216,7 @@ public class PanelReportes extends JDialog {
         p.add(gCtrl);
 
         JPanel gTabla = grupo("Vendedores y Comisiones");
-        mdlVend = modelo("Cod. Empleado", "Nombre", "Tipo Usuario", "Ventas", "Comision (RD$)", "Emp. Mes");
+        mdlVend = modelo("Cod. Empleado", "Nombre", "Tipo Usuario", "Ventas", "Comisión (RD$)", "Emp. Mes");
         gTabla.add(new JScrollPane(tabla(mdlVend)));
         p.add(gTabla);
         return p;
@@ -276,7 +276,7 @@ public class PanelReportes extends JDialog {
         p.add(gFiltro);
 
         JPanel gTabla = grupo("Historial de Clientes");
-        mdlLtv = modelo("Cod. Cliente", "Nombre", "Cedula", "Registro", "Compras", "Total Gastado (RD$)", "Clasificacion");
+        mdlLtv = modelo("Cod. Cliente", "Nombre", "Cedula", "Registro", "Compras", "Total Gastado (RD$)", "Clasificación");
         gTabla.add(new JScrollPane(tabla(mdlLtv)));
         p.add(gTabla);
         return p;

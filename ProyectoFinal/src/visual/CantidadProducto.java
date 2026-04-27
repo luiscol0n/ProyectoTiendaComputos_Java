@@ -1,4 +1,3 @@
-//.
 package visual;
 
 import java.awt.BorderLayout;
@@ -89,7 +88,6 @@ public class CantidadProducto extends JDialog {
              		 cantField.setText(String.valueOf(pro.getCantDisponible()));
              	  }      		  
              	  else {
-             		  //JOptionPane.showMessageDialog(null, "El producto no existe", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
              		 ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/alert.png"));
              		 MensajeAlerta mensajito = new MensajeAlerta(iconito, "El producto no existe");
              		 mensajito.setModal(true);

@@ -754,14 +754,6 @@ public class RegistrarFactura extends JDialog {
 
                     pro.setCantDisponible(pro.getCantDisponible() + cant);
                     pro.setSeleccionado(false);
-
-                    /*
-                     * Si tienes un método para actualizar producto en SQL,
-                     * debes llamarlo aquí para que también suba el stock en la BD.
-                     *
-                     * Ejemplo:
-                     * db.actualizarProducto(pro);
-                     */
                 }
 
                 Tienda.getInstance().registrarFactura(compra);
@@ -842,13 +834,7 @@ public class RegistrarFactura extends JDialog {
                     pro.setCantDisponible(pro.getCantDisponible() - cant);
                     pro.setSeleccionado(false);
 
-                    /*
-                     * Si tienes un método para actualizar producto en SQL,
-                     * debes llamarlo aquí para que también baje el stock en la BD.
-                     *
-                     * Ejemplo:
-                     * db.actualizarProducto(pro);
-                     */
+                  
                 }
 
                 Tienda.getInstance().registrarFactura(venta);

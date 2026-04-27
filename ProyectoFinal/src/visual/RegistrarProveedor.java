@@ -148,15 +148,7 @@ public class RegistrarProveedor extends JDialog {
 		cedulaField.setBorder(new MatteBorder(0, 0, 2, 0, (Color) SystemColor.activeCaption));
 		contentPanel.add(cedulaField);
 		
-		/*cedulaField = new JTextField();
-		cedulaField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-		cedulaField.setColumns(10);
-		cedulaField.setBounds(129, 109, 247, 20);
-		cedulaField.setBackground(CyanClaro);
-		cedulaField.setBorder(bottomBorder);
-		contentPanel.add(cedulaField);*/
-		
-		JLabel cedulaTxt = new JLabel("Cedula:");
+		JLabel cedulaTxt = new JLabel("Cédula:");
 		cedulaTxt.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 		cedulaTxt.setBounds(37, 115, 57, 14);
 		contentPanel.add(cedulaTxt);
@@ -217,9 +209,7 @@ public class RegistrarProveedor extends JDialog {
                     
                     if (proveedor == null) {
                         Proveedor newProveedor = new Proveedor(nombreApellido, edad, cedula, correo, empresa);
-        				//------- para SQL ---------
 						boolean exito = TiendaComputos.getInstance().insertarProveedor(newProveedor);							
-						//-----------------------------
 						if (exito) {
 	                        Tienda.getInstance().registrarPersona(newProveedor);
 							ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));

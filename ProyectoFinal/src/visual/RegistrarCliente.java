@@ -163,13 +163,6 @@ public class RegistrarCliente extends JDialog {
 			cedulaField.setBackground(Color.WHITE);
 			cedulaField.setBorder(new MatteBorder(0, 0, 2, 0, (Color) SystemColor.activeCaption));
 			contentPanel.add(cedulaField);
-			/*cedulaField = new JTextField();
-			cedulaField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-			cedulaField.setColumns(10);
-			cedulaField.setBounds(127, 114, 247, 20);
-			cedulaField.setBackground(CyanClaro);
-			cedulaField.setBorder(bottomBorder);
-			contentPanel.add(cedulaField);*/
 		}
 		{
 			correoField = new JTextField();
@@ -216,7 +209,6 @@ public class RegistrarCliente extends JDialog {
 					public void actionPerformed(ActionEvent e) {
 
 						if (nombreField.getText().isEmpty() || cedulaField.getText().equalsIgnoreCase("   -       - ") || correoField.getText().isEmpty()) {
-							//JOptionPane.showMessageDialog(null, "Operación errónea. Todos los campos deben de estar llenos!", "Error", JOptionPane.WARNING_MESSAGE);
 							ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/cancel.png"));
 							MensajeAlerta mensajito = new MensajeAlerta(iconito, "Operación errónea.\nTodos los campos deben de estar llenos!");
 							mensajito.setModal(true);
