@@ -477,7 +477,8 @@ public class Principal extends JFrame {
 		mntmNewMenuItem_11.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 		menuAdministracion.add(mntmNewMenuItem_11);
 		
-		JMenuItem mntmNewMenuItem_12 = new JMenuItem("TLM Tech - Panel de Reportes");
+		JMenuItem mntmNewMenuItem_12 = new JMenuItem("Panel de Reportes");
+		mntmNewMenuItem_12.setIcon(new ImageIcon(Principal.class.getResource("/Imagenes/reportes.png")));
 		mntmNewMenuItem_12.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				PanelReportes panelReportes = new PanelReportes(null);
