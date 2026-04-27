@@ -164,7 +164,7 @@ public class Login extends JFrame {
 		btnLogin.setBounds(80, 192, 133, 24);
 		panel.add(btnLogin);
 		
-		JLabel iconoP = new JLabel(new ImageIcon(Login.class.getResource("/Imagenes/Login TLM (2).png"))
+		JLabel iconoP = new JLabel(new ImageIcon(Login.class.getResource("/Imagenes/Login TLM.png"))
 			);
 		iconoP.setBounds(101, 15, 216, 74);
 		panel.add(iconoP);
