@@ -168,15 +168,14 @@ public class RegUser extends JDialog {
 									// Lo q agregué--------------------
 									boolean exito = TiendaComputos.getInstance().insertarUsuario(comboBox.getSelectedItem().toString(), textField.getText(), textField_1.getText());
 									if (exito) {
-										JOptionPane.showMessageDialog(null, "!Usuario registrado en SQL Server!");
+										Tienda.getInstance().RegistrarUser(user);
+										ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));
+										MensajeAlerta mensajito = new MensajeAlerta(iconito, "Operación satisfactoria.\nUsuario registrado!");
+										mensajito.setModal(true);
+										mensajito.setVisible(true);
+										clean();
 									}	
 
-									Tienda.getInstance().RegistrarUser(user);
-									ImageIcon iconito = new ImageIcon(MensajeAlerta.class.getResource("/Imagenes/check.png"));
-									MensajeAlerta mensajito = new MensajeAlerta(iconito, "Operación satisfactoria.\nUsuario registrado!");
-									mensajito.setModal(true);
-									mensajito.setVisible(true);
-									clean();
 								} else {
 									usuario.setUserName(textField.getText());
 									usuario.setPass(textField_1.getText());

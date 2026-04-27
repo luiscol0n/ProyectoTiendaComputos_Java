@@ -336,7 +336,7 @@ public class RegistrarCliente extends JDialog {
 		nombreField.setText("");
 		cedulaField.setText("");
 		correoField.setText("");
-		edadSpinner.setValue(10);
+		edadSpinner.setValue(16);
 		
 		nombreField.requestFocusInWindow();
 	}
