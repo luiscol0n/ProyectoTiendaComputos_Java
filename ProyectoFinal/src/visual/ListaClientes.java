@@ -73,13 +73,7 @@ public class ListaClientes extends JDialog {
 
         String[] columnas = {"ID", "Nombre", "Cédula", "Correo", "Clasificación"};
         tableModel = new DefaultTableModel(columnas, 0);
-        table = new JTable(new DefaultTableModel(
-        	new Object[][] {
-        	},
-        	new String[] {
-        		"ID", "Nombre", "C\u00E9dula", "Correo", "Clasificaci\u00F3n"
-        	}
-        ));
+        table = new JTable(tableModel);
         table.setBackground(SystemColor.inactiveCaptionBorder);
         table.setBorder(null);
         DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer();
