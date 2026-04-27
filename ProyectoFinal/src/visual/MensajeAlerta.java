@@ -39,7 +39,7 @@ public class MensajeAlerta extends JDialog {
         
         setBounds(100, 100, 312, 202);
         getContentPane().setLayout(new BorderLayout());
-        contentPanel.setBorder(new LineBorder(new Color(255, 0, 0), 3, true));
+        contentPanel.setBorder(new LineBorder(new Color(0, 0, 139), 3, true));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
         contentPanel.setLayout(null);
         contentPanel.setBackground(SystemColor.inactiveCaptionBorder);
