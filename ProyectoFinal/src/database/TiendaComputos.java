@@ -54,12 +54,8 @@ public class TiendaComputos {
 			con = ConexionDB.getConexion();
 			st = con.createStatement();
 
-			// 1. Desactivar temporalmente las restricciones de llaves forï¿½neas
-			// Esto evita errores de "conflicto con FK" al borrar en desorden
 			st.executeUpdate("EXEC sp_MSforeachtable 'ALTER TABLE ? NOCHECK CONSTRAINT ALL'");
 
-			// 2. Borrar los datos de todas las tablas
-			// El orden ideal es de hijas a padres
 			st.executeUpdate("DELETE FROM DetalleFacturaVenta");
 			st.executeUpdate("DELETE FROM DetalleFacturaCompra");
 			st.executeUpdate("DELETE FROM FacturaVenta");
@@ -72,21 +68,19 @@ public class TiendaComputos {
 			st.executeUpdate("DELETE FROM Usuario");
 			st.executeUpdate("DELETE FROM Persona");
 
-			// 3. Reiniciar los contadores IDENTITY de las tablas principales
 			st.executeUpdate("DBCC CHECKIDENT ('Persona', RESEED, 0)");
 			st.executeUpdate("DBCC CHECKIDENT ('Usuario', RESEED, 0)");
 			st.executeUpdate("DBCC CHECKIDENT ('Producto', RESEED, 0)");
 			st.executeUpdate("DBCC CHECKIDENT ('Factura', RESEED, 0)");
 
-			// 4. Reactivar las restricciones de llaves forï¿½neas
 			st.executeUpdate("EXEC sp_MSforeachtable 'ALTER TABLE ? WITH CHECK CHECK CONSTRAINT ALL'");
 
-			System.out.println("Base de datos reseteada por completo: AML Tech estï¿½ en blanco.");
+			System.out.println("Base de datos reseteada por completo: AML Tech está en blanco.");
 
 		} catch (SQLException e) {
 			System.err.println("Error al resetear la base de datos: " + e.getMessage());
 		} finally {
-			// Cerrar recursos
+			
 		}
 	}
 
@@ -96,14 +90,13 @@ public class TiendaComputos {
 		ResultSet rs = null;
 		int idEncontrado = -1;
 
-		// Usamos el cï¿½digo de la tabla hija para encontrar el ID en la tabla padre
 		String sql = "";
 		if (tipo.equalsIgnoreCase("Empleado")) {
-			sql = "SELECT Id_Persona FROM Empleado WHERE CodEmpleado = ?";
+			sql = "select Id_Persona from Empleado where CodEmpleado = ?";
 		} else if (tipo.equalsIgnoreCase("Cliente")) {
-			sql = "SELECT Id_Persona FROM Cliente WHERE CodCliente = ?";
+			sql = "select Id_Persona from Cliente where CodCliente = ?";
 		} else if (tipo.equalsIgnoreCase("Proveedor")) {
-			sql = "SELECT Id_Persona FROM Proveedor WHERE CodProveedor = ?";
+			sql = "select Id_Persona FROM Proveedor where CodProveedor = ?";
 		}
 
 		try {
@@ -118,7 +111,7 @@ public class TiendaComputos {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-			// Cerrar recursos
+
 		}
 		return idEncontrado;
 	}
@@ -130,7 +123,6 @@ public class TiendaComputos {
 		ResultSet rs = null;
 		boolean exito = false;
 
-		// Determinamos en quï¿½ tabla buscar el ID tï¿½cnico primero
 		String tabla = tipo.equalsIgnoreCase("Empleado") ? "Empleado"
 				: tipo.equalsIgnoreCase("Cliente") ? "Cliente" : "Proveedor";
 		String columnaCod = tipo.equalsIgnoreCase("Empleado") ? "CodEmpleado"
@@ -139,8 +131,7 @@ public class TiendaComputos {
 		try {
 			con = ConexionDB.getConexion();
 
-			// 1. Buscamos el ID tï¿½cnico (int)
-			String sqlId = "SELECT Id_Persona FROM " + tabla + " WHERE " + columnaCod + " = ?";
+			String sqlId = "select Id_Persona from " + tabla + " where " + columnaCod + " = ?";
 			psId = con.prepareStatement(sqlId);
 			psId.setString(1, codigo);
 			rs = psId.executeQuery();
@@ -148,9 +139,7 @@ public class TiendaComputos {
 			if (rs.next()) {
 				int idSQL = rs.getInt("Id_Persona");
 
-				// 2. Borramos de la tabla Persona (SQL borrarï¿½ automï¿½ticamente en las hijas por
-				// el CASCADE)
-				String sqlDel = "DELETE FROM Persona WHERE Id_Persona = ?";
+				String sqlDel = "delete from Persona where Id_Persona = ?";
 				psDel = con.prepareStatement(sqlDel);
 				psDel.setInt(1, idSQL);
 
@@ -164,7 +153,7 @@ public class TiendaComputos {
 		return exito;
 	}
 
-	// METODOS DE USUARIO
+
 	public boolean insertarUsuario(String tipo, String user, String pass) {
 		String sql = "insert into Usuario (Tipo, UserName, Contrasena) values (?, ?, ?)";
 
@@ -215,7 +204,6 @@ public class TiendaComputos {
 		}
 	}
 
-	// Mï¿½TODOS DE CLIENTE
 	public boolean insertarCliente(Cliente cliente) {
 		Connection con = null;
 		PreparedStatement psPersona = null;
@@ -482,7 +470,7 @@ public class TiendaComputos {
 			psProv = con.prepareStatement(sqlProveedor);
 			psProv.setInt(1, idPersonaSQL);
 			psProv.setString(2, prov.getEmpresa());
-			psProv.setString(3, prov.getId()); // Tu "PRV-#"
+			psProv.setString(3, prov.getId());
 			psProv.executeUpdate();
 
 			con.commit();
@@ -548,8 +536,8 @@ public class TiendaComputos {
 		return exito;
 	}
 
-	// Mï¿½TODOS DE PRODUCTO
 
+	
 	public boolean insertarProducto(Producto p) {
 		String sql = "insert into Producto (Id_Producto, NumSerie, Marca, CantDisponible, Precio) "
 				+ "values (?, ?, ?, ?, ?)";
@@ -581,7 +569,6 @@ public class TiendaComputos {
 			con = ConexionDB.getConexion();
 			con.setAutoCommit(false);
 
-			// 1. Insertar en Producto y recuperar ID generado por SQL
 			int idSQL = 0;
 			try (PreparedStatement ps = con.prepareStatement(sqlProd, PreparedStatement.RETURN_GENERATED_KEYS)) {
 				ps.setString(1, mb.getNumSerie());
@@ -596,7 +583,6 @@ public class TiendaComputos {
 					idSQL = rs.getInt(1);
 			}
 
-			// 2. Insertar en Motherboard usando el ID de SQL
 			String tiposDiscos = String.join(",", mb.getListaDiscoDuroAceptados());
 			try (PreparedStatement ps = con.prepareStatement(sqlMB)) {
 				ps.setInt(1, idSQL);
@@ -1097,7 +1083,7 @@ public class TiendaComputos {
 			e.printStackTrace();
 			return false;
 		} finally {
-			// Cerrar recursos
+
 		}
 	}
 
